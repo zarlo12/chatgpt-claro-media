@@ -1,0 +1,97 @@
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,Items,Requerimiento ,A que sector pertecen ( Unica respuesta) ,Contenido ,,,Observación 
+,Totem digital Sociodemográficos ,"Acceso a el agente ia, con las preguntas iniciales de quienes son ",Financiero - Automotor- Educación - Gobierno - Salud - Tecnologia - Moda - Entretenimiento - Retail - Consumo Masivo ,Genero ( Mujeres / Hombres o Todos) ,Edad (18+ - 18 a 24 - 25 a 34 - 35 a 44 - 45 a 54 - 55 a 64 - 65 a 74 - 75+ ,Nivel Socioeconomico (Todos - bajo ( E1- E2)- medio (E3- E4)  - Alto ( E5 - E6 ) ,Dejar en el forms con selección multiple 
+,Items,Requerimiento ,Contenido ,Afinidades ,Iconos ,,Observación 
+,Backing experiencia de afinidades ,Confirmar afinidades e iconos de cada una de ellas ,Financiero ,"Educación financiera
+Tecnología 
+Construcción, Automotor 
+Turismo ","📈 Educación financiera
+
+🏗️ Construcción
+
+📱 Tecnología
+
+✈️ Turismo
+
+Noticias nacionales  📰
+
+⚽ Deportes
+
+🎵 Música
+
+🚗 Movilidad
+
+🍽️ Gastronomía
+
+🎬 Entretenimiento y OTT
+
+🎓 Educación
+
+Participación ciudadana 🗳️
+
+❤️ Salud
+
+💰 Criptomonedas
+
+🩺 Telemedicina
+
+🛒 E-Commerce (Retail)
+
+📸 Fotografía
+
+🏋️ Bienestar y Fitness
+
+🏬 Centro comercial / Centros comerciales
+
+🔖 Ofertas y descuentos",,En el froms dejar abierto a que el cliente ponga todos los intereses que ellos ya conocen de la audincia para crea su estrategia personalizada
+,,,Automotor ,"Turismo y viajes 
+Deportes 
+Musica 
+Movilidad ",,,
+,,,Educación ,"Tecnología 
+Turismo 
+Gastronomía
+Entretenimiento y OTT",,,
+,,,Gobierno ,"Educación 
+Movilidad
+Salud 
+Participación ciudadana  Noticias nacionales ",,,
+,,,Salud ,"Tecnología
+Gatronomia
+Deportes 
+Educación ",,,
+,,,Tecnologia ,"Educación en línea 
+Entretenimiento y OTT
+Criptomonedas
+Telemedicina
+E-Commerce (Retail)",,,
+,,,Moda ,"Fotografía 
+Turismo 
+Deportes 
+Bienestar y Fitness",,,
+,,,Entretenimiento ,"gastronomía
+Turismo 
+Deportes 
+Tecnología 
+Educación",,,
+,,,Retail ,"Ofertas y descuentos, centro comercial, Tecnología",,,
+,,,Consumo Masivo ,"Entretenimiento y OTT
+Tecnología
+Centros Comerciales 
+Turismo",,,
+,Ruta de comportamiento ,"Definicion del escenario por segmento, según la ruta de comportamiento QUÉ HACEN?","Descubre, Explora, Compara, Decide,
+Compra.",,,,
+,Activa la ubicación ,Definir data de ubicación por segmento ,Financiero ,"usuarios que frecuentan zonas donde se concentran salas de ventas de proyectos inmobiliarios presentan alta afinidad con contenidos relacionados con financiación, simuladores de crédito y productos bancarios.",usuarios que frecuentan aeropuertos y terminales de transporte presentan mayor interacción con plataformas de billeteras digitales y seguros ,"en temporadas previas a vacaciones aumenta la navegación en destinos nacionales e internacionales, acompañada de consultas financieras.",
+,,,Automotor ,Detectamos que de xxxx usuarios que visitan vitrinas automotrices posteriormente navegan comparadores digitales y contenidos de financiación.,"En la zona centro de medellín  ( %) es donde más consultan vehiculos con energias limpias ( Motos, carros, patinetas) ",En la ubicación de cedritos identificamos que  el % de personas que han buscado productos para mascotas han estado interesados en busqedas de vehiculos nuevos o usados ,
+,,,Educación ,Colegios ¿Cuáles son la zonas del país donde más buscan temas relacionados a Colegios? Xxxxxx,"Universidades ¿Identificamos que en los eventos de musica, el xx% de la audiencia que asistio busco temas relacionados a pregrados y postgrados ? ",Institutos de educación continua ( Identificamos que en la localidad de Kennedy XX% son los que más buscaron programas tecnicos de desarrollo y programación? ,
+,,,Gobierno ,El 80% de las visitas a villa de leyva son de la zona centro del país y están interesadas en temas gastronomicos ,"En vacaciones de fin de año, el xx% de las personas que viven en Bogotá se desplazaron a ciudades como Medellín %, Cali % y Neiva % ",Detectamos un xxx  de concentración de navegación en contenidos de empleabilidad y programas sociales en los municipios de -…....,
+,,,Salud ,Identificamos que el xxxx  de personas que asisten a los gym consultan temas cuidados para la piel y planes complementarios de salud ,Identificamos que xxxx usuarios que visitan zonas médicas presentan simultáneamente alto consumo de contenidos sobre bienestar y prevención.,Detectamos incremento en navegación de servicios de salud digital en zonas residenciales como ( Usaquen en Bogotá y norte de Cali) ,
+,,,Tecnologia ,Identificamos que el X personas que han asistido a estadios para ver partidos de fútbol posteriormente incrementan la búsqueda de contenidos relacionados con compra de televisores y tecnología para el hogar.,"Detectamos que en temporadas de descuentos comerciales, el XXXX usuarios que visitan centros comerciales tecnológicos incrementan la consulta de comparativos, reseñas y precios online desde el mismo punto físico.","Detectamos que usuarios que frecuentan zonas corporativas y coworkings presentan mayor afinidad con contenidos sobre laptops, tablets, software colaborativo y soluciones de conectividad móvil.",
+,,,Moda ,"Identificamos que ante cambios de clima en ciertas zonas, aumenta la navegación en categorías específicas como abrigos, calzado o ropa ligera.","Detectamos que usuarios que frecuentan zonas comerciales premium presentan alta afinidad con contenidos de belleza, marcas internacionales e influencers de moda.","Identificamos que personas que asisten a partidos de fútbol, carreras atléticas o eventos fitness incrementan la navegación en categorías como tenis deportivos, camisetas oficiales y ropa técnica en los días previos y posteriores al evento.",
+,,,Entretenimiento ,"asistentes a conciertos y festivales presentan alto consumo de contenido en redes sociales, videos en vivo y búsqueda de próximos eventos.",personas que asisten a partidos en estadios posteriormente incrementan la búsqueda de contenidos deportivos en streaming y servicios de televisión premium.,"usuarios que frecuentan zonas de bares y entretenimiento nocturno presentan alta afinidad con contenidos musicales, eventos en vivo y lanzamientos culturales.",
+,,,Retail ,Identificamos que xxxxx usuarios que visitan centros comerciales también presentan afinidad con ofertas y descuentos en canales digitales.,"Detectamos que usuarios que visitan tiendas especializadas (tecnología, hogar, moda, deportes) incrementan la navegación en contenidos y reseñas de esa misma categoría días posteriores.","Detectamos patrones diferenciados según el momento de visita:                                           Compras grandes en fines de semana
+
+Compras rápidas y de reposición entre semana",
+,,,Consumo Masivo ,"usuarios que visitan supermercados y grandes superficies presentan alta afinidad con contenidos relacionados con alimento para mascotas, cuidado animal y bienestar pet.","usuarios de zonas como usaquen y chapinero  que visitan supermercados presentan alta afinidad con contenidos relacionados con alimentación saludable, productos orgánicos y bienestar integral.",Personas que asisten a conciertos y eventos masivos incrementan posteriormente el uso de apps de consumo y domicilios como Tada y Rappi,
