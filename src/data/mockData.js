@@ -33,20 +33,57 @@ export const NIVELES_SOCIOECONOMICOS = [
   "Alto (E5-E6)",
 ];
 
+// Todas las afinidades disponibles con sus iconos
+export const TODAS_AFINIDADES = [
+  "Educación financiera",
+  "Construcción",
+  "Tecnología",
+  "Turismo",
+  "Noticias nacionales",
+  "Deportes",
+  "Música",
+  "Movilidad",
+  "Gastronomía",
+  "Entretenimiento y OTT",
+  "Educación",
+  "Participación ciudadana",
+  "Salud",
+  "Criptomonedas",
+  "Telemedicina",
+  "E-Commerce",
+  "Fotografía",
+  "Bienestar y Fitness",
+  "Centro comercial",
+  "Ofertas y descuentos",
+];
+
+// Mapa de iconos para las afinidades
+export const ICONOS_AFINIDADES = {
+  "Educación financiera": "📈",
+  Construcción: "🏗️",
+  Tecnología: "📱",
+  Turismo: "✈️",
+  "Noticias nacionales": "📰",
+  Deportes: "⚽",
+  Música: "🎵",
+  Movilidad: "🚗",
+  Gastronomía: "🍽️",
+  "Entretenimiento y OTT": "🎬",
+  Educación: "🎓",
+  "Participación ciudadana": "🗳️",
+  Salud: "❤️",
+  Criptomonedas: "💰",
+  Telemedicina: "🩺",
+  "E-Commerce": "🛒",
+  Fotografía: "📸",
+  "Bienestar y Fitness": "🏋️",
+  "Centro comercial": "🏬",
+  "Ofertas y descuentos": "🔖",
+};
+
 export const AFINIDADES_POR_SECTOR = {
-  Financiero: [
-    "Educación financiera",
-    "Tecnología",
-    "Construcción",
-    "Automotor",
-    "Turismo",
-    "Noticias nacionales",
-    "Deportes",
-    "Música",
-    "Movilidad",
-    "Gastronomía",
-  ],
-  Automotor: ["Turismo y viajes", "Deportes", "Música", "Movilidad"],
+  Financiero: ["Educación financiera", "Tecnología", "Construcción", "Turismo"],
+  Automotor: ["Turismo", "Deportes", "Música", "Movilidad"],
   Educación: ["Tecnología", "Turismo", "Gastronomía", "Entretenimiento y OTT"],
   Gobierno: [
     "Educación",
@@ -57,7 +94,7 @@ export const AFINIDADES_POR_SECTOR = {
   ],
   Salud: ["Tecnología", "Gastronomía", "Deportes", "Educación"],
   Tecnología: [
-    "Educación en línea",
+    "Educación",
     "Entretenimiento y OTT",
     "Criptomonedas",
     "Telemedicina",
@@ -75,7 +112,7 @@ export const AFINIDADES_POR_SECTOR = {
   "Consumo Masivo": [
     "Entretenimiento y OTT",
     "Tecnología",
-    "Centros Comerciales",
+    "Centro comercial",
     "Turismo",
   ],
 };

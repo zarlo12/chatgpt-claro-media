@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatOptions from './ChatOptions';
+import DragDropBoard from './DragDropBoard';
 import {
   SECTORES,
   GENEROS,
   RANGOS_EDAD,
   NIVELES_SOCIOECONOMICOS,
   AFINIDADES_POR_SECTOR,
+  TODAS_AFINIDADES,
+  ICONOS_AFINIDADES,
   generarPropuestaEstrategica
 } from '../data/mockData';
 
@@ -102,8 +105,7 @@ const ChatAgent = ({ onComplete }) => {
     setUserData(prev => ({ ...prev, nivelSocioeconomico: nivel }));
     
     setTimeout(() => {
-      const afinidades = AFINIDADES_POR_SECTOR[userData.sector] || [];
-      addAgentMessage(`Basándome en el sector ${userData.sector}, he identificado algunas afinidades clave. Selecciona todas las que apliquen para tu estrategia:`);
+      addAgentMessage(`Perfecto. Ahora utiliza el tablero interactivo para seleccionar las afinidades que mejor se ajusten a tu estrategia. Puedes arrastrar las opciones de la izquierda a la derecha o hacer doble clic en ellas.`);
       setTimeout(() => {
         setCurrentStep('afinidades');
         setShowOptions(true);
@@ -175,12 +177,19 @@ const ChatAgent = ({ onComplete }) => {
           <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
         ))}
         {isTyping && <ChatMessage isTyping={true} />}
-        {showOptions && (
+        {showOptions && currentStep !== 'afinidades' && (
           <ChatOptions
             options={getCurrentOptions()}
             onSelect={handleOptionSelect}
-            multiSelect={currentStep === 'afinidades'}
+            multiSelect={false}
             selectedOptions={selectedAfinidades}
+          />
+        )}
+        {showOptions && currentStep === 'afinidades' && (
+          <DragDropBoard
+            options={TODAS_AFINIDADES}
+            onComplete={handleAfinidadesSelect}
+            iconMap={ICONOS_AFINIDADES}
           />
         )}
         <div ref={messagesEndRef} />
