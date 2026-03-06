@@ -36,10 +36,23 @@ const ChatAgent = ({ onComplete }) => {
   const [modalConfig, setModalConfig] = useState({ mensaje: '', icono: '' });
   const [pendingAction, setPendingAction] = useState(null);
   const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
   const hasInitialized = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollUpModerately = () => {
+    // Scroll suave hacia arriba para ver mejor el modal
+    if (chatContainerRef.current) {
+      const currentScroll = chatContainerRef.current.scrollTop;
+      const targetScroll = Math.max(0, currentScroll - 200); // Subir 200px
+      chatContainerRef.current.scrollTo({
+        top: targetScroll,
+        behavior: 'smooth'
+      });
+    }
   };
 
   useEffect(() => {
@@ -83,6 +96,8 @@ const ChatAgent = ({ onComplete }) => {
     setModalConfig({ mensaje, icono });
     setPendingAction(() => accion);
     setShowModal(true);
+    // Hacer scroll suave hacia arriba para mejor visibilidad del modal
+    setTimeout(() => scrollUpModerately(), 100);
   };
 
   const handleModalContinuar = () => {
@@ -368,7 +383,7 @@ const ChatAgent = ({ onComplete }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
         {messages.map((msg, index) => (
           <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
         ))}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const TransitionModal = ({ isOpen, onClose, mensaje, icono }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -6,25 +7,38 @@ const TransitionModal = ({ isOpen, onClose, mensaje, icono }) => {
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
+      // Bloquear scroll del body
+      document.body.style.overflow = 'hidden';
     } else {
       setTimeout(() => setIsVisible(false), 300);
+      // Restaurar scroll del body
+      document.body.style.overflow = 'unset';
     }
+    
+    // Cleanup: restaurar scroll al desmontar
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   if (!isVisible && !isOpen) return null;
 
-  return (
+  const modalContent = (
     <>
       {/* Backdrop con blur */}
       <div
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0'
         }`}
+        style={{ zIndex: 9998 }}
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div 
+        className="fixed inset-0 flex items-center justify-center p-4"
+        style={{ zIndex: 9999 }}
+      >
         <div
           className={`bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-xl border-2 border-white/30 rounded-3xl shadow-2xl max-w-md w-full p-8 transform transition-all duration-500 ${
             isOpen
@@ -179,6 +193,9 @@ const TransitionModal = ({ isOpen, onClose, mensaje, icono }) => {
       </div>
     </>
   );
+
+  // Usar Portal para renderizar fuera del contenedor del chat
+  return createPortal(modalContent, document.body);
 };
 
 export default TransitionModal;

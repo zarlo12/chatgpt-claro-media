@@ -83,8 +83,25 @@ const GeoInsightCard = ({ insight, index }) => {
 };
 
 const ResultsView = ({ propuesta, onReset }) => {
+  const resultsContainerRef = React.useRef(null);
+
+  // Scroll automático al top cuando se muestra la vista de resultados
+  useEffect(() => {
+    if (resultsContainerRef.current) {
+      resultsContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+    // También hacer scroll del window por si acaso
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, []);
+
   return (
-    <div className="w-full h-full overflow-y-auto px-6 py-8">
+    <div ref={resultsContainerRef} className="w-full h-full overflow-y-auto px-6 py-8">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4 animate-fade-in">
