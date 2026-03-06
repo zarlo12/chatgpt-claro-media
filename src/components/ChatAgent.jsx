@@ -3,6 +3,7 @@ import ChatMessage from './ChatMessage';
 import ChatOptions from './ChatOptions';
 import DragDropBoard from './DragDropBoard';
 import JourneyStageSelector from './JourneyStageSelector';
+import TransitionModal from './TransitionModal';
 import {
   SECTORES,
   GENEROS,
@@ -30,6 +31,10 @@ const ChatAgent = ({ onComplete }) => {
   const [correo, setCorreo] = useState('');
   const [celular, setCelular] = useState('');
   const [showFormulario, setShowFormulario] = useState(false);
+  // Modal de transición
+  const [showModal, setShowModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState({ mensaje: '', icono: '' });
+  const [pendingAction, setPendingAction] = useState(null);
   const messagesEndRef = useRef(null);
   const hasInitialized = useRef(false);
 
@@ -74,6 +79,22 @@ const ChatAgent = ({ onComplete }) => {
     setShowOptions(false);
   };
 
+  const mostrarModalTransicion = (mensaje, icono, accion) => {
+    setModalConfig({ mensaje, icono });
+    setPendingAction(() => accion);
+    setShowModal(true);
+  };
+
+  const handleModalContinuar = () => {
+    setShowModal(false);
+    if (pendingAction) {
+      setTimeout(() => {
+        pendingAction();
+        setPendingAction(null);
+      }, 300);
+    }
+  };
+
   const handleDatosPersonalesSubmit = (e) => {
     e.preventDefault();
     
@@ -97,13 +118,19 @@ const ChatAgent = ({ onComplete }) => {
     addUserMessage(`${nombre} - ${correo} - ${celular}`);
     setShowFormulario(false);
     
-    // Continuar con el flujo
+    // Mostrar modal de transición
     setTimeout(() => {
-      addAgentMessage(`Perfecto ${nombre}, gracias por tu información. Ahora empecemos conociendo tu empresa. ¿A qué sector perteneces?`);
-      setTimeout(() => {
-        setCurrentStep('welcome');
-        setShowOptions(true);
-      }, 1000);
+      mostrarModalTransicion(
+        'Perfecto! Ahora vamos a descubrir el perfil de tu audiencia',
+        'profile',
+        () => {
+          addAgentMessage(`Perfecto ${nombre}, gracias por tu información. Ahora empecemos conociendo tu empresa. ¿A qué sector perteneces?`);
+          setTimeout(() => {
+            setCurrentStep('welcome');
+            setShowOptions(true);
+          }, 1000);
+        }
+      );
     }, 500);
   };
 
@@ -151,11 +178,17 @@ const ChatAgent = ({ onComplete }) => {
     setUserData(prev => ({ ...prev, nivelSocioeconomico: nivel }));
     
     setTimeout(() => {
-      addAgentMessage(`Perfecto. Ahora utiliza el tablero interactivo para seleccionar las afinidades que mejor se ajusten a tu estrategia. Puedes arrastrar las opciones de la izquierda a la derecha o hacer doble clic en ellas.`);
-      setTimeout(() => {
-        setCurrentStep('afinidades');
-        setShowOptions(true);
-      }, 1000);
+      mostrarModalTransicion(
+        '¡Excelente! Ahora descubramos las afinidades de tu audiencia',
+        'heart',
+        () => {
+          addAgentMessage(`Perfecto. Ahora utiliza el tablero interactivo para seleccionar las afinidades que mejor se ajusten a tu estrategia. Puedes arrastrar las opciones de la izquierda a la derecha o hacer doble clic en ellas.`);
+          setTimeout(() => {
+            setCurrentStep('afinidades');
+            setShowOptions(true);
+          }, 1000);
+        }
+      );
     }, 500);
   };
 
@@ -169,14 +202,20 @@ const ChatAgent = ({ onComplete }) => {
     setUserData(prev => ({ ...prev, afinidades }));
     
     setTimeout(() => {
-      addAgentMessage('Perfecto. Ahora vamos a una reflexión estratégica importante...');
-      setTimeout(() => {
-        addAgentMessage('En tu experiencia: ¿En qué momento crees que tu comunicación tiene más poder para influir en tu audiencia?');
-        setTimeout(() => {
-          setCurrentStep('journeyPrimera');
-          setShowOptions(true);
-        }, 1000);
-      }, 1500);
+      mostrarModalTransicion(
+        '¡Increíble! Ahora vamos a explorar el Customer Journey',
+        'journey',
+        () => {
+          addAgentMessage('Perfecto. Ahora vamos a una reflexión estratégica importante...');
+          setTimeout(() => {
+            addAgentMessage('En tu experiencia: ¿En qué momento crees que tu comunicación tiene más poder para influir en tu audiencia?');
+            setTimeout(() => {
+              setCurrentStep('journeyPrimera');
+              setShowOptions(true);
+            }, 1000);
+          }, 1500);
+        }
+      );
     }, 500);
   };
 
@@ -269,12 +308,18 @@ const ChatAgent = ({ onComplete }) => {
           setTimeout(() => {
             addAgentMessage('Ahora sí, con esta comprensión completa del journey, estoy generando tu propuesta estratégica personalizada...');
             setTimeout(() => {
-              const propuesta = generarPropuestaEstrategica({ 
-                ...userData, 
-                primeraSeleccionJourney,
-                segundaSeleccionJourney 
-              });
-              onComplete(propuesta);
+              mostrarModalTransicion(
+                '¡Excelente trabajo! Ahora veamos tu propuesta estratégica completa',
+                'star',
+                () => {
+                  const propuesta = generarPropuestaEstrategica({ 
+                    ...userData, 
+                    primeraSeleccionJourney,
+                    segundaSeleccionJourney 
+                  });
+                  onComplete(propuesta);
+                }
+              );
             }, 2000);
           }, 2000);
         }, REVELACIONES_JOURNEY.aprendizajes.length * 2000 + 1000);
@@ -408,6 +453,14 @@ const ChatAgent = ({ onComplete }) => {
         )}
         <div ref={messagesEndRef} />
       </div>
+      
+      {/* Modal de transición */}
+      <TransitionModal
+        isOpen={showModal}
+        onClose={handleModalContinuar}
+        mensaje={modalConfig.mensaje}
+        icono={modalConfig.icono}
+      />
     </div>
   );
 };
