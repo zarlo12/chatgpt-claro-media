@@ -341,7 +341,16 @@ export const REVELACIONES_JOURNEY = {
 };
 
 export const generarPropuestaEstrategica = (userData) => {
-  const { sector, genero, edad, nivelSocioeconomico, afinidades } = userData;
+  const {
+    sector,
+    genero,
+    edad,
+    nivelSocioeconomico,
+    afinidades,
+    nombre,
+    correo,
+    celular,
+  } = userData;
 
   const insights = INSIGHTS_POR_SECTOR[sector] || [];
   const insightsGeoespaciales = INSIGHTS_GEOESPACIALES[sector] || [];
@@ -349,6 +358,9 @@ export const generarPropuestaEstrategica = (userData) => {
 
   return {
     sector,
+    nombre,
+    correo,
+    celular,
     audiencia: {
       genero,
       edad,

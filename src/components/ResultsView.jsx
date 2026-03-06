@@ -96,6 +96,48 @@ const ResultsView = ({ propuesta, onReset }) => {
           </p>
         </div>
 
+        {/* Datos de Contacto - Solo si existen */}
+        {(propuesta.nombre || propuesta.correo || propuesta.celular) && (
+          <div className="bg-gradient-to-br from-claro-red/10 to-claro-red/5 backdrop-blur-md border border-claro-red/30 rounded-2xl p-6 animate-slide-up">
+            <h2 className="text-lg font-bold text-white mb-4 flex items-center">
+              <svg
+                className="w-6 h-6 mr-2 text-claro-red"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              Información de Contacto
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {propuesta.nombre && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-white/60 text-sm">Nombre:</span>
+                  <span className="text-white font-medium">{propuesta.nombre}</span>
+                </div>
+              )}
+              {propuesta.correo && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-white/60 text-sm">Correo:</span>
+                  <span className="text-white font-medium">{propuesta.correo}</span>
+                </div>
+              )}
+              {propuesta.celular && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-white/60 text-sm">Celular:</span>
+                  <span className="text-white font-medium">{propuesta.celular}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Audiencia Section */}
         <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 animate-slide-up">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center">

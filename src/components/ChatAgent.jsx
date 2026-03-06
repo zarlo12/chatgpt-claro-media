@@ -25,6 +25,11 @@ const ChatAgent = ({ onComplete }) => {
   const [selectedAfinidades, setSelectedAfinidades] = useState([]);
   const [primeraSeleccionJourney, setPrimeraSeleccionJourney] = useState(null);
   const [segundaSeleccionJourney, setSegundaSeleccionJourney] = useState(null);
+  // Datos personales
+  const [nombre, setNombre] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [celular, setCelular] = useState('');
+  const [showFormulario, setShowFormulario] = useState(false);
   const messagesEndRef = useRef(null);
   const hasInitialized = useRef(false);
 
@@ -47,8 +52,11 @@ const ChatAgent = ({ onComplete }) => {
         'Bienvenido al Agente de IA de Claro Media. Desarrollado con tecnología ChatGPT y entrenado con nuestra data, estoy aquí para ayudarte a crear propuestas estratégicas personalizadas.'
       );
       setTimeout(() => {
-        addAgentMessage('Empecemos conociendo tu empresa. ¿A qué sector perteneces?');
-        setShowOptions(true);
+        addAgentMessage('Antes de empezar, me gustaría conocerte mejor. Por favor ingresa tus datos:');
+        setTimeout(() => {
+          setCurrentStep('datosPersonales');
+          setShowFormulario(true);
+        }, 1000);
       }, 1500);
     }, 500);
   }, []);
@@ -64,6 +72,39 @@ const ChatAgent = ({ onComplete }) => {
   const addUserMessage = (message) => {
     setMessages(prev => [...prev, { text: message, isUser: true }]);
     setShowOptions(false);
+  };
+
+  const handleDatosPersonalesSubmit = (e) => {
+    e.preventDefault();
+    
+    // Validar que todos los campos estén completos
+    if (!nombre.trim() || !correo.trim() || !celular.trim()) {
+      alert('Por favor completa todos los campos');
+      return;
+    }
+    
+    // Validar formato de correo básico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(correo)) {
+      alert('Por favor ingresa un correo válido');
+      return;
+    }
+    
+    // Guardar datos personales
+    setUserData(prev => ({ ...prev, nombre, correo, celular }));
+    
+    // Mostrar mensaje del usuario
+    addUserMessage(`${nombre} - ${correo} - ${celular}`);
+    setShowFormulario(false);
+    
+    // Continuar con el flujo
+    setTimeout(() => {
+      addAgentMessage(`Perfecto ${nombre}, gracias por tu información. Ahora empecemos conociendo tu empresa. ¿A qué sector perteneces?`);
+      setTimeout(() => {
+        setCurrentStep('welcome');
+        setShowOptions(true);
+      }, 1000);
+    }, 500);
   };
 
   const handleSectorSelect = (sector) => {
@@ -287,7 +328,56 @@ const ChatAgent = ({ onComplete }) => {
           <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
         ))}
         {isTyping && <ChatMessage isTyping={true} />}
-        {showOptions && currentStep !== 'afinidades' && currentStep !== 'journeyPrimera' && currentStep !== 'journeySegunda' && (
+        {showFormulario && currentStep === 'datosPersonales' && (
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 animate-slide-up">
+            <form onSubmit={handleDatosPersonalesSubmit} className="space-y-4">
+              <div>
+                <label className="block text-white/80 text-sm font-medium mb-2">
+                  Nombre completo *
+                </label>
+                <input
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  placeholder="Ej: Juan Pérez"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 text-sm font-medium mb-2">
+                  Correo electrónico *
+                </label>
+                <input
+                  type="email"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  placeholder="Ej: juan.perez@empresa.com"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 text-sm font-medium mb-2">
+                  Número de celular *
+                </label>
+                <input
+                  type="tel"
+                  value={celular}
+                  onChange={(e) => setCelular(e.target.value)}
+                  placeholder="Ej: 3001234567"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full px-6 py-3 bg-claro-red hover:bg-claro-red/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                Continuar
+              </button>
+            </form>
+          </div>
+        )}
+        {showOptions && currentStep !== 'afinidades' && currentStep !== 'journeyPrimera' && currentStep !== 'journeySegunda' && currentStep !== 'datosPersonales' && (
           <ChatOptions
             options={getCurrentOptions()}
             onSelect={handleOptionSelect}
