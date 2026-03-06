@@ -18,6 +18,7 @@ const ChatAgent = ({ onComplete }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [selectedAfinidades, setSelectedAfinidades] = useState([]);
   const messagesEndRef = useRef(null);
+  const hasInitialized = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -28,6 +29,10 @@ const ChatAgent = ({ onComplete }) => {
   }, [messages, showOptions]);
 
   useEffect(() => {
+    // Prevenir duplicación en React StrictMode
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
     // Mensaje de bienvenida
     setTimeout(() => {
       addAgentMessage(
