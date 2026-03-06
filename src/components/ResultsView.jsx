@@ -38,6 +38,50 @@ const InsightCard = ({ insight, index }) => {
   );
 };
 
+const GeoInsightCard = ({ insight, index }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, index * 200);
+    return () => clearTimeout(timer);
+  }, [index]);
+
+  return (
+    <div
+      className={`bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-md border border-blue-400/30 rounded-xl p-6 transform transition-all duration-500 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
+      <div className="flex items-start space-x-4">
+        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+        </div>
+        <p className="text-white text-sm md:text-base leading-relaxed flex-1">{insight}</p>
+      </div>
+    </div>
+  );
+};
+
 const ResultsView = ({ propuesta, onReset }) => {
   return (
     <div className="w-full h-full overflow-y-auto px-6 py-8">
@@ -140,6 +184,33 @@ const ResultsView = ({ propuesta, onReset }) => {
             ))}
           </div>
         </div>
+
+        {/* Insights GeoEspaciales - Solo si hay datos disponibles */}
+        {propuesta.insightsGeoespaciales && propuesta.insightsGeoespaciales.length > 0 && (
+          <div className="space-y-4 animate-slide-up" style={{ animationDelay: '250ms' }}>
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <svg
+                className="w-8 h-8 mr-3 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Insights Estación Analítica GeoEspacial
+            </h2>
+            <div className="space-y-4">
+              {propuesta.insightsGeoespaciales.map((insight, index) => (
+                <GeoInsightCard key={index} insight={insight} index={index} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Recomendaciones */}
         <div className="bg-gradient-to-br from-claro-red/20 to-claro-red/10 backdrop-blur-md border border-claro-red/30 rounded-2xl p-8 animate-slide-up" style={{ animationDelay: '300ms' }}>

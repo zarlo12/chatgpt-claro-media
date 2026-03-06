@@ -178,6 +178,40 @@ export const INSIGHTS_POR_SECTOR = {
   ],
 };
 
+// Insights GeoEspaciales - Análisis de comportamiento basado en ubicación geográfica
+export const INSIGHTS_GEOESPACIALES = {
+  Financiero: [],
+  Automotor: [
+    "Detectamos que el 45% de los usuarios que visitan vitrinas automotrices posteriormente navegan en comparadores digitales y contenidos de financiación.",
+    "Medellín y específicamente la av El Poblado (34%) y Av Las Vegas (29%) es donde más consultan vehículos con energías limpias (Motos, carros, patinetas)",
+    "En Bogotá sector Cedritos, identificamos que el 41% de personas que han buscado productos para mascotas han estado interesados en búsquedas de vehículos nuevos o usados",
+  ],
+  Educación: [
+    "Colegios: Detectamos que Bogotá y la Sabana Norte es la zona con mayor cantidad de búsquedas relacionadas a colegios. Aprox 1M de consultas realizadas, sobre colegios bilingües, calendario B entre otros.",
+    "Universidades: Identificamos que de los asistentes a eventos de música, el 57% de la audiencia buscó temas relacionados a pregrados y postgrados",
+    "Institutos de educación continua: Identificamos que en la localidad de Kennedy 18%, Itagüí 11% y Palmira 9%, son los puntos a nivel nacional que más buscaron programas técnicos en desarrollo y programación de software.",
+  ],
+  Gobierno: [
+    "El 80% de las visitas a villa de leyva son de la zona centro del país y están interesadas en temas gastronómicos.",
+    "En vacaciones de fin de año, el 23% de las personas que viven en Bogotá se desplazaron a ciudades como Barranquilla 8% Medellín 15% y Cali 19%",
+    "Detectamos alta concentración de navegación en contenidos de empleabilidad y programas sociales en los municipios de Barranquilla 9%, Chía 10%, Mosquera 10%, Cali 11% y Soacha 21%",
+  ],
+  Salud: [
+    "Identificamos que el 62% de personas que asisten a gimnasios, consultan temas cuidados para la piel y planes complementarios de salud",
+    "El 72% de usuarios que visitan zonas médicas, presentan simultáneamente alto consumo de contenidos sobre bienestar y prevención.",
+    "Detectamos incremento del 8% respecto al año anterior, en la navegación de servicios de salud digital en zonas residenciales como (Usaquén en Bogotá y Sur de Cali)",
+  ],
+  Tecnología: [
+    "Identificamos que el 51% de las personas que asistieron a estadios de fútbol, posteriormente incrementaron la búsqueda de contenidos relacionados con compra de televisores y tecnología para el hogar.",
+    "Detectamos que en temporadas de descuentos comerciales, el 76% de usuarios que visitan tiendas reconocidas de productos tecnológicos, incrementan la consulta de comparativos, reseñas y precios online desde el mismo punto físico, un 10% respecto al consumo habitual.",
+    "Detectamos que usuarios que frecuentan zonas corporativas y coworkings en un 47% presentan mayor interés en contenidos sobre laptops, tablets, software colaborativo y soluciones de conectividad móvil.",
+  ],
+  Moda: [],
+  Entretenimiento: [],
+  Retail: [],
+  "Consumo Masivo": [],
+};
+
 // Ejemplos de mensajes por etapa del customer journey según sector
 export const MENSAJES_JOURNEY_POR_SECTOR = {
   Financiero: {
@@ -310,6 +344,7 @@ export const generarPropuestaEstrategica = (userData) => {
   const { sector, genero, edad, nivelSocioeconomico, afinidades } = userData;
 
   const insights = INSIGHTS_POR_SECTOR[sector] || [];
+  const insightsGeoespaciales = INSIGHTS_GEOESPACIALES[sector] || [];
   const afinidadesSector = AFINIDADES_POR_SECTOR[sector] || [];
 
   return {
@@ -321,6 +356,7 @@ export const generarPropuestaEstrategica = (userData) => {
     },
     afinidades: afinidades || afinidadesSector,
     insights,
+    insightsGeoespaciales,
     recomendaciones: [
       `Enfoque estratégico en ${sector.toLowerCase()} considerando el perfil demográfico seleccionado`,
       `Activación de contenidos basados en las afinidades: ${afinidadesSector.slice(0, 3).join(", ")}`,
