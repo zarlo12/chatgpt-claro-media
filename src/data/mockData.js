@@ -178,6 +178,134 @@ export const INSIGHTS_POR_SECTOR = {
   ],
 };
 
+// Ejemplos de mensajes por etapa del customer journey según sector
+export const MENSAJES_JOURNEY_POR_SECTOR = {
+  Financiero: {
+    contexto:
+      "Una familia está considerando opciones de inversión para el futuro de sus hijos.",
+    descubre:
+      "Existen soluciones de inversión diseñadas para el futuro de tu familia.",
+    explora:
+      "Planes de ahorro con rendimientos garantizados y respaldo bancario.",
+    compara: "Tasas de interés 2% superiores al promedio del mercado.",
+    decide: "Asesoría personalizada gratuita con expertos financieros.",
+    compra: "Abre tu cuenta hoy y recibe bono de bienvenida de $500.",
+  },
+  Automotor: {
+    contexto:
+      "Un cliente busca su primer vehículo eléctrico, valorando movilidad sostenible.",
+    descubre: "Descubre los vehículos eléctricos más eficientes del mercado.",
+    explora: "Autonomía de 400km, carga rápida y cero emisiones.",
+    compara: "30% menos costo de mantenimiento vs vehículos tradicionales.",
+    decide: "Prueba de manejo a domicilio sin compromiso.",
+    compra: "Financiamiento especial 0% de interés por 12 meses.",
+  },
+  Educación: {
+    contexto: "Un joven profesional busca especializarse mientras trabaja.",
+    descubre: "Programas de maestría 100% virtuales y flexibles.",
+    explora: "Horarios adaptables, profesores con experiencia internacional.",
+    compara: "Certificación avalada, mismo título que modalidad presencial.",
+    decide: "Sesión informativa personalizada con coordinador académico.",
+    compra: "Matrícula con 20% de descuento, inicia el próximo mes.",
+  },
+  Gobierno: {
+    contexto:
+      "Una comunidad necesita información sobre programas de vivienda social.",
+    descubre: "Nuevos programas de vivienda para familias colombianas.",
+    explora:
+      "Subsidios de hasta el 50% del valor, créditos con tasas preferenciales.",
+    compara:
+      "Proyectos en ubicaciones estratégicas con acceso a transporte público.",
+    decide: "Jornada de inscripción en tu municipio este fin de semana.",
+    compra: "Separa tu vivienda con solo el 10% de cuota inicial.",
+  },
+  Salud: {
+    contexto:
+      "Una persona activa busca complementar su plan de salud para bienestar integral.",
+    descubre: "Planes de salud que incluyen medicina preventiva y bienestar.",
+    explora: "Telemedicina 24/7, gimnasios afiliados, nutrición personalizada.",
+    compara:
+      "Cobertura más amplia con menores copagos que planes tradicionales.",
+    decide: "Evaluación médica inicial sin costo.",
+    compra: "Primer mes gratis, activa tu plan hoy mismo.",
+  },
+  Tecnología: {
+    contexto:
+      "Un emprendedor necesita equipar su oficina con tecnología moderna.",
+    descubre: "Soluciones tecnológicas para impulsar tu negocio.",
+    explora: "Laptops, tablets y software colaborativo en un solo paquete.",
+    compara:
+      "Rendimiento superior, garantía extendida y soporte técnico incluido.",
+    decide: "Demo en vivo de cómo funciona integrado en tu negocio.",
+    compra: "Pago en 18 meses sin intereses, envío e instalación gratis.",
+  },
+  Moda: {
+    contexto:
+      "Una persona busca renovar su guardarropa con piezas sostenibles y versátiles.",
+    descubre: "Moda consciente: estilo y sostenibilidad en cada prenda.",
+    explora: "Materiales eco-friendly, diseños atemporales, producción ética.",
+    compara: "Calidad superior a fast fashion, durabilidad garantizada.",
+    decide: "Asesoría de estilo personal virtual gratuita.",
+    compra: "Promoción: 3x2 en toda la colección primavera-verano.",
+  },
+  Entretenimiento: {
+    contexto:
+      "Una familia busca opciones de entretenimiento para el fin de semana.",
+    descubre: "Miles de películas, series y eventos en vivo en un solo lugar.",
+    explora: "Contenido exclusivo, estrenos simultáneos, sin publicidad.",
+    compara: "Precio 40% menor que servicios competidores, más contenido.",
+    decide: "Prueba gratis por 30 días, cancela cuando quieras.",
+    compra: "Plan familiar: 4 pantallas simultáneas por solo $25.000/mes.",
+  },
+  Retail: {
+    contexto:
+      "Una persona busca equipar su hogar con electrodomésticos eficientes.",
+    descubre: "Los electrodomésticos más eficientes para tu hogar moderno.",
+    explora:
+      "Ahorro de energía hasta 50%, tecnología inteligente, diseño premium.",
+    compara:
+      "Garantía extendida, instalación incluida, mejor precio garantizado.",
+    decide: "Visita showroom o programa asesoría virtual.",
+    compra: "Cyber Monday: hasta 40% de descuento + 6 meses sin intereses.",
+  },
+  "Consumo Masivo": {
+    contexto:
+      "Una familia busca productos más saludables para su alimentación diaria.",
+    descubre: "Hay nuevas bebidas hechas con ingredientes 100% naturales.",
+    explora: "Sin conservantes, con fruta real y vitaminas esenciales.",
+    compara: "30% menos azúcar que otras marcas, certificación orgánica.",
+    decide: "Promoción en tu tienda cercana, encuentra el punto de venta.",
+    compra: "Llévate 2 y paga 1 en toda la línea familiar.",
+  },
+};
+
+// Aprendizajes y revelaciones de la experiencia journey
+export const REVELACIONES_JOURNEY = {
+  titulo: "Tres aprendizajes clave:",
+  aprendizajes: [
+    {
+      numero: "1️⃣",
+      texto: "La decisión no ocurre en un solo momento",
+      detalle: "Se construye desde etapas tempranas del journey.",
+    },
+    {
+      numero: "2️⃣",
+      texto:
+        "El insight correcto cambia la percepción de marca antes de la compra",
+      detalle:
+        "No se trata solo de promociones, sino de crear valor en cada etapa.",
+    },
+    {
+      numero: "3️⃣",
+      texto:
+        "La comunicación más efectiva es la que acompaña el journey completo",
+      detalle: "Cada etapa requiere un mensaje diferente pero coherente.",
+    },
+  ],
+  cierre:
+    "La pregunta no es solo dónde pautar… es qué decir en cada momento del journey. Y ahí es donde una solución como Claro Media permite activar: descubrimiento, consideración y decisión con data real de audiencias.",
+};
+
 export const generarPropuestaEstrategica = (userData) => {
   const { sector, genero, edad, nivelSocioeconomico, afinidades } = userData;
 

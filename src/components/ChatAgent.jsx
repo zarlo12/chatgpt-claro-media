@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatOptions from './ChatOptions';
 import DragDropBoard from './DragDropBoard';
+import JourneyStageSelector from './JourneyStageSelector';
 import {
   SECTORES,
   GENEROS,
@@ -10,6 +11,8 @@ import {
   AFINIDADES_POR_SECTOR,
   TODAS_AFINIDADES,
   ICONOS_AFINIDADES,
+  MENSAJES_JOURNEY_POR_SECTOR,
+  REVELACIONES_JOURNEY,
   generarPropuestaEstrategica
 } from '../data/mockData';
 
@@ -20,6 +23,8 @@ const ChatAgent = ({ onComplete }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [selectedAfinidades, setSelectedAfinidades] = useState([]);
+  const [primeraSeleccionJourney, setPrimeraSeleccionJourney] = useState(null);
+  const [segundaSeleccionJourney, setSegundaSeleccionJourney] = useState(null);
   const messagesEndRef = useRef(null);
   const hasInitialized = useRef(false);
 
@@ -123,12 +128,117 @@ const ChatAgent = ({ onComplete }) => {
     setUserData(prev => ({ ...prev, afinidades }));
     
     setTimeout(() => {
-      addAgentMessage('Excelente. Estoy procesando toda la información y generando tu propuesta estratégica personalizada...');
+      addAgentMessage('Perfecto. Ahora vamos a una reflexión estratégica importante...');
       setTimeout(() => {
-        const propuesta = generarPropuestaEstrategica({ ...userData, afinidades });
-        onComplete(propuesta);
-      }, 2000);
+        addAgentMessage('En tu experiencia: ¿En qué momento crees que tu comunicación tiene más poder para influir en tu audiencia?');
+        setTimeout(() => {
+          setCurrentStep('journeyPrimera');
+          setShowOptions(true);
+        }, 1000);
+      }, 1500);
     }, 500);
+  };
+
+  const handlePrimeraSeleccionJourney = (etapa) => {
+    addUserMessage(`Primera selección: ${etapa}`);
+    setPrimeraSeleccionJourney(etapa);
+    setShowOptions(false);
+    
+    setTimeout(() => {
+      const afinidadPrincipal = userData.afinidades?.[0] || 'las afinidades';
+      addAgentMessage(`Interesante elección. Hace unos minutos descubrimos que tu audiencia tiene afinidad con ${afinidadPrincipal}.`);
+      
+      setTimeout(() => {
+        addAgentMessage('Eso nos dice algo clave: no solo qué consume… sino cómo piensa.');
+        
+        setTimeout(() => {
+          addAgentMessage('Ahora la pregunta cambia: ¿Qué deberíamos decirle… y cuándo?');
+          
+          setTimeout(() => {
+            mostrarEjemplosJourney();
+          }, 1500);
+        }, 1500);
+      }, 1500);
+    }, 500);
+  };
+
+  const mostrarEjemplosJourney = () => {
+    const ejemplos = MENSAJES_JOURNEY_POR_SECTOR[userData.sector] || MENSAJES_JOURNEY_POR_SECTOR["Consumo Masivo"];
+    
+    addAgentMessage(`Veamos un ejemplo aplicado a ${userData.sector}:`);
+    
+    setTimeout(() => {
+      addAgentMessage(`Contexto: ${ejemplos.contexto}`);
+      
+      setTimeout(() => {
+        addAgentMessage('Observa cómo cambia el mensaje en cada etapa del journey:');
+        
+        setTimeout(() => {
+          const mensajeCompleto = `
+🔍 Descubre: "${ejemplos.descubre}"
+
+🌐 Explora: "${ejemplos.explora}"
+
+⚖️ Compara: "${ejemplos.compara}"
+
+💡 Decide: "${ejemplos.decide}"
+
+🛍️ Compra: "${ejemplos.compra}"`;
+          
+          addAgentMessage(mensajeCompleto);
+          
+          setTimeout(() => {
+            addAgentMessage('Ahora, con esta nueva perspectiva: ¿En qué momento crees que el insight realmente cambia la decisión?');
+            setTimeout(() => {
+              setCurrentStep('journeySegunda');
+              setShowOptions(true);
+            }, 1500);
+          }, 3000);
+        }, 1500);
+      }, 1500);
+    }, 1500);
+  };
+
+  const handleSegundaSeleccionJourney = (etapa) => {
+    addUserMessage(`Segunda selección (después de ver los ejemplos): ${etapa}`);
+    setSegundaSeleccionJourney(etapa);
+    setShowOptions(false);
+    
+    setTimeout(() => {
+      mostrarRevelaciones();
+    }, 500);
+  };
+
+  const mostrarRevelaciones = () => {
+    addAgentMessage('Excelente. Déjame compartirte los aprendizajes clave:');
+    
+    setTimeout(() => {
+      addAgentMessage(REVELACIONES_JOURNEY.titulo);
+      
+      setTimeout(() => {
+        REVELACIONES_JOURNEY.aprendizajes.forEach((aprendizaje, index) => {
+          setTimeout(() => {
+            addAgentMessage(`${aprendizaje.numero} ${aprendizaje.texto}\n${aprendizaje.detalle}`);
+          }, index * 2000);
+        });
+        
+        setTimeout(() => {
+          addAgentMessage(REVELACIONES_JOURNEY.cierre);
+          
+          setTimeout(() => {
+            addAgentMessage('Ahora sí, con esta comprensión completa del journey, estoy generando tu propuesta estratégica personalizada...');
+            setTimeout(() => {
+              const propuesta = generarPropuestaEstrategica({ 
+                ...userData, 
+                primeraSeleccionJourney,
+                segundaSeleccionJourney 
+              });
+              onComplete(propuesta);
+            }, 2000);
+          }, 2000);
+        }, REVELACIONES_JOURNEY.aprendizajes.length * 2000 + 1000);
+      }, 1500);
+    }, 1000);
   };
 
   const getCurrentOptions = () => {
@@ -177,7 +287,7 @@ const ChatAgent = ({ onComplete }) => {
           <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
         ))}
         {isTyping && <ChatMessage isTyping={true} />}
-        {showOptions && currentStep !== 'afinidades' && (
+        {showOptions && currentStep !== 'afinidades' && currentStep !== 'journeyPrimera' && currentStep !== 'journeySegunda' && (
           <ChatOptions
             options={getCurrentOptions()}
             onSelect={handleOptionSelect}
@@ -190,6 +300,20 @@ const ChatAgent = ({ onComplete }) => {
             options={TODAS_AFINIDADES}
             onComplete={handleAfinidadesSelect}
             iconMap={ICONOS_AFINIDADES}
+          />
+        )}
+        {showOptions && currentStep === 'journeyPrimera' && (
+          <JourneyStageSelector
+            title="¿En qué momento tiene más impacto tu comunicación?"
+            subtitle="Selecciona una etapa del journey (tu intuición)"
+            onSelect={handlePrimeraSeleccionJourney}
+          />
+        )}
+        {showOptions && currentStep === 'journeySegunda' && (
+          <JourneyStageSelector
+            title="Ahora que viste los ejemplos..."
+            subtitle="¿Cambiarías tu respuesta? Selecciona nuevamente"
+            onSelect={handleSegundaSeleccionJourney}
           />
         )}
         <div ref={messagesEndRef} />
