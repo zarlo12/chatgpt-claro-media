@@ -5,6 +5,7 @@ import DragDropBoard from './DragDropBoard';
 import JourneyStageSelector from './JourneyStageSelector';
 import TransitionModal from './TransitionModal';
 import { generarPropuestaConIA } from '../services/apiService';
+import { guardarDatosIniciales, actualizarConversacion } from '../services/firebaseService';
 import {
   SECTORES,
   GENEROS,
@@ -31,6 +32,8 @@ const ChatAgent = ({ onComplete }) => {
   const [correo, setCorreo] = useState('');
   const [celular, setCelular] = useState('');
   const [showFormulario, setShowFormulario] = useState(false);
+  // ID del documento de Firebase para actualizar después
+  const [conversacionId, setConversacionId] = useState(null);
   // Modal de transición
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({ mensaje: '', icono: '' });
@@ -110,7 +113,7 @@ const ChatAgent = ({ onComplete }) => {
     }
   };
 
-  const handleDatosPersonalesSubmit = (e) => {
+  const handleDatosPersonalesSubmit = async (e) => {
     e.preventDefault();
     
     // Validar que todos los campos estén completos
@@ -128,6 +131,20 @@ const ChatAgent = ({ onComplete }) => {
     
     // Guardar datos personales
     setUserData(prev => ({ ...prev, nombre, correo, celular }));
+    
+    // 🔥 Guardar datos iniciales en Firebase (crear documento)
+    try {
+      const docId = await guardarDatosIniciales({
+        nombre,
+        correo,
+        celular,
+      });
+      setConversacionId(docId); // Guardar ID para actualizar después
+      console.log('💾 Documento creado en Firebase con ID:', docId);
+    } catch (error) {
+      console.error('❌ Error guardando datos iniciales:', error);
+      // Continuar aunque falle el guardado
+    }
     
     // Mostrar mensaje del usuario
     addUserMessage(`${nombre} - ${correo} - ${celular}`);
@@ -334,6 +351,32 @@ const ChatAgent = ({ onComplete }) => {
                     segundaSeleccionJourney 
                   });
                   console.log('✅ Propuesta generada:', propuesta);
+                  
+                  // 🔥 Actualizar documento existente en Firebase
+                  if (conversacionId) {
+                    try {
+                      await actualizarConversacion(conversacionId, {
+                        sector: userData.sector,
+                        genero: userData.genero,
+                        edad: userData.edad,
+                        nivelSocioeconomico: userData.nivelSocioeconomico,
+                        afinidades: userData.afinidades,
+                        primeraSeleccionJourney,
+                        segundaSeleccionJourney,
+                        propuesta,
+                        estado: 'completado',
+                        modo: import.meta.env.VITE_MODE || 'development',
+                        modeloIA: import.meta.env.VITE_OPENAI_MODEL || 'mock',
+                      });
+                      console.log('💾 Conversación actualizada en Firebase con ID:', conversacionId);
+                    } catch (error) {
+                      console.error('❌ Error actualizando conversación:', error);
+                      // Continuar aunque falle el guardado
+                    }
+                  } else {
+                    console.warn('⚠️ No hay ID de conversación, no se puede actualizar');
+                  }
+                  
                   onComplete(propuesta);
                 }
               );
