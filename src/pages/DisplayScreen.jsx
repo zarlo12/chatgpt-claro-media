@@ -33,6 +33,7 @@ const DisplayScreen = () => {
           insightsGeoespaciales: data.propuesta?.insightsGeoespaciales || [],
           recomendaciones: data.propuesta?.recomendaciones || [],
           proximosPasos: data.propuesta?.proximosPasos || [],
+          valorPropuesta: data.propuesta?.valorPropuesta || null,
         });
       } else {
         setPropuesta(null);

@@ -223,6 +223,76 @@ const ResultsView = ({ propuesta, onReset }) => {
           </div>
         </div>
 
+        {/* Valor de la Propuesta */}
+        {propuesta.valorPropuesta && (
+          <div className="bg-gradient-to-br from-claro-red/20 to-purple-600/20 backdrop-blur-md border border-claro-red/30 rounded-2xl p-8 animate-slide-up" style={{ animationDelay: '150ms' }}>
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <svg
+                className="w-8 h-8 mr-3 text-claro-red"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+              Valor de la Propuesta
+            </h2>
+            
+            {/* Alcance Total */}
+            <div className="mb-8 text-center">
+              <p className="text-white/70 text-sm uppercase tracking-wider mb-2">Alcance Potencial Estimado</p>
+              <p className="text-5xl font-bold text-white mb-2">
+                {propuesta.valorPropuesta.alcanceTotal}
+              </p>
+              <p className="text-white/60 text-sm">usuarios potenciales en Colombia</p>
+            </div>
+
+            {/* Banderas Principales */}
+            <div>
+              <p className="text-white/80 font-semibold mb-4 text-center">Segmentos Demográficos Principales:</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {propuesta.valorPropuesta.banderasPrincipales.map((bandera, index) => (
+                  <div
+                    key={index}
+                    className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center transform hover:scale-105 transition-transform"
+                  >
+                    <div className="flex items-center justify-center mb-2">
+                      <div className="w-8 h-8 bg-claro-red/30 rounded-full flex items-center justify-center mr-2">
+                        <span className="text-claro-red font-bold">{index + 1}</span>
+                      </div>
+                    </div>
+                    <p className="text-white font-semibold mb-1">{bandera.nombre}</p>
+                    <p className="text-claro-red text-lg font-bold">{bandera.alcance}</p>
+                    <p className="text-white/50 text-xs">usuarios</p>
+                    <div className="mt-2">
+                      <div className="w-full bg-white/10 rounded-full h-2">
+                        <div
+                          className="bg-gradient-to-r from-claro-red to-pink-500 h-2 rounded-full"
+                          style={{ width: `${bandera.score}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-white/60 text-xs mt-1">{bandera.score}% de afinidad</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Nota explicativa */}
+            <div className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10">
+              <p className="text-white/70 text-sm text-center">
+                💡 Este alcance se calcula cruzando tu audiencia objetivo con nuestras banderas demográficas de Claro Media, 
+                que identifican los segmentos con mayor afinidad a tu propuesta.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Insights */}
         <div className="space-y-4 animate-slide-up" style={{ animationDelay: '200ms' }}>
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center">

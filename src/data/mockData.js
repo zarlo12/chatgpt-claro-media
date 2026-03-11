@@ -356,6 +356,14 @@ export const generarPropuestaEstrategica = (userData) => {
   const insightsGeoespaciales = INSIGHTS_GEOESPACIALES[sector] || [];
   const afinidadesSector = AFINIDADES_POR_SECTOR[sector] || [];
 
+  // Calcular valor de propuesta (importar la función)
+  const { calcularValorPropuesta } = require("./banderasDemograficas");
+  const valorPropuesta = calcularValorPropuesta({
+    genero,
+    edad: Array.isArray(edad) ? edad : [edad],
+    nivelSocioeconomico,
+  });
+
   return {
     sector,
     nombre,
@@ -381,5 +389,10 @@ export const generarPropuestaEstrategica = (userData) => {
       "Implementar seguimiento en tiempo real de conversiones",
       "Optimizar presupuesto hacia segmentos de mayor rendimiento",
     ],
+    valorPropuesta: {
+      alcanceTotal: valorPropuesta.alcanceTotal,
+      alcanceTotalNumerico: valorPropuesta.alcanceTotalNumerico,
+      banderasPrincipales: valorPropuesta.banderasPrincipales,
+    },
   };
 };

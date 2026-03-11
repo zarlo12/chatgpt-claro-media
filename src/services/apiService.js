@@ -231,11 +231,28 @@ export const generarPropuestaConIA = async (userData) => {
 
   const edadText = Array.isArray(edad) ? edad.join(", ") : edad;
 
+  // Calcular valor de la propuesta usando banderas demográficas
+  const valorPropuesta = calcularValorPropuesta({
+    genero,
+    edad: Array.isArray(edad) ? edad : [edad],
+    nivelSocioeconomico,
+  });
+
+  console.log("📊 Valor de la Propuesta calculado:", valorPropuesta);
+
+  const banderasTexto = valorPropuesta.banderasPrincipales
+    .map((b) => `${b.nombre} (${b.alcance} usuarios)`)
+    .join(", ");
+
   const userPrompt = `Genera una propuesta estratégica personalizada para una empresa del sector ${sector} con la siguiente audiencia:
   - Género: ${genero}
   - Edad: ${edadText}
   - Nivel Socioeconómico: ${nivelSocioeconomico}
   - Afinidades: ${afinidades.join(", ")}
+  
+  ALCANCE POTENCIAL:
+  - Alcance Total Estimado: ${valorPropuesta.alcanceTotal} usuarios
+  - Segmentos Principales: ${banderasTexto}
 
   Proporciona:
   1. Insights clave basados en patrones de comportamiento y ubicación (mínimo 3)
@@ -286,6 +303,11 @@ export const generarPropuestaConIA = async (userData) => {
       insights: parsedData.insights || [],
       recomendaciones: parsedData.recomendaciones || [],
       proximosPasos: parsedData.proximosPasos || [],
+      valorPropuesta: {
+        alcanceTotal: valorPropuesta.alcanceTotal,
+        alcanceTotalNumerico: valorPropuesta.alcanceTotalNumerico,
+        banderasPrincipales: valorPropuesta.banderasPrincipales,
+      },
     };
   } catch (error) {
     console.error("❌ Error generando propuesta con IA:", error);
