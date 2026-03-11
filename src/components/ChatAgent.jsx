@@ -18,7 +18,7 @@ import {
   REVELACIONES_JOURNEY,
 } from '../data/mockData';
 
-const ChatAgent = ({ onComplete }) => {
+const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [messages, setMessages] = useState([]);
   const [currentStep, setCurrentStep] = useState('welcome');
   const [userData, setUserData] = useState({});
@@ -138,9 +138,10 @@ const ChatAgent = ({ onComplete }) => {
         nombre,
         correo,
         celular,
+        standId, // Identificador del stand (A o B)
       });
       setConversacionId(docId); // Guardar ID para actualizar después
-      console.log('💾 Documento creado en Firebase con ID:', docId);
+      console.log('💾 Documento creado en Firebase con ID:', docId, '- Stand:', standId);
     } catch (error) {
       console.error('❌ Error guardando datos iniciales:', error);
       // Continuar aunque falle el guardado

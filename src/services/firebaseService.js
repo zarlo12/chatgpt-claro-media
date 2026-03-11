@@ -8,6 +8,11 @@ import {
   doc,
   updateDoc,
   serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  onSnapshot,
 } from "firebase/firestore";
 
 // 🔧 Configuración de Firebase desde variables de entorno
@@ -77,7 +82,7 @@ export const guardarConversacion = async (conversacion) => {
 
 /**
  * Guardar solo los datos iniciales del usuario (al completar el formulario)
- * @param {Object} datosPersonales - Datos del formulario: nombre, correo, celular
+ * @param {Object} datosPersonales - Datos del formulario: nombre, correo, celular, standId
  * @returns {Promise<string>} - ID del documento creado
  */
 export const guardarDatosIniciales = async (datosPersonales) => {
@@ -88,6 +93,7 @@ export const guardarDatosIniciales = async (datosPersonales) => {
       nombre: datosPersonales.nombre || "",
       correo: datosPersonales.correo || "",
       celular: datosPersonales.celular || "",
+      standId: datosPersonales.standId || "A", // Stand A o B
       timestamp: serverTimestamp(),
       estado: "iniciado", // Para marcar que solo tiene datos iniciales
     });
@@ -123,8 +129,74 @@ export const actualizarConversacion = async (docId, datosActualizados) => {
   }
 };
 
+/**
+ * Escuchar cambios en tiempo real para el último documento completado de un stand específico
+ * @param {string} standId - ID del stand ("A" o "B")
+ * @param {Function} callback - Función que se ejecuta cuando hay cambios
+ * @returns {Function} - Función para cancelar la suscripción
+ */
+export const escucharUltimaConversacion = (standId, callback) => {
+  try {
+    console.log("🔊 Escuchando conversaciones del Stand", standId);
+
+    // Query: buscar documentos del stand específico, completados, ordenados por timestamp
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("standId", "==", standId),
+      where("estado", "==", "completado"),
+      orderBy("timestamp", "desc"),
+      limit(1),
+    );
+
+    // Listener en tiempo real
+    const unsubscribe = onSnapshot(
+      q,
+      (querySnapshot) => {
+        console.log(
+          "📡 Snapshot recibido para Stand",
+          standId,
+          "- Docs:",
+          querySnapshot.docs.length,
+        );
+
+        if (!querySnapshot.empty) {
+          const docSnap = querySnapshot.docs[0];
+          const data = docSnap.data();
+          console.log("✅ Conversación encontrada para Stand", standId);
+          console.log("📄 ID:", docSnap.id);
+          console.log("📊 Estado:", data.estado);
+          console.log("👤 Nombre:", data.nombre);
+
+          callback({
+            id: docSnap.id,
+            ...data,
+          });
+        } else {
+          console.log(
+            "⚠️ No hay conversaciones completadas para Stand",
+            standId,
+          );
+          callback(null);
+        }
+      },
+      (error) => {
+        console.error("❌ Error en listener de Firebase:", error);
+        console.error("Detalles del error:", error.message);
+        callback(null);
+      },
+    );
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("❌ Error configurando listener:", error);
+    console.error("Detalles:", error.message);
+    throw error;
+  }
+};
+
 export default {
   guardarConversacion,
   guardarDatosIniciales,
   actualizarConversacion,
+  escucharUltimaConversacion,
 };
