@@ -347,14 +347,14 @@ const ResultsView = ({ propuesta, onReset }) => {
         </div>
 
         {/* Reset Button */}
-        <div className="flex justify-center pt-8 pb-4">
+        {/* <div className="flex justify-center pt-8 pb-4">
           <button
             onClick={onReset}
             className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/30 rounded-xl text-white font-semibold hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
           >
             Crear Nueva Propuesta
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

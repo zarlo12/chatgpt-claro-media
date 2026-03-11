@@ -4,6 +4,7 @@ import ChatOptions from './ChatOptions';
 import DragDropBoard from './DragDropBoard';
 import JourneyStageSelector from './JourneyStageSelector';
 import TransitionModal from './TransitionModal';
+import CompletionScreen from './CompletionScreen';
 import { generarPropuestaConIA } from '../services/apiService';
 import { guardarDatosIniciales, actualizarConversacion } from '../services/firebaseService';
 import {
@@ -34,6 +35,8 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [showFormulario, setShowFormulario] = useState(false);
   // ID del documento de Firebase para actualizar después
   const [conversacionId, setConversacionId] = useState(null);
+  // Pantalla de completado
+  const [showCompletion, setShowCompletion] = useState(false);
   // Modal de transición
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({ mensaje: '', icono: '' });
@@ -111,6 +114,37 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
         setPendingAction(null);
       }, 300);
     }
+  };
+
+  const handleReset = () => {
+    // Reiniciar todo el estado
+    setShowCompletion(false);
+    setMessages([]);
+    setCurrentStep('welcome');
+    setUserData({});
+    setShowOptions(false);
+    setSelectedAfinidades([]);
+    setPrimeraSeleccionJourney(null);
+    setSegundaSeleccionJourney(null);
+    setNombre('');
+    setCorreo('');
+    setCelular('');
+    setShowFormulario(false);
+    setConversacionId(null);
+    
+    // Reiniciar bienvenida
+    setTimeout(() => {
+      addAgentMessage(
+        'Bienvenido al Agente de IA de Claro Media. Desarrollado con tecnología ChatGPT y entrenado con nuestra data, estoy aquí para ayudarte a crear propuestas estratégicas personalizadas.'
+      );
+      setTimeout(() => {
+        addAgentMessage('Antes de empezar, me gustaría conocerte mejor. Por favor ingresa tus datos:');
+        setTimeout(() => {
+          setCurrentStep('datosPersonales');
+          setShowFormulario(true);
+        }, 1000);
+      }, 1500);
+    }, 500);
   };
 
   const handleDatosPersonalesSubmit = async (e) => {
@@ -378,7 +412,10 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
                     console.warn('⚠️ No hay ID de conversación, no se puede actualizar');
                   }
                   
-                  onComplete(propuesta);
+                  // Mostrar pantalla de completado
+                  setTimeout(() => {
+                    setShowCompletion(true);
+                  }, 500);
                 }
               );
             }, 2000);
@@ -429,7 +466,11 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+      {showCompletion ? (
+        <CompletionScreen standId={standId} onReset={handleReset} />
+      ) : (
+        <>
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
         {messages.map((msg, index) => (
           <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
         ))}
@@ -522,6 +563,8 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
         mensaje={modalConfig.mensaje}
         icono={modalConfig.icono}
       />
+        </>
+      )}
     </div>
   );
 };
