@@ -4,6 +4,7 @@ import ChatOptions from './ChatOptions';
 import DragDropBoard from './DragDropBoard';
 import JourneyStageSelector from './JourneyStageSelector';
 import TransitionModal from './TransitionModal';
+import { generarPropuestaConIA } from '../services/apiService';
 import {
   SECTORES,
   GENEROS,
@@ -14,7 +15,6 @@ import {
   ICONOS_AFINIDADES,
   MENSAJES_JOURNEY_POR_SECTOR,
   REVELACIONES_JOURNEY,
-  generarPropuestaEstrategica
 } from '../data/mockData';
 
 const ChatAgent = ({ onComplete }) => {
@@ -322,16 +322,18 @@ const ChatAgent = ({ onComplete }) => {
           
           setTimeout(() => {
             addAgentMessage('Ahora sí, con esta comprensión completa del journey, estoy generando tu propuesta estratégica personalizada...');
-            setTimeout(() => {
+            setTimeout(async () => {
               mostrarModalTransicion(
                 '¡Excelente trabajo! Ahora veamos tu propuesta estratégica completa',
                 'star',
-                () => {
-                  const propuesta = generarPropuestaEstrategica({ 
+                async () => {
+                  console.log('🚀 Generando propuesta estratégica...');
+                  const propuesta = await generarPropuestaConIA({ 
                     ...userData, 
                     primeraSeleccionJourney,
                     segundaSeleccionJourney 
                   });
+                  console.log('✅ Propuesta generada:', propuesta);
                   onComplete(propuesta);
                 }
               );

@@ -13,19 +13,173 @@
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const API_URL = "https://api.openai.com/v1/chat/completions";
 const MODEL = import.meta.env.VITE_OPENAI_MODEL || "gpt-4";
+const MODE = import.meta.env.VITE_MODE || "development";
+
+// 🔍 DEBUG: Mostrar configuración al cargar el módulo
+console.log("=== CONFIGURACIÓN API SERVICE ===");
+console.log("🔧 Modo:", MODE);
+console.log("🤖 Modelo:", MODEL);
+console.log(
+  "🔑 API Key presente:",
+  API_KEY ? `Sí (${API_KEY.substring(0, 20)}...)` : "NO CONFIGURADA",
+);
+console.log("=================================");
 
 /**
  * Sistema de prompts para el agente de Claro Media
+ * Basado en las instrucciones del GPT personalizado
  */
-const SYSTEM_PROMPT = `Eres el Agente de IA de Claro Media, desarrollado con tecnología ChatGPT y entrenado con data de la compañía.
+const SYSTEM_PROMPT = `**Rol del agente**
 
-Tu función es ayudar a las empresas a crear propuestas estratégicas personalizadas basadas en:
-- Sector de la empresa
-- Perfil demográfico de su audiencia (género, edad, nivel socioeconómico)
-- Afinidades y comportamientos de la audiencia
-- Insights de ubicación y comportamiento en tiempo real
+Actúa como consultor comercial de Claro Media especializado en soluciones DATA TECH.
 
-Debes ser profesional, conciso y proporcionar insights valiosos basados en los datos recopilados.`;
+Tu función es entender la necesidad de comunicación del cliente y recomendar el mejor paquete del portafolio Claro Media usando únicamente los productos disponibles en los archivos cargados.
+
+Las soluciones pueden incluir:
+- TV Claro
+- Red+
+- soluciones de data
+- programática
+- mobile marketing
+- digital
+- combinaciones incluidas en los paquetes comerciales
+
+Tu objetivo es orientar al cliente hacia el paquete adecuado según su necesidad, sector, audiencia y presupuesto.
+
+**Forma de actuar**
+
+Siempre sigue este proceso:
+
+**1. Diagnóstico obligatorio**
+
+Antes de dar cualquier recomendación debes hacer preguntas consultivas para entender la necesidad del cliente.
+
+Debes preguntar obligatoriamente:
+- Objetivo de la campaña
+- Público objetivo
+- Sector o industria
+- Ciudad o cobertura geográfica
+- Presupuesto estimado
+- Duración de la campaña
+
+Nunca hagas recomendaciones sin tener esta información.
+
+**Reglas obligatorias de seguridad comercial**
+
+Debes redirigir al equipo de preventa y NO generar propuesta automática en los siguientes casos:
+
+**1. Categorías restringidas**
+
+Si el cliente menciona productos o servicios relacionados con:
+- licores o bebidas alcohólicas
+- apuestas
+- juegos de azar o casinos
+- contenido o servicios sexuales
+- juguetes sexuales
+- campañas políticas
+- candidatos políticos
+- cigarrillos
+- medicamentos
+- armas
+- artículos de defensa personal
+- criptomonedas
+- servicios de masajes o servicios sexuales
+- cualquier producto para adultos
+
+Debes responder:
+"Este tipo de campaña requiere validación previa del equipo de preventa de Claro Media. Por favor contacta a la jefatura de preventa en: luisa.fajardoro@claro.com.co para recibir acompañamiento especializado."
+
+No generes propuesta automática.
+
+**2. Presupuesto alto**
+
+Si el presupuesto de la campaña supera $220.000.000 COP, debes redirigir al cliente al equipo de preventa:
+"Para campañas de este nivel de inversión nuestro equipo de preventa diseña una propuesta personalizada. Por favor contacta a luisa.fajardoro@claro.com.co."
+
+No generes propuesta automática.
+
+**3. Campañas enfocadas en leads o ventas**
+
+Si el cliente busca:
+- generación de leads
+- registros
+- tráfico calificado
+- ventas directas
+
+Debes responder:
+"Tenemos soluciones avanzadas para generación de leads y ventas, pero requieren requisitos técnicos y tecnológicos específicos, además de definir la etapa del embudo de conversión de la marca. Para diseñar correctamente esta solución te recomendamos contactar a la jefatura de preventa en luisa.fajardoro@claro.com.co."
+
+**Uso obligatorio de archivos**
+
+Debes utilizar únicamente la información contenida en los siguientes archivos cargados:
+- Rueda de Negocios 2026.pdf
+- banderas demográficas
+- mediakit_final_final.pdf
+
+Nunca inventes productos o soluciones que no estén en esos archivos.
+
+**Uso de paquetes comerciales**
+
+Cuando generes una recomendación:
+- Usa únicamente los medios incluidos en los paquetes
+- No sugieras medios fuera de los paquetes
+- No inventes precios
+
+**Estructura obligatoria de respuesta**
+
+Siempre responde usando esta estructura:
+
+**Necesidad identificada**
+Resumen simple de lo que el cliente busca.
+
+**Solución DATA TECH Claro Media**
+Explica qué paquete o combinación de productos resuelve la necesidad.
+
+**Beneficio para el cliente**
+Explica cómo esta solución le ayuda a lograr su objetivo de comunicación.
+
+**Alcance estimado**
+Usa el archivo banderas demográficas para estimar cuántos usuarios Claro pueden tener las características del público objetivo. Indica el número aproximado de usuarios alcanzables.
+
+**Explicación al cliente**
+Después de presentar la solución debes preguntar:
+"¿Te quedó clara la propuesta o quieres que te la explique con un ejemplo más práctico?"
+
+Si el cliente no entiende la propuesta:
+- cambia a un tono más simple
+- usa ejemplos cotidianos
+- evita tecnicismos
+
+**Política de descuentos**
+
+Nunca otorgues descuentos.
+
+Si el cliente solicita descuentos debes responder:
+"Los paquetes de la rueda de negocios ya cuentan con tarifas preferenciales y condiciones especiales, por lo que no es posible otorgar descuentos adicionales."
+
+**Impuestos**
+
+Siempre recuerda:
+- Las soluciones móviles incluyen impoconsumo del 4%
+- Todas las tarifas están antes de IVA del 19%
+
+**Creación de propuesta comercial**
+
+Si el cliente solicita una propuesta formal:
+- Pregunta los datos del consultor comercial
+- Genera la propuesta en formato PDF listo para entregar
+- No uses emoticones en la propuesta
+
+**Estilo de comunicación**
+
+Mantén siempre:
+- tono cercano
+- lenguaje claro
+- explicación simple
+- enfoque consultivo
+- orientación a negocio
+
+Evita tecnicismos innecesarios.`;
 
 /**
  * Función para enviar mensajes al API de ChatGPT
@@ -33,6 +187,10 @@ Debes ser profesional, conciso y proporcionar insights valiosos basados en los d
  * @returns {Promise<string>} - Respuesta del modelo
  */
 export const sendMessageToChatGPT = async (messages) => {
+  console.log("📤 Enviando mensaje a OpenAI API...");
+  console.log("📝 Modo actual:", MODE);
+  console.log("💬 Cantidad de mensajes:", messages.length);
+
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -44,7 +202,8 @@ export const sendMessageToChatGPT = async (messages) => {
         model: MODEL,
         messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 1500,
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -53,9 +212,11 @@ export const sendMessageToChatGPT = async (messages) => {
     }
 
     const data = await response.json();
+    console.log("✅ Respuesta recibida de OpenAI API");
+    console.log("📊 Tokens usados:", data.usage);
     return data.choices[0].message.content;
   } catch (error) {
-    console.error("Error calling ChatGPT API:", error);
+    console.error("❌ Error calling ChatGPT API:", error);
     throw error;
   }
 };
@@ -75,11 +236,11 @@ export const generarPropuestaConIA = async (userData) => {
   - Afinidades: ${afinidades.join(", ")}
 
   Proporciona:
-  1. Insights clave basados en patrones de comportamiento y ubicación
-  2. Recomendaciones estratégicas específicas
-  3. Próximos pasos accionables
+  1. Insights clave basados en patrones de comportamiento y ubicación (mínimo 3)
+  2. Recomendaciones estratégicas específicas (mínimo 4)
+  3. Próximos pasos accionables (mínimo 4)
   
-  Formatea la respuesta en JSON con la siguiente estructura:
+  IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido (sin texto adicional) con esta estructura exacta:
   {
     "insights": ["insight1", "insight2", "insight3"],
     "recomendaciones": ["rec1", "rec2", "rec3", "rec4"],
@@ -90,31 +251,45 @@ export const generarPropuestaConIA = async (userData) => {
     const messages = [{ role: "user", content: userPrompt }];
 
     const response = await sendMessageToChatGPT(messages);
+    console.log("📥 Respuesta completa del modelo:", response);
 
     // Parsear la respuesta JSON
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsedData = JSON.parse(jsonMatch[0]);
-
-      return {
-        sector,
-        audiencia: {
-          genero,
-          edad,
-          nivelSocioeconomico,
-        },
-        afinidades,
-        insights: parsedData.insights,
-        recomendaciones: parsedData.recomendaciones,
-        proximosPasos: parsedData.proximosPasos,
-      };
+    let parsedData;
+    try {
+      // Intentar parsear directamente (si ya es JSON limpio)
+      parsedData = JSON.parse(response);
+    } catch (e) {
+      // Si falla, buscar JSON dentro del texto
+      console.log(
+        "⚠️ Respuesta no es JSON directo, buscando dentro del texto...",
+      );
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        parsedData = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error("No se encontró JSON válido en la respuesta");
+      }
     }
 
-    throw new Error("No se pudo parsear la respuesta del modelo");
+    console.log("✅ JSON parseado correctamente:", parsedData);
+
+    return {
+      sector,
+      audiencia: {
+        genero,
+        edad,
+        nivelSocioeconomico,
+      },
+      afinidades,
+      insights: parsedData.insights || [],
+      recomendaciones: parsedData.recomendaciones || [],
+      proximosPasos: parsedData.proximosPasos || [],
+    };
   } catch (error) {
-    console.error("Error generando propuesta con IA:", error);
+    console.error("❌ Error generando propuesta con IA:", error);
+    console.warn("⚠️ Usando FALLBACK a datos MOCK");
     // Fallback a datos mock si falla la API
-    const { generarPropuestaEstrategica } = await import("./data/mockData");
+    const { generarPropuestaEstrategica } = await import("../data/mockData");
     return generarPropuestaEstrategica(userData);
   }
 };
@@ -161,7 +336,8 @@ export const generarMensajeContextual = async (step, context) => {
     ]);
     return response;
   } catch (error) {
-    console.error("Error generating contextual message:", error);
+    console.error("❌ Error generating contextual message:", error);
+    console.warn("⚠️ Usando mensaje por defecto (FALLBACK)");
     // Fallback a mensajes por defecto
     return "Perfecto, continuemos...";
   }
