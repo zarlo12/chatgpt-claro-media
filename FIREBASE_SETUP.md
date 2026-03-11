@@ -3,6 +3,7 @@
 ## ✅ Configuración Completa
 
 ### 1. Credenciales en `.env`
+
 ```env
 VITE_FIREBASE_API_KEY=AIzaSyBQz_9uBt6nM4U4v9gnU17-9gsaJI_8QaM
 VITE_FIREBASE_AUTH_DOMAIN=imagen-ia-845a3.firebaseapp.com
@@ -13,6 +14,7 @@ VITE_FIREBASE_APP_ID=1:134868092813:web:1cff1980062644ffa25fc4
 ```
 
 ### 2. Colección de Firestore
+
 **Nombre**: `ClaroMediaAgenteIA`
 
 ---
@@ -20,13 +22,14 @@ VITE_FIREBASE_APP_ID=1:134868092813:web:1cff1980062644ffa25fc4
 ## 📊 ¿Qué se guarda?
 
 ### Al inicio (durante el formulario):
+
 ```javascript
 {
   // 👤 Datos Personales
   nombre: "Juan Pérez",
   correo: "juan@empresa.com",
   celular: "3001234567",
-  
+
   // 📅 Metadata
   timestamp: Timestamp, // Fecha y hora de inicio
   estado: "iniciado", // Marca que la conversación comenzó
@@ -34,31 +37,33 @@ VITE_FIREBASE_APP_ID=1:134868092813:web:1cff1980062644ffa25fc4
 ```
 
 ### Al finalizar (después de generar propuesta):
+
 El MISMO documento se actualiza con:
+
 ```javascript
 {
   // ... datos personales anteriores ...
-  
+
   // 📈 Demografía (AGREGADO)
   sector: "Tecnología",
   genero: "Hombres",
   edad: "25 a 34",
   nivelSocioeconomico: "Medio (C)",
-  
+
   // 🎯 Afinidades (AGREGADO)
   afinidades: ["Tecnología", "Educación", "OTT"],
-  
+
   // 🗺️ Customer Journey (AGREGADO)
   primeraSeleccionJourney: "Explora",
   segundaSeleccionJourney: "Compara",
-  
+
   // 💡 Propuesta Generada (AGREGADO)
   propuesta: {
     insights: [...],
     recomendaciones: [...],
     proximosPasos: [...],
   },
-  
+
   // 📅 Metadata (ACTUALIZADO)
   ultimaActualizacion: Timestamp, // Fecha y hora de finalización
   estado: "completado", // Conversación completa
@@ -72,7 +77,9 @@ El MISMO documento se actualiza con:
 ## 🔄 Flujo de Guardado
 
 ### **Momento 1: Datos Personales (CREAR)**
+
 Cuando el usuario completa el formulario:
+
 ```
 ✅ Crear documento nuevo en Firebase
 - Nombre + Correo + Celular
@@ -84,7 +91,9 @@ Cuando el usuario completa el formulario:
 ```
 
 ### **Momento 2: Conversación Completa (ACTUALIZAR)**
+
 Al finalizar y generar la propuesta:
+
 ```
 ✅ Actualizar el MISMO documento (usando el ID guardado)
 - Agregar: sector, genero, edad, nivel socioeconómico
@@ -113,6 +122,7 @@ Al finalizar y generar la propuesta:
 ## 🔍 Logs en la Consola
 
 ### Al guardar datos personales (CREAR):
+
 ```
 💾 Guardando datos iniciales del usuario... {nombre, correo, celular}
 ✅ Datos iniciales guardados con ID: abc123xyz
@@ -120,6 +130,7 @@ Al finalizar y generar la propuesta:
 ```
 
 ### Al completar conversación (ACTUALIZAR):
+
 ```
 🚀 Generando propuesta estratégica...
 ✅ Propuesta generada: {...}
@@ -129,10 +140,12 @@ Al finalizar y generar la propuesta:
 ```
 
 ### Si hay error:
+
 ```
 ❌ Error guardando datos iniciales: [detalles]
 ❌ Error actualizando conversación: [detalles]
 ```
+
 **La app continúa funcionando** aunque falle el guardado.
 
 ---
@@ -140,6 +153,7 @@ Al finalizar y generar la propuesta:
 ## 💰 Costos de Firebase
 
 ### Firestore (Base de datos)
+
 - **Gratis hasta**:
   - 1 GB de almacenamiento
   - 50,000 lecturas/día
@@ -147,6 +161,7 @@ Al finalizar y generar la propuesta:
   - 20,000 eliminaciones/día
 
 ### Para tu evento:
+
 - **500 conversaciones** ≈ 1000 operaciones (500 crear + 500 actualizar)
 - **Tamaño promedio**: ~5 KB por conversación
 - **Total**: ~2.5 MB de datos
@@ -159,9 +174,11 @@ Al finalizar y generar la propuesta:
 ## 🔐 Seguridad
 
 ### ⚠️ Importante:
+
 Las credenciales en `.env` son **públicas** (se exponen en el navegador).
 
 Para producción real necesitas:
+
 1. **Reglas de seguridad** en Firestore
 2. **Validación de origen** (dominio permitido)
 3. **Rate limiting** (límite de escrituras)
@@ -191,12 +208,14 @@ Esto permite que tu app escriba pero no que terceros lean los datos.
 ## 📊 Consultar datos guardados
 
 ### Desde Firebase Console:
+
 1. https://console.firebase.google.com
 2. Proyecto → Firestore Database
 3. Colección `ClaroMediaAgenteIA`
 4. Ver/descargar/exportar documentos
 
 ### Exportar a CSV/Excel:
+
 1. Usa extensiones de Firebase
 2. O script personalizado para exportar
 
@@ -205,20 +224,26 @@ Esto permite que tu app escriba pero no que terceros lean los datos.
 ## 🛠️ Troubleshooting
 
 ### Error: "Firebase not initialized"
+
 **Solución**: Verifica que las variables en `.env` estén correctas y que reiniciaste el servidor (`npm run dev`).
 
 ### Error: "Permission denied"
+
 **Solución**: Revisa las reglas de seguridad en Firestore. Deben permitir `write`.
 
 ### No veo documentos en Firestore
-**Solución**: 
+
+**Solución**:
+
 1. Abre la consola del navegador (F12)
 2. Busca el log: `✅ Conversación guardada con ID: ...`
 3. Si no aparece, verifica errores en consola
 4. Confirma que Firestore está activado en Firebase Console
 
 ### Los datos no se guardan
+
 **Solución**:
+
 1. Verifica que Firebase esté instalado: `npm list firebase`
 2. Confirma que `.env` tiene las credenciales correctas
 3. Reinicia el servidor de desarrollo
@@ -229,17 +254,20 @@ Esto permite que tu app escriba pero no que terceros lean los datos.
 ## 🎯 Próximos pasos opcionales
 
 ### 1. Dashboard de análisis
+
 - Crear vista para ver estadísticas
 - Total de conversaciones
 - Sectores más comunes
 - Afinidades más seleccionadas
 
 ### 2. Exportación automática
+
 - Configurar Cloud Functions
 - Exportar a Google Sheets
 - Enviar reportes por email
 
 ### 3. Autenticación
+
 - Agregar login para el equipo
 - Ver conversaciones en tiempo real
 - Dashboard privado

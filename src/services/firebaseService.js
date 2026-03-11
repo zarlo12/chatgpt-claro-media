@@ -1,7 +1,14 @@
 // Firebase Service para guardar registros de conversaciones
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
 // 🔧 Configuración de Firebase desde variables de entorno
 const firebaseConfig = {
@@ -31,35 +38,35 @@ console.log("📁 Colección:", COLLECTION_NAME);
 export const guardarConversacion = async (conversacion) => {
   try {
     console.log("💾 Guardando conversación en Firebase...", conversacion);
-    
+
     const docRef = await addDoc(collection(db, COLLECTION_NAME), {
       // Datos personales
       nombre: conversacion.nombre || "",
       correo: conversacion.correo || "",
       celular: conversacion.celular || "",
-      
+
       // Demografía
       sector: conversacion.sector || "",
       genero: conversacion.genero || "",
       edad: conversacion.edad || "",
       nivelSocioeconomico: conversacion.nivelSocioeconomico || "",
-      
+
       // Afinidades
       afinidades: conversacion.afinidades || [],
-      
+
       // Journey (si están disponibles)
       primeraSeleccionJourney: conversacion.primeraSeleccionJourney || null,
       segundaSeleccionJourney: conversacion.segundaSeleccionJourney || null,
-      
+
       // Propuesta generada
       propuesta: conversacion.propuesta || null,
-      
+
       // Metadata
       timestamp: serverTimestamp(),
       modo: import.meta.env.VITE_MODE || "development",
       modeloIA: import.meta.env.VITE_OPENAI_MODEL || "mock",
     });
-    
+
     console.log("✅ Conversación guardada con ID:", docRef.id);
     return docRef.id;
   } catch (error) {
@@ -76,7 +83,7 @@ export const guardarConversacion = async (conversacion) => {
 export const guardarDatosIniciales = async (datosPersonales) => {
   try {
     console.log("💾 Guardando datos iniciales del usuario...", datosPersonales);
-    
+
     const docRef = await addDoc(collection(db, COLLECTION_NAME), {
       nombre: datosPersonales.nombre || "",
       correo: datosPersonales.correo || "",
@@ -84,7 +91,7 @@ export const guardarDatosIniciales = async (datosPersonales) => {
       timestamp: serverTimestamp(),
       estado: "iniciado", // Para marcar que solo tiene datos iniciales
     });
-    
+
     console.log("✅ Datos iniciales guardados con ID:", docRef.id);
     return docRef.id;
   } catch (error) {
@@ -102,13 +109,13 @@ export const guardarDatosIniciales = async (datosPersonales) => {
 export const actualizarConversacion = async (docId, datosActualizados) => {
   try {
     console.log("🔄 Actualizando conversación:", docId, datosActualizados);
-    
+
     const docRef = doc(db, COLLECTION_NAME, docId);
     await updateDoc(docRef, {
       ...datosActualizados,
       ultimaActualizacion: serverTimestamp(),
     });
-    
+
     console.log("✅ Conversación actualizada");
   } catch (error) {
     console.error("❌ Error actualizando conversación:", error);
