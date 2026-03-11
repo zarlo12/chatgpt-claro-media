@@ -26,6 +26,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [selectedAfinidades, setSelectedAfinidades] = useState([]);
+  const [selectedEdades, setSelectedEdades] = useState([]);
   const [primeraSeleccionJourney, setPrimeraSeleccionJourney] = useState(null);
   const [segundaSeleccionJourney, setSegundaSeleccionJourney] = useState(null);
   // Datos personales
@@ -124,6 +125,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setUserData({});
     setShowOptions(false);
     setSelectedAfinidades([]);
+    setSelectedEdades([]);
     setPrimeraSeleccionJourney(null);
     setSegundaSeleccionJourney(null);
     setNombre('');
@@ -227,9 +229,19 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     }, 500);
   };
 
-  const handleEdadSelect = (edad) => {
-    addUserMessage(edad);
-    setUserData(prev => ({ ...prev, edad }));
+  const handleEdadSelect = (edades, isConfirmed) => {
+    if (!isConfirmed) {
+      setSelectedEdades(edades);
+      return;
+    }
+
+    const edadesText = edades.length === 1 
+      ? edades[0] 
+      : `${edades.length} rangos de edad: ${edades.join(', ')}`;
+    
+    addUserMessage(edadesText);
+    setUserData(prev => ({ ...prev, edad: edades }));
+    setShowOptions(false);
     
     setTimeout(() => {
       addAgentMessage('Perfecto. ¿Cuál es el nivel socioeconómico de tu audiencia?');
@@ -451,7 +463,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
         handleGeneroSelect(option);
         break;
       case 'edad':
-        handleEdadSelect(option);
+        handleEdadSelect(option, isConfirmed);
         break;
       case 'nivelSocioeconomico':
         handleNivelSocioeconomicoSelect(option);
@@ -528,8 +540,8 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
           <ChatOptions
             options={getCurrentOptions()}
             onSelect={handleOptionSelect}
-            multiSelect={false}
-            selectedOptions={selectedAfinidades}
+            multiSelect={currentStep === 'edad'}
+            selectedOptions={currentStep === 'edad' ? selectedEdades : []}
           />
         )}
         {showOptions && currentStep === 'afinidades' && (

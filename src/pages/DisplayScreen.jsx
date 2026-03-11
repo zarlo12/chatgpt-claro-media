@@ -25,7 +25,7 @@ const DisplayScreen = () => {
           celular: data.celular,
           audiencia: {
             genero: data.genero,
-            edad: data.edad,
+            edad: Array.isArray(data.edad) ? data.edad : (data.edad ? [data.edad] : []),
             nivelSocioeconomico: data.nivelSocioeconomico,
           },
           afinidades: data.afinidades || [],

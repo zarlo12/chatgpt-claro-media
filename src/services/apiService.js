@@ -229,9 +229,11 @@ export const sendMessageToChatGPT = async (messages) => {
 export const generarPropuestaConIA = async (userData) => {
   const { sector, genero, edad, nivelSocioeconomico, afinidades } = userData;
 
+  const edadText = Array.isArray(edad) ? edad.join(", ") : edad;
+
   const userPrompt = `Genera una propuesta estratégica personalizada para una empresa del sector ${sector} con la siguiente audiencia:
   - Género: ${genero}
-  - Edad: ${edad}
+  - Edad: ${edadText}
   - Nivel Socioeconómico: ${nivelSocioeconomico}
   - Afinidades: ${afinidades.join(", ")}
 
@@ -277,7 +279,7 @@ export const generarPropuestaConIA = async (userData) => {
       sector,
       audiencia: {
         genero,
-        edad,
+        edad: edadText,
         nivelSocioeconomico,
       },
       afinidades,
@@ -314,7 +316,7 @@ export const generarMensajeContextual = async (step, context) => {
       ". Confirma y pregunta sobre el rango de edad.",
     edad:
       "El usuario indicó edad: " +
-      context.edad +
+      (Array.isArray(context.edad) ? context.edad.join(", ") : context.edad) +
       ". Confirma y pregunta sobre nivel socioeconómico.",
     nivelSocioeconomico:
       "El usuario indicó nivel: " +

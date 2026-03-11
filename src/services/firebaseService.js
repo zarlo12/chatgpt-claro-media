@@ -53,7 +53,7 @@ export const guardarConversacion = async (conversacion) => {
       // Demografía
       sector: conversacion.sector || "",
       genero: conversacion.genero || "",
-      edad: conversacion.edad || "",
+      edad: conversacion.edad || [],
       nivelSocioeconomico: conversacion.nivelSocioeconomico || "",
 
       // Afinidades
