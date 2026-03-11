@@ -1,5 +1,7 @@
 // Datos mock basados en el CSV del agente de IA de Claro Media
 
+import { calcularValorPropuesta } from "./banderasDemograficas";
+
 export const SECTORES = [
   "Financiero",
   "Automotor",
@@ -356,8 +358,7 @@ export const generarPropuestaEstrategica = (userData) => {
   const insightsGeoespaciales = INSIGHTS_GEOESPACIALES[sector] || [];
   const afinidadesSector = AFINIDADES_POR_SECTOR[sector] || [];
 
-  // Calcular valor de propuesta (importar la función)
-  const { calcularValorPropuesta } = require("./banderasDemograficas");
+  // Calcular valor de propuesta
   const valorPropuesta = calcularValorPropuesta({
     genero,
     edad: Array.isArray(edad) ? edad : [edad],

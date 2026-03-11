@@ -3,6 +3,8 @@
 // NOTA: Este es un archivo de ejemplo para cuando se integre la API real de ChatGPT
 // Por ahora, el proyecto usa datos mock en src/data/mockData.js
 
+import { calcularValorPropuesta } from "../data/banderasDemograficas";
+
 /**
  * Configuración de la API
  * Agregar estas variables a un archivo .env:
