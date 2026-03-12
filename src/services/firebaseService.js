@@ -130,6 +130,68 @@ export const actualizarConversacion = async (docId, datosActualizados) => {
 };
 
 /**
+ * Escuchar cambios en tiempo real para TODAS las conversaciones completadas de un stand específico
+ * @param {string} standId - ID del stand ("A" o "B")
+ * @param {Function} callback - Función que se ejecuta cuando hay cambios
+ * @returns {Function} - Función para cancelar la suscripción
+ */
+export const escucharTodasLasConversaciones = (standId, callback) => {
+  try {
+    console.log("🔊 Escuchando TODAS las conversaciones del Stand", standId);
+
+    // Query: buscar TODOS los documentos del stand específico, completados, ordenados por timestamp descendente
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("standId", "==", standId),
+      where("estado", "==", "completado"),
+      orderBy("timestamp", "desc"),
+    );
+
+    // Listener en tiempo real
+    const unsubscribe = onSnapshot(
+      q,
+      (querySnapshot) => {
+        console.log(
+          "📡 Snapshot recibido para Stand",
+          standId,
+          "- Total docs:",
+          querySnapshot.docs.length,
+        );
+
+        if (!querySnapshot.empty) {
+          const conversaciones = querySnapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...docSnap.data(),
+          }));
+
+          console.log(
+            `✅ ${conversaciones.length} conversaciones encontradas para Stand ${standId}`,
+          );
+          callback(conversaciones);
+        } else {
+          console.log(
+            "⚠️ No hay conversaciones completadas para Stand",
+            standId,
+          );
+          callback([]);
+        }
+      },
+      (error) => {
+        console.error("❌ Error en listener de Firebase:", error);
+        console.error("Detalles del error:", error.message);
+        callback([]);
+      },
+    );
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("❌ Error configurando listener:", error);
+    console.error("Detalles:", error.message);
+    throw error;
+  }
+};
+
+/**
  * Escuchar cambios en tiempo real para el último documento completado de un stand específico
  * @param {string} standId - ID del stand ("A" o "B")
  * @param {Function} callback - Función que se ejecuta cuando hay cambios
@@ -199,4 +261,5 @@ export default {
   guardarDatosIniciales,
   actualizarConversacion,
   escucharUltimaConversacion,
+  escucharTodasLasConversaciones,
 };
