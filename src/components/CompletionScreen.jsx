@@ -54,18 +54,10 @@ const CompletionScreen = ({ standId, onReset }) => {
             transition={{ delay: 0.4 }}
             className="text-3xl md:text-4xl font-bold text-white text-center mb-4"
           >
-            ¡Propuesta Generada con Éxito!
+            ¡Propuesta Generada!
           </motion.h1>
 
-          {/* Mensaje */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="text-lg text-white/80 text-center mb-3"
-          >
-            Tu propuesta estratégica personalizada está lista y guardada.
-          </motion.p>
+        
 
           {/* Badge del Stand */}
           <motion.div
@@ -98,39 +90,7 @@ const CompletionScreen = ({ standId, onReset }) => {
             </div>
           </motion.div>
 
-          {/* Instrucción principal */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8"
-          >
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <svg
-                  className="w-8 h-8 text-claro-red animate-pulse"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2">
-                  Siguiente paso:
-                </h3>
-                <p className="text-white/70 text-base leading-relaxed">
-                  Dirígete a la <span className="text-claro-red font-semibold">pantalla de resultados</span> al final del recorrido para visualizar tu propuesta estratégica completa con insights, recomendaciones y próximos pasos.
-                </p>
-              </div>
-            </div>
-          </motion.div>
+       
 
           {/* Botones */}
           <motion.div
@@ -186,17 +146,6 @@ const CompletionScreen = ({ standId, onReset }) => {
             </button>
           </motion.div>
 
-          {/* Footer info */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-            className="mt-8 text-center"
-          >
-            <p className="text-white/50 text-sm">
-              Los resultados permanecerán visibles en la pantalla de display hasta que se genere una nueva propuesta
-            </p>
-          </motion.div>
         </div>
       </motion.div>
     </div>
