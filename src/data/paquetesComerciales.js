@@ -312,50 +312,150 @@ export const recomendarPaquete = (perfil) => {
     "usuarios",
   );
   console.log("  - Sector:", sector);
+  console.log("  - Audiencia:", audiencia);
 
-  // Lógica de recomendación basada en presupuesto y alcance
-  let paqueteRecomendado;
+  // Sistema de puntuación para cada paquete
+  let scores = {
+    vip: 0,
+    "editorial-red-plus": 0,
+    smart: 0,
+    basic: 0,
+  };
   let razonamiento = [];
 
-  // 1. Evaluar por presupuesto (factor principal)
+  // FACTOR 1: ALCANCE POTENCIAL (peso: 40%)
+  if (alcanceNum >= 3000000) {
+    scores.vip += 40;
+    scores["editorial-red-plus"] += 20;
+    scores.smart += 10;
+    razonamiento.push(`Alcance masivo (${(alcanceNum/1000000).toFixed(1)}M usuarios) requiere máxima cobertura`);
+  } else if (alcanceNum >= 2000000) {
+    scores.vip += 30;
+    scores["editorial-red-plus"] += 35;
+    scores.smart += 25;
+    razonamiento.push(`Alcance alto (${(alcanceNum/1000000).toFixed(1)}M usuarios) ideal para paquetes premium`);
+  } else if (alcanceNum >= 1000000) {
+    scores["editorial-red-plus"] += 20;
+    scores.smart += 40;
+    scores.basic += 15;
+    razonamiento.push(`Alcance medio (${(alcanceNum/1000000).toFixed(1)}M usuarios) óptimo para SMART`);
+  } else if (alcanceNum >= 500000) {
+    scores.smart += 30;
+    scores.basic += 35;
+    razonamiento.push(`Alcance moderado (${Math.round(alcanceNum/1000)}K usuarios) eficiente con BASIC/SMART`);
+  } else {
+    scores.basic += 40;
+    scores.smart += 20;
+    razonamiento.push(`Alcance focalizado (${Math.round(alcanceNum/1000)}K usuarios) ideal para testing`);
+  }
+
+  // FACTOR 2: SECTOR (peso: 30%)
+  const sectorLower = sector?.toLowerCase() || "";
+  
+  // Sectores premium que requieren alto awareness
+  if (["tecnología", "tecnologia", "banca", "financiero", "automotriz", "automotor"].some(s => sectorLower.includes(s))) {
+    scores.vip += 30;
+    scores["editorial-red-plus"] += 20;
+    scores.smart += 10;
+    razonamiento.push(`Sector ${sector} beneficia de campañas de alto impacto y awareness masivo`);
+  } 
+  // Sectores con foco editorial
+  else if (["entretenimiento", "moda", "alimentación", "alimentacion", "servicios"].some(s => sectorLower.includes(s))) {
+    scores["editorial-red-plus"] += 35;
+    scores.smart += 20;
+    scores.vip += 10;
+    razonamiento.push(`Sector ${sector} se potencia con contenido editorial y branded content`);
+  }
+  // Sectores tácticos (resultados directos)
+  else if (["retail", "telecomunicaciones", "salud", "educación", "educacion", "gobierno"].some(s => sectorLower.includes(s))) {
+    scores.smart += 30;
+    scores.basic += 20;
+    scores["editorial-red-plus"] += 10;
+    razonamiento.push(`Sector ${sector} ideal para campañas tácticas con objetivos específicos`);
+  }
+  // Sector consumo masivo
+  else if (["consumo masivo", "consumo", "masivo"].some(s => sectorLower.includes(s))) {
+    scores.vip += 25;
+    scores.smart += 30;
+    scores["editorial-red-plus"] += 15;
+    razonamiento.push(`Sector ${sector} requiere alcance masivo multiplataforma`);
+  }
+  // Default para sectores no específicos
+  else {
+    scores.smart += 20;
+    scores.basic += 15;
+  }
+
+  // FACTOR 3: PERFIL DE AUDIENCIA (peso: 20%)
+  const audienciaGenero = audiencia?.genero?.toLowerCase() || "";
+  const audienciaEdad = audiencia?.edad?.toLowerCase() || "";
+  const audienciaNSE = audiencia?.nivelSocioeconomico?.toLowerCase() || "";
+
+  // Género segmentado necesita más enfoque
+  if (audienciaGenero === "mujeres" || audienciaGenero === "hombres") {
+    scores.smart += 15;
+    scores["editorial-red-plus"] += 10;
+    razonamiento.push(`Audiencia segmentada por género permite enfoque preciso`);
+  } else {
+    scores.vip += 10;
+    scores.smart += 5;
+  }
+
+  // NSE Alto requiere paquetes premium
+  if (audienciaNSE.includes("alto") || audienciaNSE.includes("e5") || audienciaNSE.includes("e6")) {
+    scores.vip += 20;
+    scores["editorial-red-plus"] += 15;
+    razonamiento.push(`NSE alto justifica inversión en paquetes premium con mayor ROI`);
+  } 
+  // NSE Medio es versátil
+  else if (audienciaNSE.includes("medio") || audienciaNSE.includes("e3") || audienciaNSE.includes("e4")) {
+    scores.smart += 20;
+    scores["editorial-red-plus"] += 10;
+    scores.basic += 5;
+  }
+  // NSE Bajo necesita eficiencia
+  else if (audienciaNSE.includes("bajo") || audienciaNSE.includes("e1") || audienciaNSE.includes("e2")) {
+    scores.basic += 20;
+    scores.smart += 10;
+  }
+
+  // Jóvenes (18-34) prefieren digital/mobile
+  if (audienciaEdad.includes("18") || audienciaEdad.includes("24") || audienciaEdad.includes("25") || audienciaEdad.includes("34")) {
+    scores.smart += 10;
+    scores.vip += 5;
+    razonamiento.push(`Audiencia joven responde mejor a estrategias digitales y mobile`);
+  }
+  // Adultos (35-54) balance TV + Digital
+  else if (audienciaEdad.includes("35") || audienciaEdad.includes("44") || audienciaEdad.includes("45") || audienciaEdad.includes("54")) {
+    scores["editorial-red-plus"] += 10;
+    scores.smart += 10;
+  }
+  // Mayores (55+) más TV tradicional
+  else if (audienciaEdad.includes("55") || audienciaEdad.includes("64") || audienciaEdad.includes("65") || audienciaEdad.includes("75")) {
+    scores["editorial-red-plus"] += 15;
+    scores.vip += 10;
+  }
+
+  // FACTOR 4: PRESUPUESTO (peso: 10% - solo si existe)
   if (presupuestoNum >= 150000000) {
-    paqueteRecomendado = PAQUETES_COMERCIALES[0]; // VIP
+    scores.vip += 10;
     razonamiento.push("Presupuesto alto permite máxima cobertura multimedia");
   } else if (presupuestoNum >= 80000000) {
-    paqueteRecomendado = PAQUETES_COMERCIALES[1]; // EDITORIAL RED+
-    razonamiento.push("Presupuesto medio-alto ideal para contenido editorial");
+    scores["editorial-red-plus"] += 10;
   } else if (presupuestoNum >= 35000000) {
-    paqueteRecomendado = PAQUETES_COMERCIALES[2]; // SMART
-    razonamiento.push("Presupuesto medio permite alcance equilibrado");
-  } else {
-    paqueteRecomendado = PAQUETES_COMERCIALES[3]; // BASIC
-    razonamiento.push("Presupuesto controlado con acceso a medios masivos");
+    scores.smart += 10;
+  } else if (presupuestoNum > 0) {
+    scores.basic += 10;
   }
 
-  // 2. Ajustar por alcance potencial (si es muy alto pero presupuesto bajo, recomendar upgrade)
-  if (alcanceNum > 2000000 && paqueteRecomendado.id === "basic") {
-    paqueteRecomendado = PAQUETES_COMERCIALES[2]; // Upgrade a SMART
-    razonamiento.push("Alcance potencial alto justifica inversión en SMART");
-  } else if (alcanceNum > 1500000 && paqueteRecomendado.id === "smart") {
-    razonamiento.push(
-      "Alcance potencial masivo alineado con cobertura del paquete",
-    );
-  }
+  // Determinar paquete ganador
+  console.log("📊 Puntuaciones finales:", scores);
+  
+  const paqueteId = Object.keys(scores).reduce((a, b) => 
+    scores[a] > scores[b] ? a : b
+  );
 
-  // 3. Consideraciones por sector (recomendaciones especiales)
-  const sectoresAwareness = ["tecnología", "banca", "automotriz", "retail"];
-  const sectoresEditorial = ["entretenimiento", "alimentación", "servicios"];
-  const sectoresTacticos = ["telecomunicaciones", "salud", "educación"];
-
-  if (sectoresAwareness.some((s) => sector?.toLowerCase().includes(s))) {
-    razonamiento.push(
-      `Sector ${sector} beneficia de alto awareness multimedia`,
-    );
-  } else if (sectoresEditorial.some((s) => sector?.toLowerCase().includes(s))) {
-    razonamiento.push(`Sector ${sector} se beneficia de contenido editorial`);
-  } else if (sectoresTacticos.some((s) => sector?.toLowerCase().includes(s))) {
-    razonamiento.push(`Sector ${sector} ideal para campañas tácticas`);
-  }
+  const paqueteRecomendado = PAQUETES_COMERCIALES.find(p => p.id === paqueteId) || PAQUETES_COMERCIALES[2];
 
   // 4. Calcular ROI estimado (impresiones totales / inversión)
   const impresionesTotales = calcularImpresionesTotales(paqueteRecomendado);
@@ -363,8 +463,10 @@ export const recomendarPaquete = (perfil) => {
     paqueteRecomendado.precioPreventa / (impresionesTotales / 1000);
 
   razonamiento.push(
-    `CPM estimado: $${Math.round(costoMilImpresiones).toLocaleString("es-CO")}`,
+    `CPM estimado: $${Math.round(costoMilImpresiones).toLocaleString("es-CO")} - excelente relación costo-beneficio`,
   );
+
+  console.log("🎯 Paquete recomendado:", paqueteRecomendado.nombre, "- Score:", scores[paqueteId]);
 
   return {
     paquete: paqueteRecomendado,
