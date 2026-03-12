@@ -354,8 +354,8 @@ const ResultsView = ({ propuesta, onReset }) => {
                             <p className="text-white font-bold text-base mb-2">{componente.nombre}</p>
                             <p className="text-white/70 text-xs mb-2">{componente.detalle}</p>
                             {componente.alcance !== "N/A" && (
-                              <div className="bg-claro-red/20 rounded-lg px-2 py-1 inline-block">
-                                <p className="text-claro-red text-xs font-bold">{componente.alcance}</p>
+                              <div className="bg-gradient-to-r from-claro-red to-pink-600 rounded-lg px-2 py-1 inline-block shadow-lg">
+                                <p className="text-white text-xs font-bold">{componente.alcance}</p>
                               </div>
                             )}
                           </div>
@@ -365,9 +365,9 @@ const ResultsView = ({ propuesta, onReset }) => {
                   </div>
                   
                   <div className="text-center mt-6">
-                    <div className="inline-block bg-claro-red/20 rounded-full px-6 py-3">
+                    <div className="inline-block bg-gradient-to-r from-claro-red/30 to-pink-600/30 rounded-full px-6 py-3 border border-claro-red/40">
                       <p className="text-white font-bold text-lg">
-                        🎁 Total: <span className="text-claro-red">{propuesta.paqueteRecomendado.paquete.productos} productos completos</span>
+                        🎁 Total: <span className="text-white">{propuesta.paqueteRecomendado.paquete.productos} productos completos</span>
                       </p>
                     </div>
                   </div>
