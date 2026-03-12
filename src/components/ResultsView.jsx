@@ -453,30 +453,7 @@ const ResultsView = ({ propuesta, onReset }) => {
                   </div>
                 </div>
 
-                {/* Alternativas compactas */}
-                {propuesta.paqueteRecomendado.alternativas && propuesta.paqueteRecomendado.alternativas.length > 0 && (
-                  <div>
-                    <p className="text-white/60 text-center text-sm mb-4">💡 También disponibles:</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {propuesta.paqueteRecomendado.alternativas.map((alt, index) => (
-                        <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10 hover:border-white/30 transition-all">
-                          <div className="flex items-center justify-between mb-2">
-                            <h5 className="text-white font-bold text-base">{alt.paquete.nombre}</h5>
-                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
-                              alt.tipo === 'menor' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'
-                            }`}>
-                              {alt.tipo === 'menor' ? 'Más económico' : 'Premium'}
-                            </span>
-                          </div>
-                          <p className="text-claro-red text-2xl font-bold mb-1">
-                            ${alt.paquete.precioPreventa.toLocaleString('es-CO')}
-                          </p>
-                          <p className="text-white/60 text-xs">{alt.paquete.productos} productos • {alt.razon}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+               
               </div>
             </div>
           </div>
