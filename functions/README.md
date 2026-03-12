@@ -30,6 +30,7 @@ firebase init
 ```
 
 Selecciona:
+
 - ✅ Functions
 - ✅ Firestore
 - ✅ Hosting (opcional)
@@ -46,12 +47,14 @@ npm install
 #### Opción A: Para Testing Local
 
 1. Copia `.env.example` a `.env` en la carpeta `/functions`:
+
 ```bash
 cd functions
 cp .env.example .env
 ```
 
 2. Edita `.env` y configura:
+
 ```env
 GMAIL_EMAIL=tu-email@gmail.com
 GMAIL_PASSWORD=tu-app-password-aqui
@@ -103,6 +106,7 @@ firebase emulators:start --only functions
 ```
 
 La función estará disponible en:
+
 ```
 http://localhost:5001/TU-PROJECT-ID/us-central1/enviarPropuestaPorCorreo
 ```
@@ -140,6 +144,7 @@ firebase functions:config:get
 ## 🎨 PDF Generado
 
 El PDF incluye:
+
 - ✅ Header con logo ClaroMedia
 - ✅ Información de contacto
 - ✅ Perfil de audiencia detallado
@@ -159,6 +164,7 @@ El PDF incluye:
 ## 📧 Email Enviado
 
 Incluye:
+
 - ✅ HTML elegante con diseño ClaroMedia
 - ✅ Mensaje personalizado
 - ✅ PDF adjunto con nombre descriptivo
@@ -168,20 +174,24 @@ Incluye:
 ## 🔍 Troubleshooting
 
 ### Error: "Auth failed"
+
 - Verifica que hayas activado "Verificación en 2 pasos" en Google
 - Usa App Password, NO tu contraseña normal de Gmail
 - Revisa que el email y password estén correctamente configurados
 
 ### Error: "Function not found"
+
 - Asegúrate de haber hecho `firebase deploy --only functions`
 - Verifica la URL en `pdfService.js`
 - Chequea que tu proyecto de Firebase esté correctamente configurado
 
 ### Error: "Timeout"
+
 - Aumenta el timeout en `index.js` (ya está en 540 segundos)
 - Verifica tu plan de Firebase (Blaze/Pay as you go requerido para functions)
 
 ### PDF no se genera bien
+
 - Verifica que todos los datos de la propuesta estén completos
 - Chequea los logs: `firebase functions:log`
 - Prueba localmente con emulator primero
@@ -189,6 +199,7 @@ Incluye:
 ## 💰 Costos
 
 Firebase Functions (Plan Blaze):
+
 - **2M invocaciones gratis/mes**
 - **400,000 GB-segundos gratis/mes**
 - Esta función usa ~2-5 segundos por ejecución
@@ -222,6 +233,7 @@ Firebase Functions (Plan Blaze):
 ## 📞 Soporte
 
 Si tienes problemas:
+
 1. Revisa los logs: `firebase functions:log`
 2. Prueba con emulator local primero
 3. Verifica configuración de Gmail

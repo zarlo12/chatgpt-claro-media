@@ -3,6 +3,7 @@
 ## ⚡ Comandos Esenciales
 
 ### 1️⃣ Instalar dependencias de Functions
+
 ```bash
 cd functions
 npm install
@@ -10,6 +11,7 @@ cd ..
 ```
 
 ### 2️⃣ Configurar Gmail para envío
+
 ```bash
 firebase functions:config:set gmail.email="tu-email@gmail.com" gmail.password="tu-app-password"
 ```
@@ -17,23 +19,29 @@ firebase functions:config:set gmail.email="tu-email@gmail.com" gmail.password="t
 💡 **Obtener App Password**: https://myaccount.google.com/apppasswords
 
 ### 3️⃣ Deploy
+
 ```bash
 firebase deploy --only functions
 ```
 
 ### 4️⃣ Ver URL de la función
+
 Después del deploy, copia la URL que aparece, algo como:
+
 ```
 https://us-central1-imagen-ia-845a3.cloudfunctions.net/enviarPropuestaPorCorreo
 ```
 
 ### 5️⃣ Actualizar frontend
+
 Agrega en `.env`:
+
 ```env
 VITE_FIREBASE_FUNCTIONS_URL=https://us-central1-TU-PROJECT-ID.cloudfunctions.net/enviarPropuestaPorCorreo
 ```
 
 ### 6️⃣ Rebuild frontend
+
 ```bash
 npm run build
 ```

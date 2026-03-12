@@ -3,6 +3,7 @@
 ## 📦 Archivos Creados
 
 ### Backend (Firebase Functions)
+
 ```
 functions/
 ├── index.js              ✅ Cloud Function con generación PDF + envío email
@@ -13,6 +14,7 @@ functions/
 ```
 
 ### Frontend
+
 ```
 src/
 ├── services/
@@ -22,6 +24,7 @@ src/
 ```
 
 ### Configuración
+
 ```
 .env.example             ✅ Agregada URL de Firebase Functions
 firebase.json            ✅ Configuración de Firebase
@@ -31,12 +34,14 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 ## 🎯 Funcionalidades Implementadas
 
 ### 1. Botón de Envío
+
 - ✅ Botón destacado "Enviar por Correo (PDF)" al final de ResultsView
 - ✅ Diseño con gradiente rojo-rosa llamativo
 - ✅ Animaciones hover y feedback visual
 - ✅ Íconos de email y flecha
 
 ### 2. Modal Elegante
+
 - ✅ Modal animado con backdrop blur
 - ✅ Campo de email pre-rellenado con el del cliente
 - ✅ Validación de email en tiempo real
@@ -46,6 +51,7 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 - ✅ Botón de cancelar y cerrar (X)
 
 ### 3. Generación de PDF
+
 - ✅ Template HTML profesional con diseño ClaroMedia
 - ✅ Gradientes oscuros elegantes
 - ✅ Sección de header con logo
@@ -68,6 +74,7 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 - ✅ Footer profesional con fecha
 
 ### 4. Email HTML Profesional
+
 - ✅ Diseño responsive y elegante
 - ✅ Header con logo ClaroMedia
 - ✅ Mensaje personalizado con nombre del cliente
@@ -77,6 +84,7 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 - ✅ PDF adjunto con nombre descriptivo
 
 ### 5. Backend Robusto
+
 - ✅ Firebase Cloud Function HTTP
 - ✅ CORS configurado
 - ✅ Validación de parámetros
@@ -91,6 +99,7 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 ## 🎨 Diseño Visual del PDF
 
 ### Paleta de Colores
+
 - **Background**: Gradiente oscuro (#1a1a1a → #2d2d2d)
 - **Claro Red**: #E30613 (principal)
 - **Rosa**: #ec4899 (acentos)
@@ -99,6 +108,7 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 - **Morado**: Para "Ideal Para"
 
 ### Typography
+
 - **Headers**: Font-weight 900, uppercase
 - **Títulos sección**: 24px, bold
 - **Nombre paquete**: 48px, ultra-bold
@@ -106,6 +116,7 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 - **Cuerpo**: 14-16px, line-height 1.6
 
 ### Efectos Visuales
+
 - Glassmorphism en cards
 - Gradientes en botones y badges
 - Bordes con opacidad variable
@@ -115,24 +126,25 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 ## 📊 Flujo Completo
 
 ```
-1. Usuario completa propuesta → 
-2. Ve ResultsView con todos los detalles → 
-3. Click en "Enviar por Correo" → 
-4. Modal aparece con email pre-rellenado → 
-5. Usuario confirma/edita email y hace click "Enviar" → 
-6. Loading spinner aparece → 
-7. Frontend llama a Firebase Function → 
-8. Backend genera HTML de la propuesta → 
-9. Puppeteer convierte HTML a PDF → 
-10. Nodemailer envía email con PDF adjunto → 
-11. Frontend muestra mensaje de éxito → 
-12. Modal se cierra automáticamente → 
+1. Usuario completa propuesta →
+2. Ve ResultsView con todos los detalles →
+3. Click en "Enviar por Correo" →
+4. Modal aparece con email pre-rellenado →
+5. Usuario confirma/edita email y hace click "Enviar" →
+6. Loading spinner aparece →
+7. Frontend llama a Firebase Function →
+8. Backend genera HTML de la propuesta →
+9. Puppeteer convierte HTML a PDF →
+10. Nodemailer envía email con PDF adjunto →
+11. Frontend muestra mensaje de éxito →
+12. Modal se cierra automáticamente →
 13. Cliente recibe email profesional con PDF
 ```
 
 ## 🔧 Tecnologías Usadas
 
 ### Backend
+
 - **Firebase Functions**: Serverless computing
 - **Puppeteer**: Generación de PDF desde HTML
 - **Nodemailer**: Envío de emails vía SMTP
@@ -140,6 +152,7 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 - **Gmail SMTP**: Servicio de email (gratuito)
 
 ### Frontend
+
 - **React 18**: Framework principal
 - **Tailwind CSS**: Estilos del modal y botón
 - **Fetch API**: Llamadas HTTP a Function
@@ -165,12 +178,14 @@ DEPLOY_FUNCTIONS.md      ✅ Guía rápida de deploy
 ## ✅ Testing
 
 ### Local (Emulator)
+
 ```bash
 firebase emulators:start
 # Function: http://localhost:5001/[PROJECT]/us-central1/enviarPropuestaPorCorreo
 ```
 
 ### Producción
+
 ```bash
 firebase deploy --only functions
 # Function: https://us-central1-[PROJECT].cloudfunctions.net/enviarPropuestaPorCorreo
@@ -214,6 +229,7 @@ firebase deploy --only functions
 ## 📞 Soporte
 
 Ver documentación completa en:
+
 - `functions/README.md` - Guía detallada
 - `DEPLOY_FUNCTIONS.md` - Comandos rápidos
 
