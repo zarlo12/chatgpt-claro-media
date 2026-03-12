@@ -779,7 +779,7 @@ export const BANDERAS_DEMOGRAFICAS = [
 
 /**
  * Calcula el score de afinidad entre la audiencia seleccionada y una bandera demográfica
- * @param {Object} audiencia - {genero, edad: [], nivelSocioeconomico}
+ * @param {Object} audiencia - {genero, edad: [], nivelSocioeconomico: []}
  * @param {Object} bandera - Objeto de bandera demográfica
  * @returns {number} Score de 0 a 100
  */
@@ -831,17 +831,24 @@ export function calcularScoreBandera(audiencia, bandera) {
   }
 
   // Factor 3: NSE (peso: 30%)
-  if (audiencia.nivelSocioeconomico) {
-    const columnasNSE = MAPEO_NSE[audiencia.nivelSocioeconomico] || [];
+  if (
+    audiencia.nivelSocioeconomico &&
+    Array.isArray(audiencia.nivelSocioeconomico) &&
+    audiencia.nivelSocioeconomico.length > 0
+  ) {
     let nseScore = 0;
     let nseCount = 0;
 
-    columnasNSE.forEach((columna) => {
-      const porcentajeNSE = bandera.porcentajes[columna];
-      if (porcentajeNSE !== undefined) {
-        nseScore += porcentajeNSE;
-        nseCount++;
-      }
+    audiencia.nivelSocioeconomico.forEach((nivelNSE) => {
+      const columnasNSE = MAPEO_NSE[nivelNSE] || [nivelNSE];
+
+      columnasNSE.forEach((columna) => {
+        const porcentajeNSE = bandera.porcentajes[columna];
+        if (porcentajeNSE !== undefined) {
+          nseScore += porcentajeNSE;
+          nseCount++;
+        }
+      });
     });
 
     if (nseCount > 0) {
@@ -857,7 +864,7 @@ export function calcularScoreBandera(audiencia, bandera) {
 
 /**
  * Encuentra las banderas más relevantes para una audiencia específica
- * @param {Object} audiencia - {genero, edad: [], nivelSocioeconomico}
+ * @param {Object} audiencia - {genero, edad: [], nivelSocioeconomico: []}
  * @param {number} limit - Número máximo de banderas a retornar
  * @returns {Array} Array de banderas ordenadas por relevancia con su score
  */
@@ -874,7 +881,7 @@ export function encontrarBanderasRelevantes(audiencia, limit = 10) {
 
 /**
  * Calcula el alcance potencial total de una propuesta
- * @param {Object} audiencia - {genero, edad: [], nivelSocioeconomico}
+ * @param {Object} audiencia - {genero, edad: [], nivelSocioeconomico: []}
  * @returns {Object} {alcanceTotal, banderasPrincipales}
  */
 export function calcularValorPropuesta(audiencia) {

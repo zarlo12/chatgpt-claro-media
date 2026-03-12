@@ -188,7 +188,11 @@ const ResultsView = ({ propuesta, onReset }) => {
             </div>
             <div className="space-y-2">
               <p className="text-white/60 text-sm">Nivel Socioeconómico</p>
-              <p className="text-white text-lg font-semibold">{propuesta.audiencia.nivelSocioeconomico}</p>
+              <p className="text-white text-lg font-semibold">
+                {Array.isArray(propuesta.audiencia.nivelSocioeconomico)
+                  ? propuesta.audiencia.nivelSocioeconomico.join(', ')
+                  : propuesta.audiencia.nivelSocioeconomico}
+              </p>
             </div>
           </div>
         </div>

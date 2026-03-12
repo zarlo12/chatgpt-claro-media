@@ -27,6 +27,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [selectedAfinidades, setSelectedAfinidades] = useState([]);
   const [selectedEdades, setSelectedEdades] = useState([]);
+  const [selectedNSE, setSelectedNSE] = useState([]);
   const [primeraSeleccionJourney, setPrimeraSeleccionJourney] = useState(null);
   const [segundaSeleccionJourney, setSegundaSeleccionJourney] = useState(null);
   // Datos personales
@@ -126,6 +127,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setShowOptions(false);
     setSelectedAfinidades([]);
     setSelectedEdades([]);
+    setSelectedNSE([]);
     setPrimeraSeleccionJourney(null);
     setSegundaSeleccionJourney(null);
     setNombre('');
@@ -252,9 +254,19 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     }, 500);
   };
 
-  const handleNivelSocioeconomicoSelect = (nivel) => {
-    addUserMessage(nivel);
-    setUserData(prev => ({ ...prev, nivelSocioeconomico: nivel }));
+  const handleNivelSocioeconomicoSelect = (niveles, isConfirmed) => {
+    if (!isConfirmed) {
+      setSelectedNSE(niveles);
+      return;
+    }
+
+    const nseText = niveles.length === 1
+      ? niveles[0]
+      : `${niveles.length} niveles socioeconómicos: ${niveles.join(', ')}`;
+    
+    addUserMessage(nseText);
+    setUserData(prev => ({ ...prev, nivelSocioeconomico: niveles }));
+    setShowOptions(false);
     
     setTimeout(() => {
       mostrarModalTransicion(
@@ -466,7 +478,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
         handleEdadSelect(option, isConfirmed);
         break;
       case 'nivelSocioeconomico':
-        handleNivelSocioeconomicoSelect(option);
+        handleNivelSocioeconomicoSelect(option, isConfirmed);
         break;
       case 'afinidades':
         handleAfinidadesSelect(option, isConfirmed);
@@ -540,8 +552,12 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
           <ChatOptions
             options={getCurrentOptions()}
             onSelect={handleOptionSelect}
-            multiSelect={currentStep === 'edad'}
-            selectedOptions={currentStep === 'edad' ? selectedEdades : []}
+            multiSelect={currentStep === 'edad' || currentStep === 'nivelSocioeconomico'}
+            selectedOptions={
+              currentStep === 'edad' ? selectedEdades :
+              currentStep === 'nivelSocioeconomico' ? selectedNSE :
+              []
+            }
           />
         )}
         {showOptions && currentStep === 'afinidades' && (

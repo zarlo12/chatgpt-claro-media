@@ -232,12 +232,17 @@ export const generarPropuestaConIA = async (userData) => {
   const { sector, genero, edad, nivelSocioeconomico, afinidades } = userData;
 
   const edadText = Array.isArray(edad) ? edad.join(", ") : edad;
+  const nseText = Array.isArray(nivelSocioeconomico)
+    ? nivelSocioeconomico.join(", ")
+    : nivelSocioeconomico;
 
   // Calcular valor de la propuesta usando banderas demográficas
   const valorPropuesta = calcularValorPropuesta({
     genero,
     edad: Array.isArray(edad) ? edad : [edad],
-    nivelSocioeconomico,
+    nivelSocioeconomico: Array.isArray(nivelSocioeconomico)
+      ? nivelSocioeconomico
+      : [nivelSocioeconomico],
   });
 
   console.log("📊 Valor de la Propuesta calculado:", valorPropuesta);
@@ -249,7 +254,7 @@ export const generarPropuestaConIA = async (userData) => {
   const userPrompt = `Genera una propuesta estratégica personalizada para una empresa del sector ${sector} con la siguiente audiencia:
   - Género: ${genero}
   - Edad: ${edadText}
-  - Nivel Socioeconómico: ${nivelSocioeconomico}
+  - Nivel Socioeconómico: ${nseText}
   - Afinidades: ${afinidades.join(", ")}
   
   ALCANCE POTENCIAL:
@@ -299,7 +304,7 @@ export const generarPropuestaConIA = async (userData) => {
       audiencia: {
         genero,
         edad: edadText,
-        nivelSocioeconomico,
+        nivelSocioeconomico: nseText,
       },
       afinidades,
       insights: parsedData.insights || [],
@@ -343,8 +348,10 @@ export const generarMensajeContextual = async (step, context) => {
       (Array.isArray(context.edad) ? context.edad.join(", ") : context.edad) +
       ". Confirma y pregunta sobre nivel socioeconómico.",
     nivelSocioeconomico:
-      "El usuario indicó nivel: " +
-      context.nivelSocioeconomico +
+      "El usuario indicó nivel socioeconómico: " +
+      (Array.isArray(context.nivelSocioeconomico)
+        ? context.nivelSocioeconomico.join(", ")
+        : context.nivelSocioeconomico) +
       ". Confirma y menciona que identificarás afinidades basadas en el sector " +
       context.sector,
     afinidades:

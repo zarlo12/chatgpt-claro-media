@@ -362,7 +362,9 @@ export const generarPropuestaEstrategica = (userData) => {
   const valorPropuesta = calcularValorPropuesta({
     genero,
     edad: Array.isArray(edad) ? edad : [edad],
-    nivelSocioeconomico,
+    nivelSocioeconomico: Array.isArray(nivelSocioeconomico)
+      ? nivelSocioeconomico
+      : [nivelSocioeconomico],
   });
 
   return {
