@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { enviarPropuestaPorCorreo } from '../services/pdfService';
 
 const InsightCard = ({ insight, index }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -84,6 +85,12 @@ const GeoInsightCard = ({ insight, index }) => {
 
 const ResultsView = ({ propuesta, onReset }) => {
   const resultsContainerRef = React.useRef(null);
+  
+  // Estados para envío de correo
+  const [mostrarModalCorreo, setMostrarModalCorreo] = useState(false);
+  const [emailDestinatario, setEmailDestinatario] = useState(propuesta.correo || '');
+  const [enviandoCorreo, setEnviandoCorreo] = useState(false);
+  const [mensajeEnvio, setMensajeEnvio] = useState({ tipo: '', texto: '' });
 
   // Scroll automático al top cuando se muestra la vista de resultados
   useEffect(() => {
@@ -99,6 +106,40 @@ const ResultsView = ({ propuesta, onReset }) => {
       behavior: 'smooth'
     });
   }, []);
+
+  // Función para enviar propuesta por correo
+  const handleEnviarPorCorreo = async () => {
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailDestinatario)) {
+      setMensajeEnvio({ tipo: 'error', texto: 'Por favor ingresa un email válido' });
+      return;
+    }
+
+    setEnviandoCorreo(true);
+    setMensajeEnvio({ tipo: '', texto: '' });
+
+    try {
+      await enviarPropuestaPorCorreo(propuesta, emailDestinatario);
+      setMensajeEnvio({ 
+        tipo: 'success', 
+        texto: `✅ ¡Propuesta enviada exitosamente a ${emailDestinatario}!` 
+      });
+      
+      // Cerrar modal después de 2 segundos
+      setTimeout(() => {
+        setMostrarModalCorreo(false);
+        setMensajeEnvio({ tipo: '', texto: '' });
+      }, 2500);
+    } catch (error) {
+      setMensajeEnvio({ 
+        tipo: 'error', 
+        texto: `❌ Error: ${error.message}` 
+      });
+    } finally {
+      setEnviandoCorreo(false);
+    }
+  };
 
   return (
     <div ref={resultsContainerRef} className="w-full h-full overflow-y-auto px-6 py-8">
@@ -545,6 +586,22 @@ const ResultsView = ({ propuesta, onReset }) => {
           </div>
         </div>
 
+        {/* Botón Enviar por Correo */}
+        <div className="flex justify-center pt-8 pb-4 animate-fade-in">
+          <button
+            onClick={() => setMostrarModalCorreo(true)}
+            className="group relative px-8 py-4 bg-gradient-to-r from-claro-red to-pink-600 hover:from-claro-red hover:to-pink-700 rounded-xl text-white font-bold text-lg shadow-2xl hover:shadow-claro-red/50 transition-all duration-300 transform hover:scale-105 flex items-center space-x-3"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>Enviar por Correo (PDF)</span>
+            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </div>
+
        
 
         {/* Reset Button */}
@@ -557,6 +614,110 @@ const ResultsView = ({ propuesta, onReset }) => {
           </button>
         </div> */}
       </div>
+
+      {/* Modal para enviar por correo */}
+      {mostrarModalCorreo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => !enviandoCorreo && setMostrarModalCorreo(false)}
+          ></div>
+
+          {/* Modal */}
+          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border-2 border-claro-red/50 p-8 max-w-md w-full shadow-2xl animate-slide-up">
+            {/* Close button */}
+            {!enviandoCorreo && (
+              <button
+                onClick={() => setMostrarModalCorreo(false)}
+                className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+
+            {/* Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="bg-gradient-to-br from-claro-red to-pink-600 rounded-full p-4">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-black text-white text-center mb-3">Enviar Propuesta</h3>
+            <p className="text-white/60 text-center mb-6 text-sm">
+              Recibirás un PDF profesional con toda la estrategia personalizada
+            </p>
+
+            {/* Input de email */}
+            <div className="mb-6">
+              <label className="block text-white/80 text-sm font-medium mb-2">
+                Email de destino
+              </label>
+              <input
+                type="email"
+                value={emailDestinatario}
+                onChange={(e) => setEmailDestinatario(e.target.value)}
+                placeholder="ejemplo@correo.com"
+                disabled={enviandoCorreo}
+                className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-claro-red focus:ring-2 focus:ring-claro-red/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </div>
+
+            {/* Mensaje de estado */}
+            {mensajeEnvio.texto && (
+              <div className={`mb-6 p-4 rounded-xl border ${
+                mensajeEnvio.tipo === 'success' 
+                  ? 'bg-green-500/20 border-green-500/50 text-green-300' 
+                  : 'bg-red-500/20 border-red-500/50 text-red-300'
+              }`}>
+                <p className="text-sm font-medium">{mensajeEnvio.texto}</p>
+              </div>
+            )}
+
+            {/* Botones */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setMostrarModalCorreo(false)}
+                disabled={enviandoCorreo}
+                className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white font-medium hover:bg-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleEnviarPorCorreo}
+                disabled={enviandoCorreo}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-claro-red to-pink-600 rounded-xl text-white font-bold hover:from-claro-red hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              >
+                {enviandoCorreo ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Enviando...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                    <span>Enviar Ahora</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Info adicional */}
+            <p className="text-white/40 text-xs text-center mt-4">
+              El PDF incluye diseño profesional con todos los detalles de la propuesta
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

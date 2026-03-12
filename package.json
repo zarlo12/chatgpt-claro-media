@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "functions:install": "cd functions && npm install",
+    "functions:serve": "firebase emulators:start",
+    "functions:deploy": "firebase deploy --only functions",
+    "functions:logs": "firebase functions:log"
   },
   "dependencies": {
     "firebase": "^12.10.0",
