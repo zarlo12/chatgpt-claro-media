@@ -34,6 +34,7 @@ const DisplayScreen = () => {
           recomendaciones: data.propuesta?.recomendaciones || [],
           proximosPasos: data.propuesta?.proximosPasos || [],
           valorPropuesta: data.propuesta?.valorPropuesta || null,
+          paqueteRecomendado: data.propuesta?.paqueteRecomendado || null, // ✅ AGREGADO
         });
       } else {
         setPropuesta(null);

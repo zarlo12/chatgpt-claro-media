@@ -1,6 +1,7 @@
 // Datos mock basados en el CSV del agente de IA de Claro Media
 
 import { calcularValorPropuesta } from "./banderasDemograficas";
+import { recomendarPaquete } from "./paquetesComerciales";
 
 export const SECTORES = [
   "Financiero",
@@ -367,6 +368,20 @@ export const generarPropuestaEstrategica = (userData) => {
       : [nivelSocioeconomico],
   });
 
+  // Recomendar paquete comercial
+  const recomendacion = recomendarPaquete({
+    presupuesto: 0, // Sin presupuesto del usuario, se basa en alcance
+    alcancePotencial: valorPropuesta.alcanceTotalNumerico,
+    sector,
+    audiencia: {
+      genero,
+      edad: Array.isArray(edad) ? edad.join(", ") : edad,
+      nivelSocioeconomico: Array.isArray(nivelSocioeconomico)
+        ? nivelSocioeconomico.join(", ")
+        : nivelSocioeconomico,
+    },
+  });
+
   return {
     sector,
     nombre,
@@ -396,6 +411,12 @@ export const generarPropuestaEstrategica = (userData) => {
       alcanceTotal: valorPropuesta.alcanceTotal,
       alcanceTotalNumerico: valorPropuesta.alcanceTotalNumerico,
       banderasPrincipales: valorPropuesta.banderasPrincipales,
+    },
+    paqueteRecomendado: {
+      paquete: recomendacion.paquete,
+      razonamiento: recomendacion.razonamiento,
+      alternativas: recomendacion.alternativas,
+      mensajePersonalizado: recomendacion.mensajePersonalizado,
     },
   };
 };

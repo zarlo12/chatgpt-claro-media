@@ -227,75 +227,7 @@ const ResultsView = ({ propuesta, onReset }) => {
           </div>
         </div>
 
-        {/* Valor de la Propuesta */}
-        {propuesta.valorPropuesta && (
-          <div className="bg-gradient-to-br from-claro-red/20 to-purple-600/20 backdrop-blur-md border border-claro-red/30 rounded-2xl p-8 animate-slide-up" style={{ animationDelay: '150ms' }}>
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-              <svg
-                className="w-8 h-8 mr-3 text-claro-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                />
-              </svg>
-              Valor de la Propuesta
-            </h2>
-            
-            {/* Alcance Total */}
-            <div className="mb-8 text-center">
-              <p className="text-white/70 text-sm uppercase tracking-wider mb-2">Alcance Potencial Estimado</p>
-              <p className="text-5xl font-bold text-white mb-2">
-                {propuesta.valorPropuesta.alcanceTotal}
-              </p>
-              <p className="text-white/60 text-sm">usuarios potenciales en Colombia</p>
-            </div>
 
-            {/* Banderas Principales */}
-            <div>
-              <p className="text-white/80 font-semibold mb-4 text-center">Segmentos Demográficos Principales:</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {propuesta.valorPropuesta.banderasPrincipales.map((bandera, index) => (
-                  <div
-                    key={index}
-                    className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center transform hover:scale-105 transition-transform"
-                  >
-                    <div className="flex items-center justify-center mb-2">
-                      <div className="w-8 h-8 bg-claro-red/30 rounded-full flex items-center justify-center mr-2">
-                        <span className="text-claro-red font-bold">{index + 1}</span>
-                      </div>
-                    </div>
-                    <p className="text-white font-semibold mb-1">{bandera.nombre}</p>
-                    <p className="text-claro-red text-lg font-bold">{bandera.alcance}</p>
-                    <p className="text-white/50 text-xs">usuarios</p>
-                    <div className="mt-2">
-                      <div className="w-full bg-white/10 rounded-full h-2">
-                        <div
-                          className="bg-gradient-to-r from-claro-red to-pink-500 h-2 rounded-full"
-                          style={{ width: `${bandera.score}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-white/60 text-xs mt-1">{bandera.score}% de afinidad</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Nota explicativa */}
-            <div className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10">
-              <p className="text-white/70 text-sm text-center">
-                💡 Este alcance se calcula cruzando tu audiencia objetivo con nuestras banderas demográficas de Claro Media, 
-                que identifican los segmentos con mayor afinidad a tu propuesta.
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* Insights */}
         <div className="space-y-4 animate-slide-up" style={{ animationDelay: '200ms' }}>
@@ -349,8 +281,197 @@ const ResultsView = ({ propuesta, onReset }) => {
           </div>
         )}
 
-        {/* Recomendaciones */}
-        <div className="bg-gradient-to-br from-claro-red/20 to-claro-red/10 backdrop-blur-md border border-claro-red/30 rounded-2xl p-8 animate-slide-up" style={{ animationDelay: '300ms' }}>
+        {/* 🎯 PAQUETE RECOMENDADO - SÚPER DESTACADO */}
+        {propuesta.paqueteRecomendado && (
+          <div className="animate-slide-up" style={{ animationDelay: '150ms' }}>
+            {/* BANNER DEL PAQUETE - MUY LLAMATIVO */}
+            <div className="bg-gradient-to-r from-claro-red via-pink-600 to-purple-600 rounded-3xl p-1 mb-8 shadow-2xl">
+              <div className="bg-gray-900/95 backdrop-blur-xl rounded-3xl p-10">
+                {/* Header con nombre y precio */}
+                <div className="text-center mb-8">
+                  <div className="inline-block bg-gradient-to-r from-claro-red/20 to-purple-600/20 px-6 py-2 rounded-full mb-4">
+                    <p className="text-claro-red font-bold text-sm uppercase tracking-widest">📦 Tu Paquete Ideal</p>
+                  </div>
+                  <h2 className="text-6xl font-black text-white mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                    {propuesta.paqueteRecomendado.paquete.nombre}
+                  </h2>
+                  <p className="text-white/70 text-xl mb-6">{propuesta.paqueteRecomendado.paquete.descripcion}</p>
+                  
+                  {/* Precio destacado */}
+                  <div className="flex items-center justify-center gap-6 mb-4">
+                    <div className="text-right">
+                      <p className="text-white/50 text-lg line-through">
+                        ${propuesta.paqueteRecomendado.paquete.precio.toLocaleString('es-CO')}
+                      </p>
+                    </div>
+                    <div className="bg-gradient-to-r from-claro-red to-pink-600 rounded-2xl px-8 py-4">
+                      <p className="text-white text-5xl font-black">
+                        ${propuesta.paqueteRecomendado.paquete.precioPreventa.toLocaleString('es-CO')}
+                      </p>
+                    </div>
+                    <div className="text-left">
+                      <span className="bg-green-500/20 text-green-300 text-lg font-bold px-4 py-2 rounded-full">
+                        {propuesta.paqueteRecomendado.paquete.descuento}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-white/60 text-sm">{propuesta.paqueteRecomendado.paquete.impuestos}</p>
+                </div>
+
+                {/* Alcance comparativo */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
+                    <p className="text-white/60 text-sm uppercase tracking-wider mb-3">Alcance Ideal del Paquete</p>
+                    <p className="text-5xl font-black text-white">{propuesta.paqueteRecomendado.paquete.alcanceIdeal}</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-claro-red/20 to-purple-600/20 rounded-2xl p-6 text-center border-2 border-claro-red/40">
+                    <p className="text-white/80 text-sm uppercase tracking-wider mb-3">✨ Tu Alcance Potencial</p>
+                    <p className="text-5xl font-black text-claro-red">{propuesta.valorPropuesta.alcanceTotal}</p>
+                  </div>
+                </div>
+
+                {/* TODOS LOS COMPONENTES DEL PAQUETE - MUY VISUAL */}
+                <div className="mb-8">
+                  <div className="flex items-center justify-center mb-6">
+                    <div className="h-px bg-gradient-to-r from-transparent via-claro-red to-transparent flex-1"></div>
+                    <h3 className="text-3xl font-black text-white px-6 flex items-center">
+                      <svg className="w-8 h-8 mr-3 text-claro-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                      TODO lo que Incluye
+                    </h3>
+                    <div className="h-px bg-gradient-to-r from-claro-red via-transparent to-transparent flex-1"></div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {propuesta.paqueteRecomendado.paquete.componentes.map((componente, index) => (
+                      <div key={index} className="bg-gradient-to-br from-white/10 to-white/5 rounded-xl p-5 border border-white/20 hover:border-claro-red/60 hover:scale-105 transition-all duration-300 cursor-pointer">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-claro-red to-pink-600 rounded-lg flex items-center justify-center text-white text-sm font-black shadow-lg">
+                            {index + 1}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-white font-bold text-base mb-2">{componente.nombre}</p>
+                            <p className="text-white/70 text-xs mb-2">{componente.detalle}</p>
+                            {componente.alcance !== "N/A" && (
+                              <div className="bg-claro-red/20 rounded-lg px-2 py-1 inline-block">
+                                <p className="text-claro-red text-xs font-bold">{componente.alcance}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="text-center mt-6">
+                    <div className="inline-block bg-claro-red/20 rounded-full px-6 py-3">
+                      <p className="text-white font-bold text-lg">
+                        🎁 Total: <span className="text-claro-red">{propuesta.paqueteRecomendado.paquete.productos} productos completos</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Beneficios y Recomendado para - EN COLUMNAS */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  {/* Beneficios */}
+                  <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 rounded-2xl p-6 border border-green-500/30">
+                    <h4 className="text-white font-black text-xl mb-4 flex items-center">
+                      <svg className="w-7 h-7 mr-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Beneficios Clave
+                    </h4>
+                    <ul className="space-y-3">
+                      {propuesta.paqueteRecomendado.paquete.beneficios.map((beneficio, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="text-green-400 mr-3 text-xl flex-shrink-0">✓</span>
+                          <span className="text-white/90 text-sm leading-relaxed">{beneficio}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Ideal para */}
+                  <div className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 rounded-2xl p-6 border border-purple-500/30">
+                    <h4 className="text-white font-black text-xl mb-4 flex items-center">
+                      <svg className="w-7 h-7 mr-3 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                      </svg>
+                      Ideal Para
+                    </h4>
+                    <ul className="space-y-3">
+                      {propuesta.paqueteRecomendado.paquete.recomendadoPara.map((item, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="text-purple-400 mr-3 text-lg flex-shrink-0">★</span>
+                          <span className="text-white/90 text-sm leading-relaxed">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Alternativas compactas */}
+                {propuesta.paqueteRecomendado.alternativas && propuesta.paqueteRecomendado.alternativas.length > 0 && (
+                  <div>
+                    <p className="text-white/60 text-center text-sm mb-4">💡 También disponibles:</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {propuesta.paqueteRecomendado.alternativas.map((alt, index) => (
+                        <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10 hover:border-white/30 transition-all">
+                          <div className="flex items-center justify-between mb-2">
+                            <h5 className="text-white font-bold text-base">{alt.paquete.nombre}</h5>
+                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                              alt.tipo === 'menor' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'
+                            }`}>
+                              {alt.tipo === 'menor' ? 'Más económico' : 'Premium'}
+                            </span>
+                          </div>
+                          <p className="text-claro-red text-2xl font-bold mb-1">
+                            ${alt.paquete.precioPreventa.toLocaleString('es-CO')}
+                          </p>
+                          <p className="text-white/60 text-xs">{alt.paquete.productos} productos • {alt.razon}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+         {/* ARGUMENTO FINAL DE LA IA - SECCIÓN PEQUEÑA AL FINAL */}
+        {propuesta.paqueteRecomendado && (
+          <div className="bg-gradient-to-br from-purple-600/15 to-claro-red/15 backdrop-blur-md border border-purple-500/30 rounded-2xl p-6 animate-slide-up" style={{ animationDelay: '450ms' }}>
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+              <svg className="w-6 h-6 mr-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              ¿Por qué {propuesta.paqueteRecomendado.paquete.nombre}?
+            </h3>
+            
+            <div className="bg-white/5 rounded-xl p-4 mb-3">
+              <p className="text-white/90 text-sm leading-relaxed">
+                {propuesta.paqueteRecomendado.mensajePersonalizado}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {propuesta.paqueteRecomendado.razonamiento.map((razon, index) => (
+                <div key={index} className="flex items-start">
+                  <svg className="w-4 h-4 mr-2 text-claro-red flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-white/80 text-xs">{razon}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recomendaciones Estratégicas de la IA */}
+        <div className="bg-gradient-to-br from-claro-red/20 to-purple-600/20 backdrop-blur-md border border-claro-red/30 rounded-2xl p-8 animate-slide-up" style={{ animationDelay: '300ms' }}>
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
             <svg
               className="w-8 h-8 mr-3 text-claro-red"
@@ -423,6 +544,8 @@ const ResultsView = ({ propuesta, onReset }) => {
             ))}
           </div>
         </div>
+
+       
 
         {/* Reset Button */}
         {/* <div className="flex justify-center pt-8 pb-4">

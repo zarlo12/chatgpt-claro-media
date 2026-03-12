@@ -4,6 +4,7 @@
 // Por ahora, el proyecto usa datos mock en src/data/mockData.js
 
 import { calcularValorPropuesta } from "../data/banderasDemograficas";
+import { recomendarPaquete } from "../data/paquetesComerciales";
 
 /**
  * Configuración de la API
@@ -120,12 +121,34 @@ Debes utilizar únicamente la información contenida en los siguientes archivos 
 
 Nunca inventes productos o soluciones que no estén en esos archivos.
 
-**Uso de paquetes comerciales**
+**Paquetes comerciales disponibles (Rueda de Negocios 2026)**
 
-Cuando generes una recomendación:
-- Usa únicamente los medios incluidos en los paquetes
-- No sugieras medios fuera de los paquetes
-- No inventes precios
+Debes recomendar ÚNICAMENTE uno de estos 4 paquetes según el perfil del cliente:
+
+1. **PAQUETE VIP** - $220.000.000 ($107.892.900 preventa, 51% descuento)
+   - 12 productos: Push Multimedia (13.034 clics), RRSS Video (347K impresiones), Display (1.7M impresiones), Native (1.6M impresiones), Data Rewards (13.333 views), Menciones Comerciales (15x20"), Comerciales TV (110x10"), Revista 15 Minutos (1 pág + free press), Shopping Live, SMS (21.823 envíos), Contenido Portal, Post+Historia
+   - Ideal para: Presupuestos >$150M, alcance masivo (>2M usuarios), sectores premium (Tecnología, Banca, Automotriz)
+   
+2. **PAQUETE EDITORIAL RED+** - $123.000.000 ($75.000.000 preventa, 39% descuento)
+   - 7 productos: Comerciales TV (55x10"), Push Multimedia (10.000 clics), Patrocinio Sección (14x10"), Menciones (14x20"), Revista (1/2 pág), Post orgánico, Data Rewards (4.834 views)
+   - Ideal para: Presupuestos $80M-$150M, posicionamiento editorial, sectores: Entretenimiento, Alimentación, Servicios
+
+3. **PAQUETE SMART** - $55.000.000 ($40.000.000 preventa, 27% descuento)
+   - 7 productos: Comerciales TV (55x10"), Revista (1 pág), RRSS Post, Display (1.17M impresiones), Alto Impacto (3.000 unidades), SMS (19.204 envíos), Push Multimedia (14.893 clics)
+   - Ideal para: Presupuestos $35M-$80M, campañas tácticas, sectores: Retail, Telecomunicaciones, Salud, Educación
+
+4. **PAQUETE BASIC** - $20.048.500 ($17.000.000 preventa, 27% descuento)
+   - 6 productos: Comerciales TV (20x10"), RRSS Historia, Revista (1/3 pág), Native (701K impresiones), Display (423K impresiones), Push Multimedia (3.717 clics)
+   - Ideal para: Presupuestos <$35M, PyMEs, testing de mercado, campañas locales
+
+**Reglas de recomendación:**
+- Evalúa primero el presupuesto del cliente
+- Considera el alcance potencial de su audiencia (banderas demográficas)
+- Alinea el sector con los beneficios del paquete
+- Si el presupuesto es incierto, pregunta rangos: <$35M, $35M-$80M, $80M-$150M, >$150M
+- NUNCA mezcles componentes de diferentes paquetes
+- NUNCA inventes precios o productos fuera de estos paquetes
+- Siempre menciona el precio de preventa y el descuento incluido
 
 **Estructura obligatoria de respuesta**
 
@@ -247,6 +270,20 @@ export const generarPropuestaConIA = async (userData) => {
 
   console.log("📊 Valor de la Propuesta calculado:", valorPropuesta);
 
+  // Recomendar paquete comercial basado en perfil
+  const recomendacion = recomendarPaquete({
+    presupuesto: 0, // Sin presupuesto del usuario, se basa en alcance
+    alcancePotencial: valorPropuesta.alcanceTotalNumerico,
+    sector,
+    audiencia: {
+      genero,
+      edad: edadText,
+      nivelSocioeconomico: nseText,
+    },
+  });
+
+  console.log("📦 Paquete recomendado:", recomendacion.paquete.nombre);
+
   const banderasTexto = valorPropuesta.banderasPrincipales
     .map((b) => `${b.nombre} (${b.alcance} usuarios)`)
     .join(", ");
@@ -261,9 +298,15 @@ export const generarPropuestaConIA = async (userData) => {
   - Alcance Total Estimado: ${valorPropuesta.alcanceTotal} usuarios
   - Segmentos Principales: ${banderasTexto}
 
+  PAQUETE RECOMENDADO:
+  - Nombre: ${recomendacion.paquete.nombre}
+  - Precio: $${recomendacion.paquete.precio.toLocaleString("es-CO")} (Preventa: $${recomendacion.paquete.precioPreventa.toLocaleString("es-CO")})
+  - Productos incluidos: ${recomendacion.paquete.productos}
+  - Razones: ${recomendacion.razonamiento.join(", ")}
+
   Proporciona:
   1. Insights clave basados en patrones de comportamiento y ubicación (mínimo 3)
-  2. Recomendaciones estratégicas específicas (mínimo 4)
+  2. Recomendaciones estratégicas específicas considerando el paquete ${recomendacion.paquete.nombre} (mínimo 4)
   3. Próximos pasos accionables (mínimo 4)
   
   IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido (sin texto adicional) con esta estructura exacta:
@@ -314,6 +357,12 @@ export const generarPropuestaConIA = async (userData) => {
         alcanceTotal: valorPropuesta.alcanceTotal,
         alcanceTotalNumerico: valorPropuesta.alcanceTotalNumerico,
         banderasPrincipales: valorPropuesta.banderasPrincipales,
+      },
+      paqueteRecomendado: {
+        paquete: recomendacion.paquete,
+        razonamiento: recomendacion.razonamiento,
+        alternativas: recomendacion.alternativas,
+        mensajePersonalizado: recomendacion.mensajePersonalizado,
       },
     };
   } catch (error) {
