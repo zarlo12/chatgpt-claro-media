@@ -325,41 +325,48 @@ export const recomendarPaquete = (perfil) => {
 
   // FACTOR 1: ALCANCE POTENCIAL (peso: 40%)
   if (alcanceNum >= 3000000) {
-    scores.vip += 40;
-    scores["editorial-red-plus"] += 20;
-    scores.smart += 10;
+    scores.vip += 50;
+    scores["editorial-red-plus"] += 25;
+    scores.smart += 5;
+    scores.basic += 0;
     razonamiento.push(
-      `Alcance masivo (${(alcanceNum / 1000000).toFixed(1)}M usuarios) requiere máxima cobertura`,
+      `Alcance masivo (${(alcanceNum / 1000000).toFixed(1)}M usuarios) requiere máxima cobertura VIP`,
     );
   } else if (alcanceNum >= 2000000) {
-    scores.vip += 30;
-    scores["editorial-red-plus"] += 35;
-    scores.smart += 25;
+    scores.vip += 35;
+    scores["editorial-red-plus"] += 45;
+    scores.smart += 15;
+    scores.basic += 0;
     razonamiento.push(
-      `Alcance alto (${(alcanceNum / 1000000).toFixed(1)}M usuarios) ideal para paquetes premium`,
+      `Alcance alto (${(alcanceNum / 1000000).toFixed(1)}M usuarios) ideal para EDITORIAL RED+`,
     );
   } else if (alcanceNum >= 1000000) {
-    scores["editorial-red-plus"] += 20;
-    scores.smart += 40;
-    scores.basic += 15;
+    scores.vip += 10;
+    scores["editorial-red-plus"] += 25;
+    scores.smart += 50;
+    scores.basic += 10;
     razonamiento.push(
       `Alcance medio (${(alcanceNum / 1000000).toFixed(1)}M usuarios) óptimo para SMART`,
     );
   } else if (alcanceNum >= 500000) {
+    scores.vip += 0;
+    scores["editorial-red-plus"] += 10;
     scores.smart += 30;
-    scores.basic += 35;
+    scores.basic += 45;
     razonamiento.push(
-      `Alcance moderado (${Math.round(alcanceNum / 1000)}K usuarios) eficiente con BASIC/SMART`,
+      `Alcance moderado (${Math.round(alcanceNum / 1000)}K usuarios) eficiente con BASIC`,
     );
   } else {
-    scores.basic += 40;
-    scores.smart += 20;
+    scores.vip += 0;
+    scores["editorial-red-plus"] += 0;
+    scores.smart += 15;
+    scores.basic += 50;
     razonamiento.push(
-      `Alcance focalizado (${Math.round(alcanceNum / 1000)}K usuarios) ideal para testing`,
+      `Alcance focalizado (${Math.round(alcanceNum / 1000)}K usuarios) ideal para BASIC`,
     );
   }
 
-  // FACTOR 2: SECTOR (peso: 30%)
+  // FACTOR 2: SECTOR (peso: 35%)
   const sectorLower = sector?.toLowerCase() || "";
 
   // Sectores premium que requieren alto awareness
@@ -373,11 +380,12 @@ export const recomendarPaquete = (perfil) => {
       "automotor",
     ].some((s) => sectorLower.includes(s))
   ) {
-    scores.vip += 30;
-    scores["editorial-red-plus"] += 20;
-    scores.smart += 10;
+    scores.vip += 40;
+    scores["editorial-red-plus"] += 25;
+    scores.smart += 5;
+    scores.basic += 0;
     razonamiento.push(
-      `Sector ${sector} beneficia de campañas de alto impacto y awareness masivo`,
+      `Sector ${sector} beneficia de campañas de alto impacto y awareness masivo (VIP)`,
     );
   }
   // Sectores con foco editorial
@@ -390,11 +398,12 @@ export const recomendarPaquete = (perfil) => {
       "servicios",
     ].some((s) => sectorLower.includes(s))
   ) {
-    scores["editorial-red-plus"] += 35;
+    scores["editorial-red-plus"] += 45;
     scores.smart += 20;
     scores.vip += 10;
+    scores.basic += 0;
     razonamiento.push(
-      `Sector ${sector} se potencia con contenido editorial y branded content`,
+      `Sector ${sector} se potencia con contenido editorial y branded content (EDITORIAL RED+)`,
     );
   }
   // Sectores tácticos (resultados directos)
@@ -408,9 +417,10 @@ export const recomendarPaquete = (perfil) => {
       "gobierno",
     ].some((s) => sectorLower.includes(s))
   ) {
-    scores.smart += 30;
-    scores.basic += 20;
+    scores.smart += 40;
+    scores.basic += 25;
     scores["editorial-red-plus"] += 10;
+    scores.vip += 0;
     razonamiento.push(
       `Sector ${sector} ideal para campañas tácticas con objetivos específicos`,
     );
@@ -419,17 +429,20 @@ export const recomendarPaquete = (perfil) => {
   else if (
     ["consumo masivo", "consumo", "masivo"].some((s) => sectorLower.includes(s))
   ) {
-    scores.vip += 25;
+    scores.vip += 35;
     scores.smart += 30;
-    scores["editorial-red-plus"] += 15;
+    scores["editorial-red-plus"] += 20;
+    scores.basic += 0;
     razonamiento.push(
       `Sector ${sector} requiere alcance masivo multiplataforma`,
     );
   }
   // Default para sectores no específicos
   else {
-    scores.smart += 20;
-    scores.basic += 15;
+    scores.smart += 25;
+    scores.basic += 20;
+    scores["editorial-red-plus"] += 15;
+    scores.vip += 10;
   }
 
   // FACTOR 3: PERFIL DE AUDIENCIA (peso: 20%)
@@ -455,8 +468,10 @@ export const recomendarPaquete = (perfil) => {
     audienciaNSE.includes("e5") ||
     audienciaNSE.includes("e6")
   ) {
-    scores.vip += 20;
-    scores["editorial-red-plus"] += 15;
+    scores.vip += 30;
+    scores["editorial-red-plus"] += 20;
+    scores.smart += 5;
+    scores.basic += 0;
     razonamiento.push(
       `NSE alto justifica inversión en paquetes premium con mayor ROI`,
     );
@@ -465,11 +480,13 @@ export const recomendarPaquete = (perfil) => {
   else if (
     audienciaNSE.includes("medio") ||
     audienciaNSE.includes("e3") ||
-    audienciaNSE.includes("e4")
+    audienciaNSE.includes("e4") ||
+    audienciaNSE === "todos"
   ) {
-    scores.smart += 20;
-    scores["editorial-red-plus"] += 10;
-    scores.basic += 5;
+    scores.smart += 25;
+    scores["editorial-red-plus"] += 15;
+    scores.basic += 10;
+    scores.vip += 5;
   }
   // NSE Bajo necesita eficiencia
   else if (
@@ -477,8 +494,10 @@ export const recomendarPaquete = (perfil) => {
     audienciaNSE.includes("e1") ||
     audienciaNSE.includes("e2")
   ) {
-    scores.basic += 20;
-    scores.smart += 10;
+    scores.basic += 30;
+    scores.smart += 15;
+    scores["editorial-red-plus"] += 0;
+    scores.vip += 0;
   }
 
   // Jóvenes (18-34) prefieren digital/mobile
@@ -488,8 +507,10 @@ export const recomendarPaquete = (perfil) => {
     audienciaEdad.includes("25") ||
     audienciaEdad.includes("34")
   ) {
-    scores.smart += 10;
-    scores.vip += 5;
+    scores.smart += 20;
+    scores.vip += 10;
+    scores["editorial-red-plus"] += 5;
+    scores.basic += 10;
     razonamiento.push(
       `Audiencia joven responde mejor a estrategias digitales y mobile`,
     );
@@ -501,18 +522,23 @@ export const recomendarPaquete = (perfil) => {
     audienciaEdad.includes("45") ||
     audienciaEdad.includes("54")
   ) {
-    scores["editorial-red-plus"] += 10;
-    scores.smart += 10;
+    scores["editorial-red-plus"] += 20;
+    scores.smart += 15;
+    scores.vip += 10;
+    scores.basic += 0;
   }
   // Mayores (55+) más TV tradicional
   else if (
     audienciaEdad.includes("55") ||
     audienciaEdad.includes("64") ||
     audienciaEdad.includes("65") ||
-    audienciaEdad.includes("75")
+    audienciaEdad.includes("75") ||
+    audienciaEdad.includes("+")
   ) {
-    scores["editorial-red-plus"] += 15;
-    scores.vip += 10;
+    scores["editorial-red-plus"] += 25;
+    scores.vip += 20;
+    scores.smart += 5;
+    scores.basic += 0;
   }
 
   // FACTOR 4: PRESUPUESTO (peso: 10% - solo si existe)
