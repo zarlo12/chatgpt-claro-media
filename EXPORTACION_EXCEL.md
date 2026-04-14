@@ -57,6 +57,7 @@ Se ha implementado un panel de administración que permite exportar **todos los 
 **URL**: http://localhost:5173/admin
 
 O en producción:
+
 - https://tu-dominio.com/admin
 
 ### 2. Exportar datos
@@ -82,11 +83,13 @@ Ejemplo: `ClaroMedia_Registros_2026-03-13.xlsx`
 ### 1. **Manejo de campos dinámicos**
 
 Si un registro tiene campos que otros no tienen, el sistema:
+
 - Detecta todos los campos únicos de todos los registros
 - Crea columnas para todos los campos
 - Llena con vacíos los campos faltantes en cada registro
 
 **Ejemplo:**
+
 ```
 Registro 1: { nombre, correo, sector, campo_extra_1 }
 Registro 2: { nombre, correo, sector }
@@ -109,9 +112,9 @@ afinidades: ["Tecnología", "Educación", "OTT"]
 
 La propuesta IA se divide en múltiples columnas para facilitar análisis:
 
-| propuesta_insights | propuesta_recomendaciones | propuesta_proximosPasos | propuesta_completa |
-|-------------------|--------------------------|------------------------|-------------------|
-| Insight 1 \| Insight 2 | Rec 1 \| Rec 2 | Paso 1 \| Paso 2 | {JSON completo} |
+| propuesta_insights     | propuesta_recomendaciones | propuesta_proximosPasos | propuesta_completa |
+| ---------------------- | ------------------------- | ----------------------- | ------------------ |
+| Insight 1 \| Insight 2 | Rec 1 \| Rec 2            | Paso 1 \| Paso 2        | {JSON completo}    |
 
 ### 4. **Fechas formateadas**
 
@@ -186,6 +189,7 @@ XLSX.writeFile(workbook, 'ClaroMedia_Registros_2026-03-13.xlsx');
 **Problema**: Click en "Exportar" pero no pasa nada
 
 **Soluciones:**
+
 1. Verifica la consola del navegador (F12)
 2. Confirma que Firebase está conectado
 3. Verifica que hay registros en Firestore:
@@ -196,6 +200,7 @@ XLSX.writeFile(workbook, 'ClaroMedia_Registros_2026-03-13.xlsx');
 **Problema**: Excel se descarga pero está vacío o tiene errores
 
 **Soluciones:**
+
 1. Verifica que los registros tienen datos:
    ```javascript
    console.log(registros); // En consola del navegador
@@ -208,6 +213,7 @@ XLSX.writeFile(workbook, 'ClaroMedia_Registros_2026-03-13.xlsx');
 **Problema**: Error en consola "The query requires an index"
 
 **Solución:**
+
 1. Haz clic en el enlace del error (Firebase lo proporciona)
 2. Creará el índice automáticamente
 3. Espera 2-5 minutos a que se active
@@ -224,6 +230,7 @@ XLSX.writeFile(workbook, 'ClaroMedia_Registros_2026-03-13.xlsx');
 **Recomendaciones para producción:**
 
 1. **Agregar autenticación:**
+
 ```jsx
 // src/pages/AdminPanel.jsx
 import { useState, useEffect } from 'react';
@@ -231,7 +238,7 @@ import { getAuth } from 'firebase/auth';
 
 const AdminPanel = () => {
   const [autorizado, setAutorizado] = useState(false);
-  
+
   useEffect(() => {
     const auth = getAuth();
     // Verificar si usuario está logueado
@@ -241,9 +248,9 @@ const AdminPanel = () => {
       window.location.href = '/';
     }
   }, []);
-  
+
   if (!autorizado) return <div>Acceso denegado</div>;
-  
+
   // ... resto del componente
 };
 ```
@@ -286,11 +293,13 @@ Posibles extensiones:
 ### Para probar el sistema:
 
 1. **Inicia el servidor:**
+
 ```bash
 npm run dev
 ```
 
 2. **Accede al panel:**
+
 ```
 http://localhost:5173/admin
 ```

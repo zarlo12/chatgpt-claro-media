@@ -268,11 +268,11 @@ export const obtenerTodosLosRegistros = async () => {
     // Query sin filtros, ordenados por timestamp descendente
     const q = query(
       collection(db, COLLECTION_NAME),
-      orderBy("timestamp", "desc")
+      orderBy("timestamp", "desc"),
     );
 
     const querySnapshot = await getDocs(q);
-    
+
     const registros = querySnapshot.docs.map((docSnap) => ({
       id: docSnap.id,
       ...docSnap.data(),
