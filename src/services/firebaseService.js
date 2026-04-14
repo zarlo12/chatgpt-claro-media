@@ -13,6 +13,7 @@ import {
   orderBy,
   limit,
   onSnapshot,
+  getDocs,
 } from "firebase/firestore";
 
 // 🔧 Configuración de Firebase desde variables de entorno
@@ -256,10 +257,40 @@ export const escucharUltimaConversacion = (standId, callback) => {
   }
 };
 
+/**
+ * Obtener TODOS los registros de la base de datos (sin filtrar por stand)
+ * @returns {Promise<Array>} - Array con todos los documentos
+ */
+export const obtenerTodosLosRegistros = async () => {
+  try {
+    console.log("📥 Obteniendo todos los registros de Firebase...");
+
+    // Query sin filtros, ordenados por timestamp descendente
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      orderBy("timestamp", "desc")
+    );
+
+    const querySnapshot = await getDocs(q);
+    
+    const registros = querySnapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data(),
+    }));
+
+    console.log(`✅ ${registros.length} registros obtenidos de Firebase`);
+    return registros;
+  } catch (error) {
+    console.error("❌ Error obteniendo registros:", error);
+    throw error;
+  }
+};
+
 export default {
   guardarConversacion,
   guardarDatosIniciales,
   actualizarConversacion,
   escucharUltimaConversacion,
   escucharTodasLasConversaciones,
+  obtenerTodosLosRegistros,
 };
