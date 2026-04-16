@@ -35,6 +35,8 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [correo, setCorreo] = useState('');
   const [celular, setCelular] = useState('');
   const [showFormulario, setShowFormulario] = useState(false);
+  // Estados de carga para evitar múltiples envíos
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // ID del documento de Firebase para actualizar después
   const [conversacionId, setConversacionId] = useState(null);
   // Pantalla de completado
@@ -154,6 +156,9 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const handleDatosPersonalesSubmit = async (e) => {
     e.preventDefault();
     
+    // Evitar múltiples envíos
+    if (isSubmitting) return;
+    
     // Validar que todos los campos estén completos
     if (!nombre.trim() || !correo.trim() || !celular.trim()) {
       alert('Por favor completa todos los campos');
@@ -166,6 +171,9 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       alert('Por favor ingresa un correo válido');
       return;
     }
+    
+    // Activar estado de carga
+    setIsSubmitting(true);
     
     // Guardar datos personales
     setUserData(prev => ({ ...prev, nombre, correo, celular }));
@@ -183,6 +191,9 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     } catch (error) {
       console.error('❌ Error guardando datos iniciales:', error);
       // Continuar aunque falle el guardado
+    } finally {
+      // Desactivar loading después de guardar (éxito o error)
+      setIsSubmitting(false);
     }
     
     // Mostrar mensaje del usuario
@@ -541,9 +552,36 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
               </div>
               <button
                 type="submit"
-                className="w-full px-6 py-3 bg-claro-red hover:bg-claro-red/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                disabled={isSubmitting}
+                className={`w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center gap-2 ${
+                  isSubmitting 
+                    ? 'bg-gray-500 cursor-not-allowed' 
+                    : 'bg-claro-red hover:bg-claro-red/90 transform hover:scale-105'
+                }`}
               >
-                Continuar
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle 
+                        className="opacity-25" 
+                        cx="12" 
+                        cy="12" 
+                        r="10" 
+                        stroke="currentColor" 
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path 
+                        className="opacity-75" 
+                        fill="currentColor" 
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Enviando...
+                  </>
+                ) : (
+                  'Continuar'
+                )}
               </button>
             </form>
           </div>

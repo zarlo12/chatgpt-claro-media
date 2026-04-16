@@ -91,6 +91,7 @@ const ResultsView = ({ propuesta, onReset }) => {
   const [emailDestinatario, setEmailDestinatario] = useState(propuesta.correo || '');
   const [enviandoCorreo, setEnviandoCorreo] = useState(false);
   const [mensajeEnvio, setMensajeEnvio] = useState({ tipo: '', texto: '' });
+  const [isOpeningModal, setIsOpeningModal] = useState(false);
 
   // Scroll automático al top cuando se muestra la vista de resultados
   useEffect(() => {
@@ -106,6 +107,16 @@ const ResultsView = ({ propuesta, onReset }) => {
       behavior: 'smooth'
     });
   }, []);
+
+  // Función para abrir modal de correo
+  const handleOpenModal = async () => {
+    if (isOpeningModal) return;
+    
+    setIsOpeningModal(true);
+    await new Promise(resolve => setTimeout(resolve, 200));
+    setMostrarModalCorreo(true);
+    setIsOpeningModal(false);
+  };
 
   // Función para enviar propuesta por correo
   const handleEnviarPorCorreo = async () => {
@@ -566,16 +577,33 @@ const ResultsView = ({ propuesta, onReset }) => {
         {/* Botón Enviar por Correo */}
         <div className="flex justify-center pt-8 pb-4 animate-fade-in">
           <button
-            onClick={() => setMostrarModalCorreo(true)}
-            className="group relative px-8 py-4 bg-gradient-to-r from-claro-red to-pink-600 hover:from-claro-red hover:to-pink-700 rounded-xl text-white font-bold text-lg shadow-2xl hover:shadow-claro-red/50 transition-all duration-300 transform hover:scale-105 flex items-center space-x-3"
+            onClick={handleOpenModal}
+            disabled={isOpeningModal}
+            className={`group relative px-8 py-4 rounded-xl text-white font-bold text-lg shadow-2xl transition-all duration-300 transform flex items-center space-x-3 ${
+              isOpeningModal
+                ? 'bg-gray-500 cursor-not-allowed opacity-70'
+                : 'bg-gradient-to-r from-claro-red to-pink-600 hover:from-claro-red hover:to-pink-700 hover:shadow-claro-red/50 hover:scale-105'
+            }`}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            <span>Enviar por Correo (PDF)</span>
-            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            {isOpeningModal ? (
+              <>
+                <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Preparando...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span>Enviar por Correo (PDF)</span>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </>
+            )}
           </button>
         </div>
 

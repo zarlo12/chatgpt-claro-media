@@ -3,10 +3,22 @@ import { motion } from 'framer-motion';
 
 const CompletionScreen = ({ standId, onReset }) => {
   const [showContent, setShowContent] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     setTimeout(() => setShowContent(true), 300);
   }, []);
+
+  const handleReset = async () => {
+    if (isResetting) return;
+    setIsResetting(true);
+    
+    // Pequeño delay para feedback visual
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    onReset();
+    setIsResetting(false);
+  };
 
   return (
     <div className="flex items-center justify-center min-h-full p-8">
@@ -126,23 +138,52 @@ const CompletionScreen = ({ standId, onReset }) => {
 
             {/* Botón secundario - Nueva propuesta */}
             <button
-              onClick={onReset}
-              className="w-full px-8 py-4 bg-white/10 backdrop-blur-md border border-white/30 rounded-xl text-white font-semibold hover:bg-white/20 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+              onClick={handleReset}
+              disabled={isResetting}
+              className={`w-full px-8 py-4 backdrop-blur-md border rounded-xl font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${
+                isResetting
+                  ? 'bg-gray-500/50 border-gray-400 text-white/50 cursor-not-allowed'
+                  : 'bg-white/10 border-white/30 text-white hover:bg-white/20 transform hover:scale-105'
+              }`}
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              <span>Crear Nueva Propuesta</span>
+              {isResetting ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle 
+                      className="opacity-25" 
+                      cx="12" 
+                      cy="12" 
+                      r="10" 
+                      stroke="currentColor" 
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path 
+                      className="opacity-75" 
+                      fill="currentColor" 
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span>Reiniciando...</span>
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  <span>Crear Nueva Propuesta</span>
+                </>
+              )}
             </button>
           </motion.div>
 
