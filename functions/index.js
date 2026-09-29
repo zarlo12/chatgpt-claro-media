@@ -428,6 +428,86 @@ const generarHTMLPropuesta = (propuesta) => {
       </div>
     </div>
 
+    <!-- Lectura de audiencia (estilo de vida) -->
+    ${
+      propuesta.estiloVida
+        ? `
+    <div class="section">
+      <div class="section-title">Lectura de Audiencia</div>
+      <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 20px;">
+        <div style="font-size: 22px; font-weight: 900; color: #ffffff; margin-bottom: 10px;">
+          ${propuesta.estiloVida.nombre || ""}
+        </div>
+        ${
+          propuesta.estiloVida.afinidades
+            ? `<div class="tags" style="margin-bottom: 14px;">${[]
+                .concat(propuesta.estiloVida.afinidades)
+                .map((a) => `<span class="tag">${a}</span>`)
+                .join("")}</div>`
+            : ""
+        }
+        ${propuesta.estiloVida.descripcion ? `<p style="font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: 14px;">${propuesta.estiloVida.descripcion}</p>` : ""}
+        ${
+          propuesta.estiloVida.dato
+            ? `<div style="margin-bottom: 12px;">
+                 <div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 4px;">Dato observado</div>
+                 <div style="font-size: 14px; color: #ffffff; line-height: 1.6;">${propuesta.estiloVida.dato}</div>
+               </div>`
+            : ""
+        }
+        ${
+          propuesta.estiloVida.interpretacion
+            ? `<div style="margin-bottom: 12px;">
+                 <div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 4px;">Esto sugiere</div>
+                 <div style="font-size: 14px; color: #ffffff; line-height: 1.6;">${propuesta.estiloVida.interpretacion}</div>
+               </div>`
+            : ""
+        }
+        ${
+          propuesta.estiloVida.respuesta
+            ? `<div style="font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6;">
+                 ${propuesta.estiloVida.pregunta || ""}<br/>
+                 <strong style="color: #ffffff;">"${propuesta.estiloVida.respuesta}"</strong>
+               </div>`
+            : ""
+        }
+        ${
+          propuesta.estiloVida.sectorPrincipal
+            ? `<div style="margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.75);">
+                 Ruta de negocio: <strong style="color: #ffffff;">${propuesta.estiloVida.sectorPrincipal}</strong>
+                 ${
+                   propuesta.estiloVida.sectoresConectados
+                     ? ` → ${[].concat(propuesta.estiloVida.sectoresConectados).join(", ")}`
+                     : ""
+                 }
+               </div>`
+            : ""
+        }
+      </div>
+    </div>
+    `
+        : ""
+    }
+
+    <!-- Interacción por formato en la categoría -->
+    ${
+      propuesta.benchmarkCategoria && propuesta.benchmarkCategoria.formatos
+        ? `
+    <div class="section">
+      <div class="section-title">Cómo Interactúa tu Categoría (${propuesta.benchmarkCategoria.categoria})</div>
+      <ul class="insights-list">
+        ${propuesta.benchmarkCategoria.formatos
+          .map(
+            (f) =>
+              `<li><strong>${f.formato}:</strong> ${f.interaccion.toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% de interacción</li>`,
+          )
+          .join("")}
+      </ul>
+    </div>
+    `
+        : ""
+    }
+
     <!-- Afinidades -->
     ${
       propuesta.afinidades && propuesta.afinidades.length > 0
@@ -462,8 +542,9 @@ const generarHTMLPropuesta = (propuesta) => {
       <!-- Alcance Comparativo -->
       <div class="alcance-grid">
         <div class="alcance-item">
-          <div class="alcance-label">Alcance Ideal del Paquete</div>
-          <div class="alcance-valor">${paquete.alcanceIdeal}</div>
+          <div class="alcance-label">Enfoque del Paquete</div>
+          <div class="alcance-valor" style="font-size: 26px;">${paquete.claim || paquete.alcanceIdeal || ""}</div>
+          ${paquete.duracion ? `<div style="font-size: 14px; color: rgba(255,255,255,0.7); margin-top: 6px;">Vigencia: ${paquete.duracion}</div>` : ""}
         </div>
         <div class="alcance-item" style="border: 2px solid #E30613;">
           <div class="alcance-label">✨ Tu Alcance Potencial</div>
@@ -482,6 +563,7 @@ const generarHTMLPropuesta = (propuesta) => {
               (comp, idx) => `
             <div class="componente-card">
               <div class="componente-numero">${idx + 1}</div>
+              ${comp.fase ? `<div style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #E30613; font-weight: 700; margin-bottom: 4px;">${comp.fase}</div>` : ""}
               <div class="componente-nombre">${comp.nombre}</div>
               <div class="componente-detalle">${comp.detalle}</div>
               ${comp.alcance !== "N/A" ? `<div class="componente-alcance">${comp.alcance}</div>` : ""}

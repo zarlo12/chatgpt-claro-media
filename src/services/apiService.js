@@ -1,14 +1,25 @@
-// API Service para integración futura con ChatGPT
-
-// NOTA: Este es un archivo de ejemplo para cuando se integre la API real de ChatGPT
-// Por ahora, el proyecto usa datos mock en src/data/mockData.js
+// API Service para integración con ChatGPT
 
 import { calcularValorPropuesta } from "../data/banderasDemograficas";
-import { recomendarPaquete } from "../data/paquetesComerciales";
+import {
+  PAQUETES_COMERCIALES,
+  recomendarPaquete,
+} from "../data/paquetesComerciales";
+import {
+  ESTILOS_DE_VIDA,
+  REGLA_NARRATIVA,
+  construirResumenEstilo,
+  obtenerEstiloPorNombre,
+} from "../data/estilosDeVida";
+import {
+  BENCHMARKS_POR_CATEGORIA,
+  formatearInteraccion,
+  obtenerBenchmarkPorSector,
+} from "../data/benchmarksInteraccion";
 
 /**
  * Configuración de la API
- * Agregar estas variables a un archivo .env:
+ * Variables de entorno (.env):
  * VITE_OPENAI_API_KEY=tu_api_key_aqui
  * VITE_OPENAI_MODEL=gpt-4 o gpt-3.5-turbo
  */
@@ -28,9 +39,52 @@ console.log(
 );
 console.log("=================================");
 
+const formatearPesos = (valor) => `$${valor.toLocaleString("es-CO")}`;
+
+// ---------------------------------------------------------------------------
+// Secciones del prompt generadas desde la data (una sola fuente de verdad)
+// ---------------------------------------------------------------------------
+
+const describirPaquete = (paquete) => {
+  const componentes = paquete.componentes
+    .map((c) => `${c.nombre} (${c.detalle}): ${c.alcance}`)
+    .join("; ");
+
+  return `**${paquete.nombre} — ${paquete.claim}**
+- Inversión: ${formatearPesos(paquete.precio)} sin descuento / ${formatearPesos(paquete.precioPreventa)} en preventa (${paquete.descuento}). ${paquete.impuestos}
+- Duración: ${paquete.duracion || "según cronograma de la campaña"}
+- Etapas del journey que cubre: ${paquete.etapasJourney.join(", ")}
+- ${paquete.productos} productos: ${componentes}
+- Recomendado para: ${paquete.recomendadoPara.join("; ")}`;
+};
+
+const SECCION_PAQUETES = PAQUETES_COMERCIALES.map(describirPaquete).join("\n\n");
+
+const SECCION_ESTILOS = ESTILOS_DE_VIDA.map(
+  (e) =>
+    `- ${e.nombre} (${e.afinidades.join(" + ")}) → sector ${e.sectorPrincipal}; conecta con ${e.sectoresConectados.join(", ")}.
+  Dato observado: ${e.dato}
+  Interpretación: ${e.interpretacion}`,
+).join("\n");
+
+const SECCION_BENCHMARKS = Object.entries(BENCHMARKS_POR_CATEGORIA)
+  .map(
+    ([categoria, formatos]) =>
+      `- ${categoria}: ${formatos
+        .map((f) => `${f.formato} ${formatearInteraccion(f.interaccion)}`)
+        .join(", ")}`,
+  )
+  .join("\n");
+
+/** Paquete de mayor valor del portafolio: define el tope de auto-cotización. */
+const PAQUETE_TOPE = [...PAQUETES_COMERCIALES].sort(
+  (a, b) => b.precio - a.precio,
+)[0];
+
 /**
  * Sistema de prompts para el agente de Claro Media
- * Basado en las instrucciones del GPT personalizado
+ * Basado en las instrucciones del GPT personalizado y en los contenidos de la
+ * Rueda de Negocios 2026 (experiencia de Estilos de Vida).
  */
 const SYSTEM_PROMPT = `**Rol del agente**
 
@@ -41,13 +95,13 @@ Tu función es entender la necesidad de comunicación del cliente y recomendar e
 Las soluciones pueden incluir:
 - TV Claro
 - Red+
-- soluciones de data
+- soluciones de data (analítica geoespacial, sondeos)
 - programática
-- mobile marketing
+- mobile marketing (Push Multimedia, Sat Push, SMS, RCS)
 - digital
 - combinaciones incluidas en los paquetes comerciales
 
-Tu objetivo es orientar al cliente hacia el paquete adecuado según su necesidad, sector, audiencia y presupuesto.
+Tu objetivo es orientar al cliente hacia el paquete adecuado según su necesidad, sector, audiencia, estilo de vida y presupuesto.
 
 **Forma de actuar**
 
@@ -66,6 +120,27 @@ Debes preguntar obligatoriamente:
 - Duración de la campaña
 
 Nunca hagas recomendaciones sin tener esta información.
+
+**Experiencia de Estilos de Vida**
+
+La experiencia parte de un estilo de vida elegido por el usuario. Cada estilo define una ruta de análisis:
+
+${SECCION_ESTILOS}
+
+**Regla narrativa obligatoria**
+
+${REGLA_NARRATIVA.descripcion}
+
+- Presenta primero el DATO OBSERVADO (evidencia cuantitativa).
+- Presenta después la INTERPRETACIÓN, siempre separada del dato.
+- Usa "${REGLA_NARRATIVA.conectorSinCausalidad}" cuando no exista causalidad directa.
+- Nunca presentes una correlación como si fuera una causa.
+
+**Cómo interactúan las audiencias por categoría**
+
+Tasas de interacción observadas por formato (usar para priorizar la mezcla de medios):
+
+${SECCION_BENCHMARKS}
 
 **Reglas obligatorias de seguridad comercial**
 
@@ -96,7 +171,7 @@ No generes propuesta automática.
 
 **2. Presupuesto alto**
 
-Si el presupuesto de la campaña supera $220.000.000 COP, debes redirigir al cliente al equipo de preventa:
+Si el presupuesto de la campaña supera ${formatearPesos(PAQUETE_TOPE.precio)} COP (el valor del paquete más alto del portafolio, ${PAQUETE_TOPE.nombre}), debes redirigir al cliente al equipo de preventa:
 "Para campañas de este nivel de inversión nuestro equipo de preventa diseña una propuesta personalizada. Por favor contacta a luisa.fajardoro@claro.com.co."
 
 No generes propuesta automática.
@@ -115,40 +190,28 @@ Debes responder:
 **Uso obligatorio de archivos**
 
 Debes utilizar únicamente la información contenida en los siguientes archivos cargados:
-- Rueda de Negocios 2026.pdf
+- Rueda de Negocios 2026 - 2_OF.pptx (paquetes vigentes y benchmarks de interacción)
+- Contenidos_Estilos_de_Vida_ClaroMedia.xlsx (estilos de vida y reglas narrativas)
 - banderas demográficas
 - mediakit_final_final.pdf
 
-Nunca inventes productos o soluciones que no estén en esos archivos.
+Nunca inventes productos, cifras o soluciones que no estén en esos archivos.
 
 **Paquetes comerciales disponibles (Rueda de Negocios 2026)**
 
-Debes recomendar ÚNICAMENTE uno de estos 4 paquetes según el perfil del cliente:
+Debes recomendar ÚNICAMENTE uno de estos ${PAQUETES_COMERCIALES.length} paquetes según el perfil del cliente:
 
-1. **PAQUETE VIP** - $220.000.000 ($107.892.900 preventa, 51% descuento)
-   - 12 productos: Push Multimedia (13.034 clics), RRSS Video (347K impresiones), Display (1.7M impresiones), Native (1.6M impresiones), Data Rewards (13.333 views), Menciones Comerciales (15x20"), Comerciales TV (110x10"), Revista 15 Minutos (1 pág + free press), Shopping Live, SMS (21.823 envíos), Contenido Portal, Post+Historia
-   - Ideal para: Presupuestos >$150M, alcance masivo (>2M usuarios), sectores premium (Tecnología, Banca, Automotriz)
-   
-2. **PAQUETE EDITORIAL RED+** - $123.000.000 ($75.000.000 preventa, 39% descuento)
-   - 7 productos: Comerciales TV (55x10"), Push Multimedia (10.000 clics), Patrocinio Sección (14x10"), Menciones (14x20"), Revista (1/2 pág), Post orgánico, Data Rewards (4.834 views)
-   - Ideal para: Presupuestos $80M-$150M, posicionamiento editorial, sectores: Entretenimiento, Alimentación, Servicios
+${SECCION_PAQUETES}
 
-3. **PAQUETE SMART** - $55.000.000 ($40.000.000 preventa, 27% descuento)
-   - 7 productos: Comerciales TV (55x10"), Revista (1 pág), RRSS Post, Display (1.17M impresiones), Alto Impacto (3.000 unidades), SMS (19.204 envíos), Push Multimedia (14.893 clics)
-   - Ideal para: Presupuestos $35M-$80M, campañas tácticas, sectores: Retail, Telecomunicaciones, Salud, Educación
-
-4. **PAQUETE BASIC** - $20.048.500 ($17.000.000 preventa, 27% descuento)
-   - 6 productos: Comerciales TV (20x10"), RRSS Historia, Revista (1/3 pág), Native (701K impresiones), Display (423K impresiones), Push Multimedia (3.717 clics)
-   - Ideal para: Presupuestos <$35M, PyMEs, testing de mercado, campañas locales
-
-**Reglas de recomendación:**
-- Evalúa primero el presupuesto del cliente
-- Considera el alcance potencial de su audiencia (banderas demográficas)
-- Alinea el sector con los beneficios del paquete
-- Si el presupuesto es incierto, pregunta rangos: <$35M, $35M-$80M, $80M-$150M, >$150M
-- NUNCA mezcles componentes de diferentes paquetes
-- NUNCA inventes precios o productos fuera de estos paquetes
-- Siempre menciona el precio de preventa y el descuento incluido
+**Reglas de recomendación**
+- Evalúa primero el presupuesto del cliente y recomienda el paquete más completo que quepa en él.
+- Considera el alcance potencial de su audiencia (banderas demográficas).
+- Alinea la etapa del journey que el cliente prioriza con las etapas que cubre el paquete.
+- Usa el estilo de vida para explicar el sector principal y los sectores conectados.
+- Prioriza en la mezcla de medios los formatos con mayor interacción en la categoría del cliente.
+- NUNCA mezcles componentes de diferentes paquetes.
+- NUNCA inventes precios o productos fuera de estos paquetes.
+- Siempre menciona el precio de preventa y el descuento incluido.
 
 **Estructura obligatoria de respuesta**
 
@@ -157,8 +220,11 @@ Siempre responde usando esta estructura:
 **Necesidad identificada**
 Resumen simple de lo que el cliente busca.
 
+**Lectura de audiencia**
+Dato observado y, por separado, la interpretación (con "${REGLA_NARRATIVA.conectorSinCausalidad}").
+
 **Solución DATA TECH Claro Media**
-Explica qué paquete o combinación de productos resuelve la necesidad.
+Explica qué paquete resuelve la necesidad.
 
 **Beneficio para el cliente**
 Explica cómo esta solución le ayuda a lograr su objetivo de comunicación.
@@ -247,19 +313,71 @@ export const sendMessageToChatGPT = async (messages) => {
 };
 
 /**
- * Función para generar propuesta estratégica usando ChatGPT
- * @param {Object} userData - Datos recopilados del usuario
- * @returns {Promise<Object>} - Propuesta estratégica generada
+ * Bloque de contexto del estilo de vida para el prompt del usuario.
+ * @param {Object|null} estilo
+ * @param {string} respuestaEstilo
+ * @returns {string}
+ */
+const contextoEstiloDeVida = (estilo, respuestaEstilo) => {
+  if (!estilo) return "";
+
+  return `
+  ESTILO DE VIDA SELECCIONADO: ${estilo.nombre}
+  - Afinidades que definen la ruta: ${estilo.afinidades.join(", ")}
+  - Dato observado: ${estilo.dato}
+  - Interpretación (sin causalidad): ${estilo.interpretacion}
+  - Sector principal: ${estilo.sectorPrincipal}
+  - Sectores conectados: ${estilo.sectoresConectados.join(", ")}
+  - Pregunta de profundización: ${estilo.pregunta}
+  - Respuesta del cliente: ${respuestaEstilo || "sin respuesta"}`;
+};
+
+/**
+ * Bloque de contexto del benchmark de interacción para el prompt del usuario.
+ * @param {Object|null} benchmark
+ * @returns {string}
+ */
+const contextoBenchmark = (benchmark) => {
+  if (!benchmark) return "";
+
+  const formatos = benchmark.formatos
+    .map((f) => `${f.formato} ${formatearInteraccion(f.interaccion)}`)
+    .join(", ");
+
+  return `
+  INTERACCIÓN POR FORMATO (categoría ${benchmark.categoria}${benchmark.esReferencia ? ", usada como referencia" : ""}): ${formatos}`;
+};
+
+/**
+ * Genera la propuesta estratégica combinando el cálculo local (banderas
+ * demográficas, estilo de vida, benchmarks y paquete recomendado) con los
+ * textos que produce el modelo.
+ * @param {Object} userData - Datos recopilados durante la experiencia
+ * @returns {Promise<Object>} - Propuesta estratégica completa
  */
 export const generarPropuestaConIA = async (userData) => {
-  const { sector, genero, edad, nivelSocioeconomico, afinidades } = userData;
+  const {
+    sector,
+    genero,
+    edad,
+    nivelSocioeconomico,
+    afinidades = [],
+    estiloVida,
+    respuestaEstilo,
+    etapaJourney,
+    presupuesto = 0,
+    presupuestoEtiqueta,
+  } = userData;
 
   const edadText = Array.isArray(edad) ? edad.join(", ") : edad;
   const nseText = Array.isArray(nivelSocioeconomico)
     ? nivelSocioeconomico.join(", ")
     : nivelSocioeconomico;
 
-  // Calcular valor de la propuesta usando banderas demográficas
+  const estilo = obtenerEstiloPorNombre(estiloVida);
+  const benchmark = obtenerBenchmarkPorSector(sector);
+
+  // Alcance potencial según banderas demográficas
   const valorPropuesta = calcularValorPropuesta({
     genero,
     edad: Array.isArray(edad) ? edad : [edad],
@@ -270,11 +388,12 @@ export const generarPropuestaConIA = async (userData) => {
 
   console.log("📊 Valor de la Propuesta calculado:", valorPropuesta);
 
-  // Recomendar paquete comercial basado en perfil
+  // Paquete recomendado según perfil, journey e inversión declarada
   const recomendacion = recomendarPaquete({
-    presupuesto: 0, // Sin presupuesto del usuario, se basa en alcance
+    presupuesto,
     alcancePotencial: valorPropuesta.alcanceTotalNumerico,
     sector,
+    etapaJourney,
     audiencia: {
       genero,
       edad: edadText,
@@ -293,22 +412,27 @@ export const generarPropuestaConIA = async (userData) => {
   - Edad: ${edadText}
   - Nivel Socioeconómico: ${nseText}
   - Afinidades: ${afinidades.join(", ")}
-  
+  - Etapa del journey priorizada: ${etapaJourney || "no definida"}
+  - Inversión declarada: ${presupuestoEtiqueta || "no definida"}
+${contextoEstiloDeVida(estilo, respuestaEstilo)}
+${contextoBenchmark(benchmark)}
+
   ALCANCE POTENCIAL:
   - Alcance Total Estimado: ${valorPropuesta.alcanceTotal} usuarios
   - Segmentos Principales: ${banderasTexto}
 
   PAQUETE RECOMENDADO:
-  - Nombre: ${recomendacion.paquete.nombre}
-  - Precio: $${recomendacion.paquete.precio.toLocaleString("es-CO")} (Preventa: $${recomendacion.paquete.precioPreventa.toLocaleString("es-CO")})
+  - Nombre: ${recomendacion.paquete.nombre} (${recomendacion.paquete.claim})
+  - Precio: ${formatearPesos(recomendacion.paquete.precio)} (Preventa: ${formatearPesos(recomendacion.paquete.precioPreventa)}, ${recomendacion.paquete.descuento})
+  - Duración: ${recomendacion.paquete.duracion || "según cronograma"}
   - Productos incluidos: ${recomendacion.paquete.productos}
   - Razones: ${recomendacion.razonamiento.join(", ")}
 
   Proporciona:
-  1. Insights clave basados en patrones de comportamiento y ubicación (mínimo 3)
-  2. Recomendaciones estratégicas específicas considerando el paquete ${recomendacion.paquete.nombre} (mínimo 4)
+  1. Insights clave que separen dato observado de interpretación, usando "${REGLA_NARRATIVA.conectorSinCausalidad}" cuando no haya causalidad directa (mínimo 3)
+  2. Recomendaciones estratégicas específicas para el paquete ${recomendacion.paquete.nombre}, priorizando los formatos de mayor interacción en la categoría (mínimo 4)
   3. Próximos pasos accionables (mínimo 4)
-  
+
   IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido (sin texto adicional) con esta estructura exacta:
   {
     "insights": ["insight1", "insight2", "insight3"],
@@ -350,6 +474,10 @@ export const generarPropuestaConIA = async (userData) => {
         nivelSocioeconomico: nseText,
       },
       afinidades,
+      estiloVida: construirResumenEstilo(estilo, respuestaEstilo),
+      benchmarkCategoria: benchmark,
+      presupuestoEstimado: presupuestoEtiqueta || null,
+      etapaJourney: etapaJourney || null,
       insights: parsedData.insights || [],
       recomendaciones: parsedData.recomendaciones || [],
       proximosPasos: parsedData.proximosPasos || [],
@@ -368,9 +496,13 @@ export const generarPropuestaConIA = async (userData) => {
   } catch (error) {
     console.error("❌ Error generando propuesta con IA:", error);
     console.warn("⚠️ Usando FALLBACK a datos MOCK");
-    // Fallback a datos mock si falla la API
+    // Fallback a datos calculados localmente si falla la API
     const { generarPropuestaEstrategica } = await import("../data/mockData");
-    return generarPropuestaEstrategica(userData);
+    return {
+      ...generarPropuestaEstrategica(userData),
+      presupuestoEstimado: presupuestoEtiqueta || null,
+      etapaJourney: etapaJourney || null,
+    };
   }
 };
 
@@ -401,11 +533,14 @@ export const generarMensajeContextual = async (step, context) => {
       (Array.isArray(context.nivelSocioeconomico)
         ? context.nivelSocioeconomico.join(", ")
         : context.nivelSocioeconomico) +
-      ". Confirma y menciona que identificarás afinidades basadas en el sector " +
-      context.sector,
+      ". Confirma y menciona que ahora elegirá el estilo de vida de su audiencia.",
+    estiloVida:
+      "El usuario seleccionó el estilo de vida: " +
+      context.estiloVida +
+      ". Presenta primero el dato observado y luego la interpretación, separados.",
     afinidades:
       "El usuario seleccionó estas afinidades: " +
-      context.afinidades.join(", ") +
+      (context.afinidades || []).join(", ") +
       ". Confirma que procesarás la información para generar la propuesta.",
   };
 

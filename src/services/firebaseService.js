@@ -36,6 +36,32 @@ const COLLECTION_NAME = "ClaroMediaAgenteIA";
 console.log("🔥 Firebase inicializado correctamente");
 console.log("📁 Colección:", COLLECTION_NAME);
 
+// En un stand la conexión puede fallar: ninguna escritura debe dejar la
+// experiencia congelada esperando respuesta del servidor.
+const LIMITE_ESCRITURA_MS = 8000;
+
+/**
+ * Rechaza la promesa si el servidor no responde dentro del límite.
+ * @param {Promise} promesa
+ * @param {string} descripcion
+ * @param {number} limite
+ * @returns {Promise}
+ */
+const conTiempoLimite = (
+  promesa,
+  descripcion,
+  limite = LIMITE_ESCRITURA_MS,
+) =>
+  Promise.race([
+    promesa,
+    new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error(`${descripcion}: sin respuesta en ${limite}ms`)),
+        limite,
+      ),
+    ),
+  ]);
+
 /**
  * Guardar una nueva conversación completa en Firestore
  * @param {Object} conversacion - Objeto con todos los datos de la conversación
@@ -59,6 +85,10 @@ export const guardarConversacion = async (conversacion) => {
 
       // Afinidades
       afinidades: conversacion.afinidades || [],
+
+      // Experiencia de estilos de vida
+      estiloVida: conversacion.estiloVida || null,
+      presupuestoEstimado: conversacion.presupuestoEstimado || null,
 
       // Journey (si están disponibles)
       primeraSeleccionJourney: conversacion.primeraSeleccionJourney || null,
@@ -90,14 +120,17 @@ export const guardarDatosIniciales = async (datosPersonales) => {
   try {
     console.log("💾 Guardando datos iniciales del usuario...", datosPersonales);
 
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-      nombre: datosPersonales.nombre || "",
-      correo: datosPersonales.correo || "",
-      celular: datosPersonales.celular || "",
-      standId: datosPersonales.standId || "A", // Stand A o B
-      timestamp: serverTimestamp(),
-      estado: "iniciado", // Para marcar que solo tiene datos iniciales
-    });
+    const docRef = await conTiempoLimite(
+      addDoc(collection(db, COLLECTION_NAME), {
+        nombre: datosPersonales.nombre || "",
+        correo: datosPersonales.correo || "",
+        celular: datosPersonales.celular || "",
+        standId: datosPersonales.standId || "A", // Stand A o B
+        timestamp: serverTimestamp(),
+        estado: "iniciado", // Para marcar que solo tiene datos iniciales
+      }),
+      "guardarDatosIniciales",
+    );
 
     console.log("✅ Datos iniciales guardados con ID:", docRef.id);
     return docRef.id;
@@ -118,10 +151,13 @@ export const actualizarConversacion = async (docId, datosActualizados) => {
     console.log("🔄 Actualizando conversación:", docId, datosActualizados);
 
     const docRef = doc(db, COLLECTION_NAME, docId);
-    await updateDoc(docRef, {
-      ...datosActualizados,
-      ultimaActualizacion: serverTimestamp(),
-    });
+    await conTiempoLimite(
+      updateDoc(docRef, {
+        ...datosActualizados,
+        ultimaActualizacion: serverTimestamp(),
+      }),
+      "actualizarConversacion",
+    );
 
     console.log("✅ Conversación actualizada");
   } catch (error) {

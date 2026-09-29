@@ -88,6 +88,12 @@ const DisplayScreen = () => {
         nivelSocioeconomico: Array.isArray(conversacion.nivelSocioeconomico) ? conversacion.nivelSocioeconomico : (conversacion.nivelSocioeconomico ? [conversacion.nivelSocioeconomico] : []),
       },
       afinidades: conversacion.afinidades || [],
+      estiloVida: conversacion.estiloVida || conversacion.propuesta?.estiloVida || null,
+      benchmarkCategoria: conversacion.propuesta?.benchmarkCategoria || null,
+      presupuestoEstimado:
+        conversacion.presupuestoEstimado || conversacion.propuesta?.presupuestoEstimado || null,
+      etapaJourney:
+        conversacion.segundaSeleccionJourney || conversacion.propuesta?.etapaJourney || null,
       insights: conversacion.propuesta?.insights || [],
       insightsGeoespaciales: conversacion.propuesta?.insightsGeoespaciales || [],
       recomendaciones: conversacion.propuesta?.recomendaciones || [],

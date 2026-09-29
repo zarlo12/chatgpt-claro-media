@@ -210,6 +210,8 @@ const extraerTodosLosCampos = (registros) => {
     "edad",
     "nivelSocioeconomico",
     "afinidades",
+    "estiloVida",
+    "presupuestoEstimado",
     "primeraSeleccionJourney",
     "segundaSeleccionJourney",
   ];
@@ -243,6 +245,7 @@ const procesarPropuesta = (propuesta) => {
       propuesta_recomendaciones: "",
       propuesta_proximosPasos: "",
       propuesta_paquete: "",
+      propuesta_estiloVida: "",
       propuesta_alcance: "",
       propuesta_resumen: "",
       propuesta_datos_adicionales: "",
@@ -334,6 +337,35 @@ const procesarPropuesta = (propuesta) => {
     resultado.propuesta_paquete = "";
   }
 
+  // Procesar estilo de vida (lectura de audiencia)
+  if (propuesta.estiloVida) {
+    const estilo = propuesta.estiloVida;
+    let textoEstilo = `ESTILO DE VIDA: ${estilo.nombre || ""}\n`;
+
+    if (estilo.afinidades) {
+      textoEstilo += `AFINIDADES: ${[].concat(estilo.afinidades).join(", ")}\n`;
+    }
+    if (estilo.dato) {
+      textoEstilo += `DATO OBSERVADO: ${estilo.dato}\n`;
+    }
+    if (estilo.interpretacion) {
+      textoEstilo += `INTERPRETACIÓN: ${estilo.interpretacion}\n`;
+    }
+    if (estilo.sectorPrincipal) {
+      textoEstilo += `SECTOR PRINCIPAL: ${estilo.sectorPrincipal}\n`;
+    }
+    if (estilo.sectoresConectados) {
+      textoEstilo += `SECTORES CONECTADOS: ${[].concat(estilo.sectoresConectados).join(", ")}\n`;
+    }
+    if (estilo.respuesta) {
+      textoEstilo += `PREGUNTA: ${estilo.pregunta || ""}\nRESPUESTA: ${estilo.respuesta}`;
+    }
+
+    resultado.propuesta_estiloVida = textoEstilo.trim();
+  } else {
+    resultado.propuesta_estiloVida = "";
+  }
+
   // Procesar valor de propuesta (alcance)
   if (propuesta.valorPropuesta) {
     const valor = propuesta.valorPropuesta;
@@ -394,6 +426,19 @@ const procesarPropuesta = (propuesta) => {
     propuesta.afinidades.length > 0
   ) {
     resumen += `🎯 AFINIDADES: ${propuesta.afinidades.join(", ")}\n\n`;
+  }
+
+  // Estilo de vida
+  if (propuesta.estiloVida && propuesta.estiloVida.nombre) {
+    const estilo = propuesta.estiloVida;
+    resumen += `🧭 ESTILO DE VIDA: ${estilo.nombre}\n`;
+    if (estilo.sectorPrincipal) {
+      resumen += `   Sector principal: ${estilo.sectorPrincipal}\n`;
+    }
+    if (estilo.respuesta) {
+      resumen += `   Respuesta del cliente: ${estilo.respuesta}\n`;
+    }
+    resumen += "\n";
   }
 
   // Paquete recomendado

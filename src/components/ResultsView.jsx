@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { enviarPropuestaPorCorreo } from '../services/pdfService';
+import EstiloVidaCard from './EstiloVidaCard';
+import BenchmarkInteraccion from './BenchmarkInteraccion';
 
 const InsightCard = ({ insight, index }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -246,8 +248,28 @@ const ResultsView = ({ propuesta, onReset }) => {
                   : propuesta.audiencia.nivelSocioeconomico}
               </p>
             </div>
+            {propuesta.etapaJourney && (
+              <div className="space-y-2">
+                <p className="text-white/60 text-sm">Momento clave del journey</p>
+                <p className="text-white text-lg font-semibold">{propuesta.etapaJourney}</p>
+              </div>
+            )}
+            {propuesta.presupuestoEstimado && (
+              <div className="space-y-2">
+                <p className="text-white/60 text-sm">Inversión contemplada</p>
+                <p className="text-white text-lg font-semibold">{propuesta.presupuestoEstimado}</p>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Lectura de audiencia desde el estilo de vida */}
+        {propuesta.estiloVida && <EstiloVidaCard estilo={propuesta.estiloVida} />}
+
+        {/* Interacción por formato en la categoría del cliente */}
+        {propuesta.benchmarkCategoria && (
+          <BenchmarkInteraccion benchmark={propuesta.benchmarkCategoria} />
+        )}
 
         {/* Afinidades */}
         <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 animate-slide-up" style={{ animationDelay: '100ms' }}>
@@ -373,8 +395,14 @@ const ResultsView = ({ propuesta, onReset }) => {
                 {/* Alcance comparativo */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
-                    <p className="text-white/60 text-sm uppercase tracking-wider mb-3">Alcance Ideal del Paquete</p>
-                    <p className="text-5xl font-black text-white">{propuesta.paqueteRecomendado.paquete.alcanceIdeal}</p>
+                    <p className="text-white/60 text-sm uppercase tracking-wider mb-3">Enfoque del Paquete</p>
+                    <p className="text-3xl font-black text-white">
+                      {propuesta.paqueteRecomendado.paquete.claim ||
+                        propuesta.paqueteRecomendado.paquete.alcanceIdeal /* registros del evento anterior */}
+                    </p>
+                    {propuesta.paqueteRecomendado.paquete.duracion && (
+                      <p className="text-white/70 text-lg mt-2">Vigencia: {propuesta.paqueteRecomendado.paquete.duracion}</p>
+                    )}
                   </div>
                   <div className="bg-gradient-to-br from-claro-red/20 to-purple-600/20 rounded-2xl p-6 text-center border-2 border-claro-red/40">
                     <p className="text-white/80 text-sm uppercase tracking-wider mb-3">✨ Tu Alcance Potencial</p>
@@ -403,6 +431,9 @@ const ResultsView = ({ propuesta, onReset }) => {
                             {index + 1}
                           </div>
                           <div className="flex-1">
+                            {componente.fase && (
+                              <p className="text-claro-red text-[10px] font-bold uppercase tracking-widest mb-1">{componente.fase}</p>
+                            )}
                             <p className="text-white font-bold text-base mb-2">{componente.nombre}</p>
                             <p className="text-white/70 text-xs mb-2">{componente.detalle}</p>
                             {componente.alcance !== "N/A" && (

@@ -1,632 +1,938 @@
 /**
- * Paquetes Comerciales - Rueda de Negocios 2026
+ * Paquetes Comerciales - Rueda de Negocios 2026 (Experiencias)
  * Claro Media - Soluciones DATA TECH
  *
- * Basado en: documentosAgente/Rueda de Negocios 2026.pdf
+ * Fuente: nuevoEventoExperiencias/Rueda de Negocios 2026 - 2_OF.pptx
+ * Láminas "PAQUETES POR CATEGORIAS".
+ *
+ * Cada paquete se describe por sus FASES (tal como aparecen en la lámina).
+ * Los campos `componentes` y `productos` se derivan de las fases para que
+ * exista una sola fuente de verdad.
  */
 
-export const PAQUETES_COMERCIALES = [
+const IMPUESTOS = "+ Impuestos (IVA 19% + impoconsumo 4% en mobile)";
+
+const ORDEN_JOURNEY = ["Descubre", "Explora", "Compara", "Decide", "Compra"];
+
+/**
+ * Definición de los paquetes tal como están en la presentación.
+ *
+ *  - claim               → bajada de la lámina
+ *  - duracion            → vigencia declarada (null si la lámina no la indica)
+ *  - etapasJourney       → etapas del customer journey que cubre mejor
+ *  - sectoresDestacados  → criterio comercial, ajustable por el equipo
+ *  - fases               → estructura numerada de la lámina
+ */
+const DEFINICION_PAQUETES = [
+  {
+    id: "elite-investigacion",
+    nombre: "ELITE + Investigación",
+    claim: "Llega al siguiente nivel",
+    descripcion:
+      "Investiga y conoce a tu audiencia, y con tus hallazgos crea una conversación propia en TV, aporta conocimiento y sé el líder de la categoría.",
+    duracion: "6 meses",
+    precio: 336234160,
+    precioPreventa: 240000000,
+    descuento: "36% de descuento",
+    categoriaPresupuesto: "alto",
+    etapasJourney: ["Descubre", "Explora", "Compara"],
+    sectoresDestacados: ["Gobierno", "Educación", "Consumo Masivo"],
+    incluyeProduccion: true,
+    fases: [
+      {
+        nombre: "1. Conoce tu audiencia",
+        componentes: [
+          {
+            nombre: "Analítica geoespacial",
+            detalle: "Interés por punto",
+            alcance: "Puntos de análisis",
+          },
+          {
+            nombre: "Sondeos",
+            detalle: "1 variable de segmentación",
+            alcance: "1.000 respuestas",
+          },
+        ],
+      },
+      {
+        nombre: "2. Crea tu historia",
+        componentes: [
+          {
+            nombre: "Entrevista",
+            detalle: "NOT RED+",
+            alcance: "3 entrevistas",
+          },
+          {
+            nombre: "Café Claro en el set de la marca",
+            detalle: "Bogotá, en vivo",
+            alcance: "1 salida",
+          },
+        ],
+      },
+      {
+        nombre: "3. Aporta conocimiento",
+        componentes: [
+          {
+            nombre: "Sección patrocinada con contenido",
+            detalle:
+              "NOT RED+. Las secciones viven en fichas de video en Portal RED+, impulsadas por Push",
+            alcance: "10 salidas",
+          },
+          {
+            nombre: "Doble página de contenido orgánico",
+            detalle: "Revista 15 Minutos",
+            alcance: "1 salida",
+          },
+          {
+            nombre: "Notas de contenido",
+            detalle: "RED+ Noticias",
+            alcance: "3 salidas",
+          },
+        ],
+      },
+      {
+        nombre: "4. Domina la pantalla",
+        componentes: [
+          {
+            nombre: 'Spots de 20"',
+            detalle: "TV RED+ / NOT",
+            alcance: "70 salidas",
+          },
+          {
+            nombre: 'Corte único de 10"',
+            detalle: "TV RED+ / NOT",
+            alcance: "30 salidas",
+          },
+          {
+            nombre: "Superimposiciones",
+            detalle: "TV RED+ / NOT",
+            alcance: "20 salidas",
+          },
+        ],
+      },
+      {
+        nombre: "5. Extiende la conversación",
+        componentes: [
+          {
+            nombre: "Nota web",
+            detalle: "Portal RED+",
+            alcance: "1 nota",
+          },
+          {
+            nombre: "Mensajes RCS",
+            detalle: "Mobile segmentado",
+            alcance: "142.011 envíos",
+          },
+          {
+            nombre: "Reel",
+            detalle: "RRSS NOT RED+",
+            alcance: "1 salida",
+          },
+        ],
+      },
+    ],
+    beneficios: [
+      "Arranca con investigación propia: analítica geoespacial y sondeos con 1.000 respuestas",
+      "Conversación propia en TV con 3 entrevistas y un Café Claro en el set de la marca",
+      "Contenido editorial en NOT RED+, Revista 15 Minutos y RED+ Noticias",
+      "120 salidas en TV entre spots, cortes únicos y superimposiciones",
+      "Extensión digital con nota web, RCS (142.011 envíos) y reel en redes",
+      "Incluye producción",
+    ],
+    recomendadoPara: [
+      "Marcas que necesitan datos antes de definir el mensaje",
+      "Campañas de liderazgo de categoría a 6 meses",
+      "Sectores: Gobierno, Educación, Consumo Masivo",
+      "Proyectos que deben sustentar la estrategia con evidencia",
+    ],
+  },
+  {
+    id: "elite-360",
+    nombre: "ELITE 360",
+    claim: "Llega al siguiente nivel",
+    descripcion:
+      "Tu marca llega al siguiente nivel: crea una conversación propia en TV, aporta conocimiento, domina la pantalla y lleva ese contenido más allá de la TV, durante 6 meses.",
+    duracion: "6 meses",
+    precio: 330734160,
+    precioPreventa: 200000000,
+    descuento: "40% de descuento",
+    categoriaPresupuesto: "alto",
+    etapasJourney: ["Explora", "Compara", "Decide"],
+    sectoresDestacados: ["Financiero", "Automotor", "Salud"],
+    incluyeProduccion: true,
+    fases: [
+      {
+        nombre: "1. Crea tu historia",
+        componentes: [
+          {
+            nombre: "Entrevista",
+            detalle: "NOT RED+",
+            alcance: "3 entrevistas",
+          },
+          {
+            nombre: "Café Claro en el set de la marca",
+            detalle: "Bogotá, en vivo",
+            alcance: "1 salida",
+          },
+        ],
+      },
+      {
+        nombre: "2. Aporta conocimiento",
+        componentes: [
+          {
+            nombre: "Sección patrocinada con contenido",
+            detalle:
+              "NOT RED+. Las secciones viven en fichas de video en Portal RED+, impulsadas por Push",
+            alcance: "10 salidas",
+          },
+          {
+            nombre: "Doble página de contenido orgánico",
+            detalle: "Revista 15 Minutos",
+            alcance: "1 salida",
+          },
+          {
+            nombre: "Notas de contenido",
+            detalle: "RED+ Noticias",
+            alcance: "3 salidas",
+          },
+        ],
+      },
+      {
+        nombre: "3. Domina la pantalla",
+        componentes: [
+          {
+            nombre: 'Spots de 20"',
+            detalle: "TV RED+ / NOT",
+            alcance: "70 salidas",
+          },
+          {
+            nombre: 'Corte único de 10"',
+            detalle: "TV RED+ / NOT",
+            alcance: "30 salidas",
+          },
+          {
+            nombre: "Superimposiciones",
+            detalle: "TV RED+ / NOT",
+            alcance: "20 salidas",
+          },
+        ],
+      },
+      {
+        nombre: "4. Extiende la conversación",
+        componentes: [
+          {
+            nombre: "Nota web",
+            detalle: "Portal RED+",
+            alcance: "1 nota",
+          },
+          {
+            nombre: "Mensajes RCS",
+            detalle: "Mobile segmentado",
+            alcance: "142.011 envíos",
+          },
+          {
+            nombre: "Reel",
+            detalle: "RRSS NOT RED+",
+            alcance: "1 salida",
+          },
+        ],
+      },
+    ],
+    beneficios: [
+      "Conversación propia en TV: 3 entrevistas y un Café Claro en el set de la marca",
+      "Sección patrocinada en NOT RED+ que revive como ficha de video en Portal RED+",
+      "Contenido editorial en Revista 15 Minutos y RED+ Noticias",
+      "120 salidas en TV entre spots, cortes únicos y superimposiciones",
+      "El contenido sale de la TV con nota web, RCS y reel en redes",
+      "Incluye producción",
+    ],
+    recomendadoPara: [
+      "Marcas que quieren ser referentes de su categoría",
+      "Campañas de 6 meses con narrativa continua",
+      "Sectores: Financiero, Automotor, Salud",
+      "Mensajes que necesitan credibilidad editorial y televisiva",
+    ],
+  },
   {
     id: "vip",
     nombre: "VIP",
-    productos: 12,
-    precio: 220000000,
-    precioPreventa: 107892900,
-    descuento: "51% de descuento",
+    claim: "Liderazgo y autoridad de marca",
     descripcion:
-      "Paquete premium con máxima cobertura multimedia, ideal para campañas de alto impacto con alcance masivo en TV, digital, data y experiencias interactivas.",
-    categoriaPresupuesto: "alto", // >150M
-    alcanceIdeal: ">2M usuarios",
-    componentes: [
+      "Una solución integral de 6 meses para fortalecer la presencia de tu marca y conectar con audiencias estratégicas a través de data, contenido y medios.",
+    duracion: "6 meses",
+    precio: 171779063,
+    precioPreventa: 100000000,
+    descuento: "40% de descuento",
+    categoriaPresupuesto: "medio-alto",
+    etapasJourney: ["Descubre", "Explora", "Compara"],
+    sectoresDestacados: ["Tecnología", "Salud", "Educación"],
+    incluyeProduccion: false,
+    fases: [
       {
-        nombre: "PUSH MULTIMEDIA",
-        detalle: "5001 a 10000 clics Segmentado",
-        alcance: "13.034 clics",
+        nombre: "1. Descubre",
+        componentes: [
+          {
+            nombre: "Sondeos",
+            detalle: "Respuestas efectivas",
+            alcance: "1.000 respuestas",
+          },
+          {
+            nombre: "Analítica geoespacial",
+            detalle: "Punto 1 a 3",
+            alcance: "3 puntos",
+          },
+        ],
       },
       {
-        nombre: "RRSS Post video",
-        detalle: "Instagram + Facebook con data",
-        alcance: "347.109 Impresiones",
+        nombre: "2. Construye autoridad",
+        componentes: [
+          {
+            nombre: "Entrevista",
+            detalle: "NOT RED+",
+            alcance: "1 salida",
+          },
+          {
+            nombre: "Cápsulas / nota pregrabada",
+            detalle: "RED TV / RED+ Not",
+            alcance: "5 salidas",
+          },
+          {
+            nombre: "Nota destacada + landing",
+            detalle: "REDMAS.COM, impulsada por SMS",
+            alcance: "19.443 envíos",
+          },
+          {
+            nombre: "Doble página de contenido",
+            detalle: "Revista 15 Minutos",
+            alcance: "1 salida",
+          },
+        ],
       },
       {
-        nombre: "DISPLAY NAL",
-        detalle: "Display nacional",
-        alcance: "1'678.086 Impresiones",
+        nombre: "3. Gana presencia",
+        componentes: [
+          {
+            nombre: "Superimposiciones",
+            detalle: "RED TV / RED+ Not",
+            alcance: "20 salidas",
+          },
+          {
+            nombre: "Publicación orgánica",
+            detalle: "RRSS RED+ Not",
+            alcance: "2 salidas",
+          },
+        ],
       },
       {
-        nombre: "Post + Historia",
-        detalle: "Contenido orgánico",
-        alcance: "N/A",
-      },
-      {
-        nombre: "NATIVE",
-        detalle: "Publicidad nativa",
-        alcance: "1'627.148 Impresiones",
-      },
-      {
-        nombre: "DATA REWARDS",
-        detalle: "Incluye paquete de datos",
-        alcance: "13.333 Views",
-      },
-      {
-        nombre: "MENCION COMERCIAL",
-        detalle: '15 de 20" RED TV / RED+ Not',
-        alcance: "N/A",
-      },
-      {
-        nombre: "COMERCIALES",
-        detalle: '110 DE 10" Red+ TV / RED+ Not',
-        alcance: "N/A",
-      },
-      {
-        nombre: "REVISTA 15 MINUTOS",
-        detalle: "1 página + Free press",
-        alcance: "N/A",
-      },
-      {
-        nombre: "Contenido Portal",
-        detalle: "RRSS + Display + Native",
-        alcance: "N/A",
-      },
-      {
-        nombre: "SHOPPING LIVE",
-        detalle: "Experiencia de compra en vivo",
-        alcance: "N/A",
-      },
-      {
-        nombre: "SMS Segmentado",
-        detalle: "1.000 a 100.000 envíos",
-        alcance: "21.823 envíos",
+        nombre: "4. Activa",
+        componentes: [
+          {
+            nombre: "RCS con agente",
+            detalle: "Mobile conversacional",
+            alcance: "22.156 envíos",
+          },
+          {
+            nombre: "Display programática",
+            detalle: "Segmentado con data",
+            alcance: "3.727 clics",
+          },
+          {
+            nombre: "Push Multimedia",
+            detalle: "Segmentado con data",
+            alcance: "18.583 clics",
+          },
+        ],
       },
     ],
     beneficios: [
-      "Máxima cobertura multimedia (TV + Digital + Mobile + Data)",
-      "Experiencias interactivas (Shopping Live)",
-      "Alto alcance en impresiones (>3.3M impresiones totales)",
-      "Segmentación avanzada con data de primera mano",
-      "Contenido orgánico + pautado en RRSS",
-      "Free press en Revista 15 Minutos",
+      "Data propia desde el inicio: sondeos y analítica geoespacial en 3 puntos",
+      "Autoridad construida con entrevista, cápsulas y contenido en Revista 15 Minutos",
+      "Landing de marca en REDMAS.COM impulsada con SMS",
+      "Presencia sostenida en TV y redes de RED+",
+      "Activación mobile con RCS con agente, display programática y Push Multimedia",
+      "Solución integral de data, contenido y medios en un solo paquete",
     ],
     recomendadoPara: [
-      "Lanzamientos de productos de alto perfil",
-      "Campañas nacionales de awareness masivo",
-      "Marcas premium con presupuestos altos",
-      "Sectores: Tecnología, Automotriz, Banca, Retail (grandes marcas)",
+      "Marcas que buscan autoridad sin la inversión de un paquete ELITE",
+      "Campañas de 6 meses que combinan data, contenido y medios",
+      "Sectores: Tecnología, Salud, Educación",
+      "Estrategias que necesitan cubrir todo el embudo con un presupuesto medio",
     ],
-    impuestos: "+ impuestos (IVA 19% + Impoconsumo 4% en mobile)",
   },
   {
-    id: "editorial-red-plus",
-    nombre: "EDITORIAL RED+",
-    productos: 7,
-    precio: 123000000,
-    precioPreventa: 75000000,
-    descuento: "39% de descuento",
+    id: "connect",
+    nombre: "CONNECT",
+    claim: "Acerca a tu marca",
     descripcion:
-      "Paquete enfocado en contenido editorial y presencia en RED+, ideal para posicionamiento de marca con integración entre TV y digital.",
-    categoriaPresupuesto: "medio-alto", // 80M-150M
-    alcanceIdeal: "1M-2M usuarios",
-    componentes: [
+      "Genera interés en audiencias relevantes y llévalas a descubrir más sobre tu marca a través de contenidos y formatos que impulsan la interacción.",
+    duracion: null,
+    precio: 157560000,
+    precioPreventa: 150000000,
+    descuento: "5% de descuento",
+    categoriaPresupuesto: "medio-alto",
+    etapasJourney: ["Decide", "Compra"],
+    sectoresDestacados: ["Retail", "Consumo Masivo", "Entretenimiento"],
+    incluyeProduccion: false,
+    fases: [
       {
-        nombre: "COMERCIALES",
-        detalle: '55 DE 10" en TV (RED+ / RED+ Not)',
-        alcance: "N/A",
+        nombre: "1. Genera interacción",
+        componentes: [
+          {
+            nombre: "Post META",
+            detalle: "Programmatic",
+            alcance: "21.007 clics",
+          },
+          {
+            nombre: "Post TikTok",
+            detalle: "Programmatic",
+            alcance: "21.907 clics",
+          },
+        ],
       },
       {
-        nombre: "PUSH MULTIMEDIA",
-        detalle: "5001 a 10000 clics Segmentado",
-        alcance: "10.000 CLICS",
+        nombre: "2. Impulsamos el clic",
+        componentes: [
+          {
+            nombre: "Display",
+            detalle: "Programmatic",
+            alcance: "7.414 clics",
+          },
+          {
+            nombre: "Push Multimedia",
+            detalle: "Segmentado con data",
+            alcance: "12.389 clics",
+          },
+        ],
       },
       {
-        nombre: "PATROCINIO DE SECCIÓN",
-        detalle: 'RED+ / RED+ Not, 14 DE 10" en TV',
-        alcance: "N/A",
+        nombre: "3. Acerca a la decisión",
+        componentes: [
+          {
+            nombre: "Tráfico calificado",
+            detalle: "Audiencias con intención",
+            alcance: "45.000 clics",
+          },
+        ],
       },
       {
-        nombre: "MENCIONES COMERCIALES",
-        detalle: 'RED+ / RED+ Not, 14 DE 20" en TV',
-        alcance: "N/A",
-      },
-      {
-        nombre: "REVISTA 15 MINUTOS",
-        detalle: "1/2 página",
-        alcance: "N/A",
-      },
-      {
-        nombre: "Post",
-        detalle: "Contenido orgánico",
-        alcance: "N/A",
-      },
-      {
-        nombre: "DATA REWARDS",
-        detalle: "Incluye paquete de datos",
-        alcance: "4.834 VIEWS",
+        nombre: "4. Conecta con el producto",
+        componentes: [
+          {
+            nombre: "Precargas virtuales",
+            detalle: "App de marca en dispositivos",
+            alcance: "18.800 instalaciones",
+          },
+          {
+            nombre: "Shopping Live",
+            detalle: "En la locación del cliente",
+            alcance: "1 transmisión",
+          },
+        ],
       },
     ],
     beneficios: [
-      "Patrocinio exclusivo de sección en RED+",
-      "Integración TV + Digital con contenido editorial",
-      "Presencia en revista impresa (15 Minutos)",
-      "Comerciales + menciones en programación RED+",
-      "Segmentación avanzada con Push Multimedia",
-      "Reward marketing con paquetes de datos",
+      "Más de 108.000 clics sumando redes, display, push y tráfico calificado",
+      "Presencia programática en META y TikTok con data de audiencias",
+      "45.000 clics de tráfico calificado hacia los activos de la marca",
+      "18.800 instalaciones precargadas de la app de la marca",
+      "Shopping Live grabado en la locación del cliente",
+      "Todo el paquete está orientado a interacción medible",
     ],
     recomendadoPara: [
-      "Marcas que buscan posicionamiento editorial",
-      "Campañas de awareness en TV + digital",
-      "Sectores: Entretenimiento, Alimentación, Servicios",
-      "Empresas con mensajes que requieren credibilidad editorial",
+      "Marcas con objetivos de interacción y consideración",
+      "Campañas que necesitan llevar audiencia a un destino digital",
+      "Sectores: Retail, Consumo Masivo, Entretenimiento",
+      "Productos con punto de venta o app propia",
     ],
-    impuestos: "+ impuestos (IVA 19% + Impoconsumo 4% en mobile)",
   },
   {
     id: "smart",
     nombre: "SMART",
-    productos: 7,
-    precio: 55000000,
-    precioPreventa: 40000000,
-    descuento: "27% de descuento",
+    claim: "Posiciona y amplifica",
     descripcion:
-      "Paquete equilibrado con presencia en TV, digital y mobile. Óptimo para campañas con presupuesto moderado que buscan alcance efectivo.",
-    categoriaPresupuesto: "medio", // 35M-80M
-    alcanceIdeal: "500K-1M usuarios",
-    componentes: [
+      "Una solución de 2 meses para fortalecer el posicionamiento de tu marca y amplificar tu mensaje en audiencias y medios estratégicos.",
+    duracion: "2 meses",
+    precio: 61600000,
+    precioPreventa: 50000000,
+    descuento: "19% de descuento",
+    categoriaPresupuesto: "medio",
+    etapasJourney: ["Descubre", "Explora"],
+    sectoresDestacados: ["Moda", "Entretenimiento", "Tecnología"],
+    incluyeProduccion: false,
+    fases: [
       {
-        nombre: "COMERCIALES",
-        detalle: '55 DE 10" en TV (RED+ / RED+ Not)',
-        alcance: "N/A",
+        nombre: "1. Conoce",
+        componentes: [
+          {
+            nombre: "Sondeos",
+            detalle: "Respuestas efectivas",
+            alcance: "500 respuestas",
+          },
+          {
+            nombre: "Analítica geoespacial",
+            detalle: "Punto 1 a 3",
+            alcance: "3 puntos",
+          },
+        ],
       },
       {
-        nombre: "REVISTA 15 MINUTOS",
-        detalle: "1 página",
-        alcance: "N/A",
+        nombre: "2. Posiciona",
+        componentes: [
+          {
+            nombre: "Nota destacada + landing",
+            detalle: "REDMAS.COM, impulsada por SMS",
+            alcance: "10.911 envíos",
+          },
+          {
+            nombre: "Entrevista",
+            detalle: "NOT RED+",
+            alcance: "1 salida",
+          },
+          {
+            nombre: "Superimposiciones",
+            detalle: "RED+ Not",
+            alcance: "10 salidas",
+          },
+        ],
       },
       {
-        nombre: "RRSS Post",
-        detalle: "Contenido orgánico",
-        alcance: "N/A",
-      },
-      {
-        nombre: "DISPLAY NAL",
-        detalle: "Display nacional",
-        alcance: "1'174.660 Impresiones",
-      },
-      {
-        nombre: "ALTO IMPACTO",
-        detalle: "Formatos de impacto",
-        alcance: "3.000 unidades",
-      },
-      {
-        nombre: "SMS Segmentado",
-        detalle: "1.000 a 100.000 envíos",
-        alcance: "19.204 envíos",
-      },
-      {
-        nombre: "PUSH MULTIMEDIA",
-        detalle: "+10000 clics Segmentado",
-        alcance: "14.893 Clics",
+        nombre: "3. Impacta",
+        componentes: [
+          {
+            nombre: "Display",
+            detalle: "Segmentado con data",
+            alcance: "3.892 clics",
+          },
+          {
+            nombre: "Push Multimedia",
+            detalle: "Segmentado con data",
+            alcance: "12.389 clics",
+          },
+          {
+            nombre: "Sat Push",
+            detalle: "Mobile masivo",
+            alcance: "16.163 envíos",
+          },
+        ],
       },
     ],
     beneficios: [
-      'Presencia en TV con 55 comerciales de 10"',
-      "Alto impacto digital con formatos especiales",
-      "Alcance móvil directo con SMS segmentado",
-      "Display nacional con +1M de impresiones",
-      "Contenido en revista impresa (página completa)",
-      "Push notifications con alto volumen de clics",
+      "Arranca conociendo a la audiencia con sondeos y analítica geoespacial",
+      "Entrevista en NOT RED+ y 10 superimposiciones para posicionar el mensaje",
+      "Landing de marca en REDMAS.COM impulsada con SMS",
+      "Más de 16.000 clics entre display y Push Multimedia",
+      "Sat Push con 16.163 envíos para amplificar el alcance mobile",
+      "Ciclo completo de posicionamiento en solo 2 meses",
     ],
     recomendadoPara: [
-      "Campañas tácticas con objetivos específicos",
-      "Lanzamientos de productos nuevos",
-      "Promociones y activaciones estacionales",
-      "Sectores: Retail, Telecomunicaciones, Salud, Educación",
+      "Campañas tácticas de posicionamiento",
+      "Lanzamientos y activaciones de temporada",
+      "Sectores: Moda, Entretenimiento, Tecnología",
+      "Marcas que buscan resultados rápidos con inversión media",
     ],
-    impuestos: "+ impuestos (IVA 19% + Impoconsumo 4% en mobile)",
   },
   {
     id: "basic",
     nombre: "BASIC",
-    productos: 6,
-    precio: 20048500,
-    precioPreventa: 17000000,
-    descuento: "27% de descuento",
+    claim: "Conoce y conecta",
     descripcion:
-      "Paquete de entrada ideal para pequeñas y medianas empresas. Combina TV, digital y mobile con un presupuesto accesible.",
-    categoriaPresupuesto: "bajo", // <35M
-    alcanceIdeal: "200K-500K usuarios",
-    componentes: [
+      "Una solución de 2 meses para llevar tu mensaje a diferentes audiencias.",
+    duracion: "2 meses",
+    precio: 22320800,
+    precioPreventa: 20000000,
+    descuento: "10% de descuento",
+    categoriaPresupuesto: "bajo",
+    etapasJourney: ["Descubre"],
+    sectoresDestacados: ["Retail", "Moda", "Gobierno"],
+    incluyeProduccion: false,
+    fases: [
       {
-        nombre: "COMERCIALES",
-        detalle: '20 DE 10" en TV (RED+ / RED+ Not)',
-        alcance: "N/A",
+        nombre: "Descubre",
+        componentes: [
+          {
+            nombre: "Sondeos",
+            detalle: "Respuestas efectivas",
+            alcance: "500 respuestas",
+          },
+        ],
       },
       {
-        nombre: "RRSS HISTORIA",
-        detalle: "Contenido orgánico",
-        alcance: "N/A",
+        nombre: "Hazte visible",
+        componentes: [
+          {
+            nombre: "Native",
+            detalle: "Contenido nativo",
+            alcance: "1.220.361 impresiones",
+          },
+          {
+            nombre: "Display",
+            detalle: "Segmentado con data",
+            alcance: "839.043 impresiones",
+          },
+          {
+            nombre: "Comerciales",
+            detalle: "NOT RED+",
+            alcance: "20 spots",
+          },
+        ],
       },
       {
-        nombre: "REVISTA 15 MINUTOS",
-        detalle: "1/3 página",
-        alcance: "N/A",
-      },
-      {
-        nombre: "NATIVE",
-        detalle: "Publicidad nativa",
-        alcance: "701.708 Impresiones",
-      },
-      {
-        nombre: "DISPLAY NAL",
-        detalle: "Display nacional",
-        alcance: "423.297 Impresiones",
-      },
-      {
-        nombre: "PUSH MULTIMEDIA",
-        detalle: "1500 - 5000 clics Segmentado",
-        alcance: "3.717 Clics",
+        nombre: "Conecta",
+        componentes: [
+          {
+            nombre: "Push Multimedia",
+            detalle: "Segmentado con data",
+            alcance: "3.767 clics",
+          },
+        ],
       },
     ],
     beneficios: [
-      "Acceso a TV con 20 comerciales",
-      "Presencia digital con +1M impresiones totales",
-      "Publicidad nativa para contenido menos intrusivo",
-      "Revista impresa con espacio editorial",
-      "Contenido orgánico en redes sociales",
-      "Presupuesto accesible con descuento en preventa",
+      "Punto de entrada al portafolio con inversión controlada",
+      "Sondeos con 500 respuestas efectivas para conocer a la audiencia",
+      "Más de 2 millones de impresiones entre Native y Display",
+      "20 comerciales en NOT RED+",
+      "Push Multimedia segmentado con data de Claro",
+      "Solución completa en 2 meses",
     ],
     recomendadoPara: [
       "PyMEs que inician en medios masivos",
-      "Campañas locales o regionales",
-      "Testing de mercado con inversión controlada",
-      "Sectores: Servicios locales, Emprendimientos, Educación",
+      "Campañas locales o pruebas de mercado",
+      "Sectores: Retail, Moda, Gobierno",
+      "Marcas que quieren validar antes de escalar",
     ],
-    impuestos: "+ impuestos (IVA 19% + Impoconsumo 4% en mobile)",
   },
 ];
 
-/**
- * Función para recomendar el paquete más adecuado según perfil del cliente
- * @param {Object} perfil - Perfil del cliente con presupuesto, alcance potencial, sector
- * @returns {Object} - Paquete recomendado con justificación
- */
-export const recomendarPaquete = (perfil) => {
-  const { presupuesto, alcancePotencial, sector, audiencia } = perfil;
-
-  // Normalizar presupuesto a número si viene como string
-  const presupuestoNum =
-    typeof presupuesto === "string"
-      ? parseInt(presupuesto.replace(/\D/g, ""))
-      : presupuesto || 0;
-
-  // Normalizar alcance potencial
-  const alcanceNum =
-    typeof alcancePotencial === "string"
-      ? parseInt(alcancePotencial.replace(/\D/g, ""))
-      : alcancePotencial || 0;
-
-  console.log("📊 Evaluando recomendación de paquete:");
-  console.log("  - Presupuesto:", presupuestoNum.toLocaleString("es-CO"));
-  console.log(
-    "  - Alcance potencial:",
-    alcanceNum.toLocaleString("es-CO"),
-    "usuarios",
-  );
-  console.log("  - Sector:", sector);
-  console.log("  - Audiencia:", audiencia);
-
-  // Sistema de puntuación para cada paquete
-  let scores = {
-    vip: 0,
-    "editorial-red-plus": 0,
-    smart: 0,
-    basic: 0,
-  };
-  let razonamiento = [];
-
-  // FACTOR 1: ALCANCE POTENCIAL (peso: 40%)
-  if (alcanceNum >= 3000000) {
-    scores.vip += 50;
-    scores["editorial-red-plus"] += 25;
-    scores.smart += 5;
-    scores.basic += 0;
-    razonamiento.push(
-      `Alcance masivo (${(alcanceNum / 1000000).toFixed(1)}M usuarios) requiere máxima cobertura VIP`,
-    );
-  } else if (alcanceNum >= 2000000) {
-    scores.vip += 35;
-    scores["editorial-red-plus"] += 45;
-    scores.smart += 15;
-    scores.basic += 0;
-    razonamiento.push(
-      `Alcance alto (${(alcanceNum / 1000000).toFixed(1)}M usuarios) ideal para EDITORIAL RED+`,
-    );
-  } else if (alcanceNum >= 1000000) {
-    scores.vip += 10;
-    scores["editorial-red-plus"] += 25;
-    scores.smart += 50;
-    scores.basic += 10;
-    razonamiento.push(
-      `Alcance medio (${(alcanceNum / 1000000).toFixed(1)}M usuarios) óptimo para SMART`,
-    );
-  } else if (alcanceNum >= 500000) {
-    scores.vip += 0;
-    scores["editorial-red-plus"] += 10;
-    scores.smart += 30;
-    scores.basic += 45;
-    razonamiento.push(
-      `Alcance moderado (${Math.round(alcanceNum / 1000)}K usuarios) eficiente con BASIC`,
-    );
-  } else {
-    scores.vip += 0;
-    scores["editorial-red-plus"] += 0;
-    scores.smart += 15;
-    scores.basic += 50;
-    razonamiento.push(
-      `Alcance focalizado (${Math.round(alcanceNum / 1000)}K usuarios) ideal para BASIC`,
-    );
-  }
-
-  // FACTOR 2: SECTOR (peso: 35%)
-  const sectorLower = sector?.toLowerCase() || "";
-
-  // Sectores premium que requieren alto awareness
-  if (
-    [
-      "tecnología",
-      "tecnologia",
-      "banca",
-      "financiero",
-      "automotriz",
-      "automotor",
-    ].some((s) => sectorLower.includes(s))
-  ) {
-    scores.vip += 40;
-    scores["editorial-red-plus"] += 25;
-    scores.smart += 5;
-    scores.basic += 0;
-    razonamiento.push(
-      `Sector ${sector} beneficia de campañas de alto impacto y awareness masivo (VIP)`,
-    );
-  }
-  // Sectores con foco editorial
-  else if (
-    [
-      "entretenimiento",
-      "moda",
-      "alimentación",
-      "alimentacion",
-      "servicios",
-    ].some((s) => sectorLower.includes(s))
-  ) {
-    scores["editorial-red-plus"] += 45;
-    scores.smart += 20;
-    scores.vip += 10;
-    scores.basic += 0;
-    razonamiento.push(
-      `Sector ${sector} se potencia con contenido editorial y branded content (EDITORIAL RED+)`,
-    );
-  }
-  // Sectores tácticos (resultados directos)
-  else if (
-    [
-      "retail",
-      "telecomunicaciones",
-      "salud",
-      "educación",
-      "educacion",
-      "gobierno",
-    ].some((s) => sectorLower.includes(s))
-  ) {
-    scores.smart += 40;
-    scores.basic += 25;
-    scores["editorial-red-plus"] += 10;
-    scores.vip += 0;
-    razonamiento.push(
-      `Sector ${sector} ideal para campañas tácticas con objetivos específicos`,
-    );
-  }
-  // Sector consumo masivo
-  else if (
-    ["consumo masivo", "consumo", "masivo"].some((s) => sectorLower.includes(s))
-  ) {
-    scores.vip += 35;
-    scores.smart += 30;
-    scores["editorial-red-plus"] += 20;
-    scores.basic += 0;
-    razonamiento.push(
-      `Sector ${sector} requiere alcance masivo multiplataforma`,
-    );
-  }
-  // Default para sectores no específicos
-  else {
-    scores.smart += 25;
-    scores.basic += 20;
-    scores["editorial-red-plus"] += 15;
-    scores.vip += 10;
-  }
-
-  // FACTOR 3: PERFIL DE AUDIENCIA (peso: 20%)
-  const audienciaGenero = audiencia?.genero?.toLowerCase() || "";
-  const audienciaEdad = audiencia?.edad?.toLowerCase() || "";
-  const audienciaNSE = audiencia?.nivelSocioeconomico?.toLowerCase() || "";
-
-  // Género segmentado necesita más enfoque
-  if (audienciaGenero === "mujeres" || audienciaGenero === "hombres") {
-    scores.smart += 15;
-    scores["editorial-red-plus"] += 10;
-    razonamiento.push(
-      `Audiencia segmentada por género permite enfoque preciso`,
-    );
-  } else {
-    scores.vip += 10;
-    scores.smart += 5;
-  }
-
-  // NSE Alto requiere paquetes premium
-  if (
-    audienciaNSE.includes("alto") ||
-    audienciaNSE.includes("e5") ||
-    audienciaNSE.includes("e6")
-  ) {
-    scores.vip += 30;
-    scores["editorial-red-plus"] += 20;
-    scores.smart += 5;
-    scores.basic += 0;
-    razonamiento.push(
-      `NSE alto justifica inversión en paquetes premium con mayor ROI`,
-    );
-  }
-  // NSE Medio es versátil
-  else if (
-    audienciaNSE.includes("medio") ||
-    audienciaNSE.includes("e3") ||
-    audienciaNSE.includes("e4") ||
-    audienciaNSE === "todos"
-  ) {
-    scores.smart += 25;
-    scores["editorial-red-plus"] += 15;
-    scores.basic += 10;
-    scores.vip += 5;
-  }
-  // NSE Bajo necesita eficiencia
-  else if (
-    audienciaNSE.includes("bajo") ||
-    audienciaNSE.includes("e1") ||
-    audienciaNSE.includes("e2")
-  ) {
-    scores.basic += 30;
-    scores.smart += 15;
-    scores["editorial-red-plus"] += 0;
-    scores.vip += 0;
-  }
-
-  // Jóvenes (18-34) prefieren digital/mobile
-  if (
-    audienciaEdad.includes("18") ||
-    audienciaEdad.includes("24") ||
-    audienciaEdad.includes("25") ||
-    audienciaEdad.includes("34")
-  ) {
-    scores.smart += 20;
-    scores.vip += 10;
-    scores["editorial-red-plus"] += 5;
-    scores.basic += 10;
-    razonamiento.push(
-      `Audiencia joven responde mejor a estrategias digitales y mobile`,
-    );
-  }
-  // Adultos (35-54) balance TV + Digital
-  else if (
-    audienciaEdad.includes("35") ||
-    audienciaEdad.includes("44") ||
-    audienciaEdad.includes("45") ||
-    audienciaEdad.includes("54")
-  ) {
-    scores["editorial-red-plus"] += 20;
-    scores.smart += 15;
-    scores.vip += 10;
-    scores.basic += 0;
-  }
-  // Mayores (55+) más TV tradicional
-  else if (
-    audienciaEdad.includes("55") ||
-    audienciaEdad.includes("64") ||
-    audienciaEdad.includes("65") ||
-    audienciaEdad.includes("75") ||
-    audienciaEdad.includes("+")
-  ) {
-    scores["editorial-red-plus"] += 25;
-    scores.vip += 20;
-    scores.smart += 5;
-    scores.basic += 0;
-  }
-
-  // FACTOR 4: PRESUPUESTO (peso: 10% - solo si existe)
-  if (presupuestoNum >= 150000000) {
-    scores.vip += 10;
-    razonamiento.push("Presupuesto alto permite máxima cobertura multimedia");
-  } else if (presupuestoNum >= 80000000) {
-    scores["editorial-red-plus"] += 10;
-  } else if (presupuestoNum >= 35000000) {
-    scores.smart += 10;
-  } else if (presupuestoNum > 0) {
-    scores.basic += 10;
-  }
-
-  // Determinar paquete ganador
-  console.log("📊 Puntuaciones finales:", scores);
-
-  const paqueteId = Object.keys(scores).reduce((a, b) =>
-    scores[a] > scores[b] ? a : b,
-  );
-
-  const paqueteRecomendado =
-    PAQUETES_COMERCIALES.find((p) => p.id === paqueteId) ||
-    PAQUETES_COMERCIALES[2];
-
-  // 4. Calcular ROI estimado (impresiones totales / inversión)
-  const impresionesTotales = calcularImpresionesTotales(paqueteRecomendado);
-  const costoMilImpresiones =
-    paqueteRecomendado.precioPreventa / (impresionesTotales / 1000);
-
-  razonamiento.push(
-    `CPM estimado: $${Math.round(costoMilImpresiones).toLocaleString("es-CO")} - excelente relación costo-beneficio`,
-  );
-
-  console.log(
-    "🎯 Paquete recomendado:",
-    paqueteRecomendado.nombre,
-    "- Score:",
-    scores[paqueteId],
+/** Paquetes listos para usar, con componentes y conteo derivados de las fases. */
+export const PAQUETES_COMERCIALES = DEFINICION_PAQUETES.map((paquete) => {
+  const componentes = paquete.fases.flatMap((fase) =>
+    fase.componentes.map((componente) => ({ ...componente, fase: fase.nombre })),
   );
 
   return {
-    paquete: paqueteRecomendado,
-    razonamiento,
-    alternativas: obtenerAlternativas(paqueteRecomendado),
-    mensajePersonalizado: generarMensajePersonalizado(
-      paqueteRecomendado,
-      perfil,
-    ),
+    ...paquete,
+    componentes,
+    productos: componentes.length,
+    impuestos: IMPUESTOS,
+  };
+});
+
+/** Paquetes ordenados de menor a mayor inversión de preventa. */
+const PAQUETES_POR_INVERSION = [...PAQUETES_COMERCIALES].sort(
+  (a, b) => a.precioPreventa - b.precioPreventa,
+);
+
+/**
+ * Rangos de inversión que se le ofrecen al usuario en el chat.
+ * `referencia` es el valor con el que se evalúa la recomendación.
+ */
+export const RANGOS_PRESUPUESTO = [
+  { etiqueta: "Hasta $30 millones", referencia: 30000000 },
+  { etiqueta: "Entre $30 y $70 millones", referencia: 70000000 },
+  { etiqueta: "Entre $70 y $120 millones", referencia: 120000000 },
+  { etiqueta: "Entre $120 y $180 millones", referencia: 180000000 },
+  { etiqueta: "Más de $180 millones", referencia: 250000000 },
+  { etiqueta: "Aún no lo defino", referencia: 0 },
+];
+
+export const OPCIONES_PRESUPUESTO = RANGOS_PRESUPUESTO.map((r) => r.etiqueta);
+
+/**
+ * Convierte la etiqueta elegida en el chat a su valor de referencia.
+ * @param {string} etiqueta
+ * @returns {number} 0 cuando el usuario no definió presupuesto
+ */
+export const presupuestoDesdeEtiqueta = (etiqueta) =>
+  RANGOS_PRESUPUESTO.find((r) => r.etiqueta === etiqueta)?.referencia || 0;
+
+// ---------------------------------------------------------------------------
+// Motor de recomendación
+// ---------------------------------------------------------------------------
+
+/** Peso máximo que puede aportar cada criterio. */
+const PESOS = {
+  presupuesto: 45,
+  journey: 25,
+  alcance: 15,
+  sector: 15,
+  nivelSocioeconomico: 8,
+  edad: 8,
+};
+
+/**
+ * Escala de alcance calibrada con la distribución real de banderas
+ * demográficas (rango observado: 6,7M - 54,9M usuarios).
+ */
+const ESCALA_ALCANCE = [
+  { desde: 30000000, etiqueta: "masivo", favoritos: ["elite-360", "elite-investigacion", "vip"] },
+  { desde: 18000000, etiqueta: "amplio", favoritos: ["elite-360", "vip", "connect"] },
+  { desde: 12000000, etiqueta: "medio", favoritos: ["vip", "connect", "smart"] },
+  { desde: 9000000, etiqueta: "focalizado", favoritos: ["smart", "connect", "basic"] },
+  { desde: 0, etiqueta: "de nicho", favoritos: ["basic", "smart", "connect"] },
+];
+
+/** Proporción del peso que recibe cada posición de una lista de favoritos. */
+const PROPORCION_FAVORITOS = [1, 0.7, 0.45];
+
+const puntosPorFavoritos = (favoritos, peso) =>
+  favoritos.reduce((acc, id, indice) => {
+    acc[id] = Math.round(peso * (PROPORCION_FAVORITOS[indice] ?? 0.25));
+    return acc;
+  }, {});
+
+const aNumero = (valor) =>
+  typeof valor === "string"
+    ? parseInt(valor.replace(/\D/g, ""), 10) || 0
+    : valor || 0;
+
+const formatearPesos = (valor) => `$${valor.toLocaleString("es-CO")}`;
+
+/**
+ * Criterio 1 - Presupuesto: gana el paquete más completo que cabe en la
+ * inversión declarada.
+ */
+const criterioPresupuesto = ({ presupuesto }) => {
+  const monto = aNumero(presupuesto);
+  if (!monto) return null;
+
+  const tolerancia = monto * 1.1;
+  const asequibles = PAQUETES_COMERCIALES.filter(
+    (p) => p.precioPreventa <= tolerancia,
+  );
+
+  if (asequibles.length === 0) {
+    const entrada = PAQUETES_POR_INVERSION[0];
+    return {
+      puntos: { [entrada.id]: PESOS.presupuesto },
+      razon: `Con una inversión de ${formatearPesos(monto)}, ${entrada.nombre} es el punto de entrada del portafolio`,
+    };
+  }
+
+  const tope = Math.max(...asequibles.map((p) => p.precioPreventa));
+  const puntos = {};
+  PAQUETES_COMERCIALES.forEach((p) => {
+    puntos[p.id] =
+      p.precioPreventa <= tolerancia
+        ? Math.round(PESOS.presupuesto * (p.precioPreventa / tope))
+        : 0;
+  });
+
+  const mejor = asequibles.find((p) => p.precioPreventa === tope);
+  return {
+    puntos,
+    razon: `La inversión de ${formatearPesos(monto)} alcanza para ${mejor.nombre} (preventa ${formatearPesos(mejor.precioPreventa)})`,
   };
 };
 
 /**
- * Calcular total de impresiones del paquete
+ * Criterio 2 - Etapa del journey: cada paquete declara las etapas que cubre
+ * mejor; las etapas vecinas reciben puntaje parcial.
  */
-const calcularImpresionesTotales = (paquete) => {
-  let total = 0;
-  paquete.componentes.forEach((comp) => {
-    const match = comp.alcance.match(/[\d']+/);
-    if (match) {
-      total += parseInt(match[0].replace(/'/g, ""));
-    }
+const criterioJourney = ({ etapaJourney }) => {
+  const indiceEtapa = ORDEN_JOURNEY.indexOf(etapaJourney);
+  if (indiceEtapa === -1) return null;
+
+  const puntos = {};
+  PAQUETES_COMERCIALES.forEach((p) => {
+    const distancia = Math.min(
+      ...p.etapasJourney.map((etapa) =>
+        Math.abs(ORDEN_JOURNEY.indexOf(etapa) - indiceEtapa),
+      ),
+    );
+    puntos[p.id] = Math.round(PESOS.journey * Math.max(0, 1 - distancia * 0.35));
   });
-  return total || 1000000; // Fallback si no hay data
+
+  const cubren = PAQUETES_COMERCIALES.filter((p) =>
+    p.etapasJourney.includes(etapaJourney),
+  ).map((p) => p.nombre);
+
+  return {
+    puntos,
+    razon: cubren.length
+      ? `La etapa "${etapaJourney}" del journey se resuelve con ${cubren.join(" o ")}`
+      : `La etapa "${etapaJourney}" se atiende con los paquetes más cercanos del portafolio`,
+  };
+};
+
+/** Criterio 3 - Alcance potencial de la audiencia seleccionada. */
+const criterioAlcance = ({ alcancePotencial }) => {
+  const alcance = aNumero(alcancePotencial);
+  if (!alcance) return null;
+
+  const escalon = ESCALA_ALCANCE.find((e) => alcance >= e.desde);
+  const millones = (alcance / 1000000).toFixed(1);
+
+  return {
+    puntos: puntosPorFavoritos(escalon.favoritos, PESOS.alcance),
+    razon: `Alcance ${escalon.etiqueta} (${millones}M de usuarios potenciales) según banderas demográficas`,
+  };
+};
+
+/** Criterio 4 - Sector de la marca. */
+const criterioSector = ({ sector }) => {
+  if (!sector) return null;
+
+  const afines = PAQUETES_COMERCIALES.filter((p) =>
+    p.sectoresDestacados.includes(sector),
+  );
+  if (afines.length === 0) return null;
+
+  return {
+    puntos: puntosPorFavoritos(
+      afines.map((p) => p.id),
+      PESOS.sector,
+    ),
+    razon: `El sector ${sector} responde bien a ${afines.map((p) => p.nombre).join(" y ")}`,
+  };
+};
+
+/** Criterio 5 - Nivel socioeconómico de la audiencia. */
+const criterioNivelSocioeconomico = ({ audiencia }) => {
+  const nse = (audiencia?.nivelSocioeconomico || "").toLowerCase();
+  if (!nse) return null;
+
+  if (nse.includes("alto") || nse.includes("e5") || nse.includes("e6")) {
+    return {
+      puntos: puntosPorFavoritos(
+        ["elite-360", "elite-investigacion", "vip"],
+        PESOS.nivelSocioeconomico,
+      ),
+      razon: "El NSE alto justifica soluciones de contenido premium",
+    };
+  }
+
+  if (nse.includes("bajo") || nse.includes("e1") || nse.includes("e2")) {
+    return {
+      puntos: puntosPorFavoritos(
+        ["basic", "smart", "connect"],
+        PESOS.nivelSocioeconomico,
+      ),
+      razon: "El NSE bajo se cubre con mayor eficiencia en formatos mobile y digitales",
+    };
+  }
+
+  return {
+    puntos: puntosPorFavoritos(
+      ["vip", "connect", "smart"],
+      PESOS.nivelSocioeconomico,
+    ),
+    razon: "El NSE medio permite combinar contenido y activación digital",
+  };
+};
+
+/** Criterio 6 - Edad de la audiencia. */
+const criterioEdad = ({ audiencia }) => {
+  const edad = (audiencia?.edad || "").toLowerCase();
+  if (!edad) return null;
+
+  const joven = ["18", "24", "25", "34"].some((r) => edad.includes(r));
+  const mayor = ["55", "64", "65", "75"].some((r) => edad.includes(r));
+
+  if (joven && !mayor) {
+    return {
+      puntos: puntosPorFavoritos(["connect", "smart", "vip"], PESOS.edad),
+      razon: "La audiencia joven responde mejor a formatos digitales y mobile",
+    };
+  }
+
+  if (mayor) {
+    return {
+      puntos: puntosPorFavoritos(["elite-360", "vip", "smart"], PESOS.edad),
+      razon: "La audiencia adulta mantiene alto consumo de TV y contenido editorial",
+    };
+  }
+
+  return {
+    puntos: puntosPorFavoritos(["vip", "elite-360", "connect"], PESOS.edad),
+    razon: "La audiencia 35-54 equilibra TV y digital",
+  };
+};
+
+const CRITERIOS = [
+  criterioPresupuesto,
+  criterioJourney,
+  criterioAlcance,
+  criterioSector,
+  criterioNivelSocioeconomico,
+  criterioEdad,
+];
+
+/**
+ * Recomienda el paquete más adecuado según el perfil del cliente.
+ * @param {Object} perfil
+ * @param {number|string} [perfil.presupuesto] - Inversión declarada (0 si no la definió)
+ * @param {number|string} [perfil.alcancePotencial] - Alcance de banderas demográficas
+ * @param {string} [perfil.sector]
+ * @param {string} [perfil.etapaJourney] - Etapa elegida en la experiencia del journey
+ * @param {Object} [perfil.audiencia] - {genero, edad, nivelSocioeconomico}
+ * @returns {{paquete: Object, razonamiento: string[], alternativas: Array, mensajePersonalizado: string, puntuaciones: Object}}
+ */
+export const recomendarPaquete = (perfil) => {
+  const puntuaciones = Object.fromEntries(
+    PAQUETES_COMERCIALES.map((p) => [p.id, 0]),
+  );
+  const razonamiento = [];
+
+  CRITERIOS.forEach((criterio) => {
+    const resultado = criterio(perfil);
+    if (!resultado) return;
+
+    Object.entries(resultado.puntos).forEach(([id, valor]) => {
+      if (puntuaciones[id] !== undefined) puntuaciones[id] += valor;
+    });
+    if (resultado.razon) razonamiento.push(resultado.razon);
+  });
+
+  // Gana el puntaje más alto; ante empate, la opción de menor inversión.
+  const paquete = [...PAQUETES_POR_INVERSION].sort(
+    (a, b) => puntuaciones[b.id] - puntuaciones[a.id],
+  )[0];
+
+  razonamiento.push(
+    paquete.duracion
+      ? `${paquete.nombre} despliega ${paquete.productos} productos durante ${paquete.duracion}`
+      : `${paquete.nombre} concentra ${paquete.productos} productos orientados a interacción`,
+  );
+
+  console.log("📊 Puntuaciones de paquetes:", puntuaciones);
+  console.log("🎯 Paquete recomendado:", paquete.nombre);
+
+  return {
+    paquete,
+    razonamiento,
+    alternativas: obtenerAlternativas(paquete),
+    mensajePersonalizado: generarMensajePersonalizado(paquete, perfil),
+    puntuaciones,
+  };
 };
 
 /**
- * Obtener paquetes alternativos (uno menor y uno mayor)
+ * Alternativa inmediatamente menor y mayor en inversión.
+ * @param {Object} paqueteActual
+ * @returns {Array<{tipo: string, paquete: Object, razon: string}>}
  */
 const obtenerAlternativas = (paqueteActual) => {
-  const index = PAQUETES_COMERCIALES.findIndex(
+  const indice = PAQUETES_POR_INVERSION.findIndex(
     (p) => p.id === paqueteActual.id,
   );
   const alternativas = [];
 
-  if (index > 0) {
+  if (indice > 0) {
+    const menor = PAQUETES_POR_INVERSION[indice - 1];
     alternativas.push({
       tipo: "menor",
-      paquete: PAQUETES_COMERCIALES[index - 1],
-      razon: "Opción más económica con cobertura reducida",
+      paquete: menor,
+      razon: `Opción más económica: ${menor.claim.toLowerCase()} con ${menor.productos} productos`,
     });
   }
 
-  if (index < PAQUETES_COMERCIALES.length - 1) {
+  if (indice < PAQUETES_POR_INVERSION.length - 1) {
+    const mayor = PAQUETES_POR_INVERSION[indice + 1];
     alternativas.push({
       tipo: "mayor",
-      paquete: PAQUETES_COMERCIALES[index + 1],
-      razon: "Opción premium con mayor alcance y componentes",
+      paquete: mayor,
+      razon: `Opción superior: ${mayor.claim.toLowerCase()} con ${mayor.productos} productos`,
     });
   }
 
@@ -634,30 +940,47 @@ const obtenerAlternativas = (paqueteActual) => {
 };
 
 /**
- * Generar mensaje personalizado para la recomendación
+ * Mensaje de cierre que explica la recomendación en lenguaje de negocio.
+ * @param {Object} paquete
+ * @param {Object} perfil
+ * @returns {string}
  */
 const generarMensajePersonalizado = (paquete, perfil) => {
-  const { sector, audiencia } = perfil;
+  const { sector, audiencia, etapaJourney } = perfil;
+  const perfilAudiencia = [
+    audiencia?.genero,
+    audiencia?.edad,
+    audiencia?.nivelSocioeconomico && `NSE ${audiencia.nivelSocioeconomico}`,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
-  return `Basado en tu perfil de audiencia (${audiencia?.genero}, ${audiencia?.edad}, NSE ${audiencia?.nivelSocioeconomico}) y sector ${sector}, el paquete **${paquete.nombre}** ofrece la mejor combinación de alcance, inversión y resultados para tu campaña.`;
+  const momento = etapaJourney
+    ? ` y el momento del journey que priorizaste (${etapaJourney})`
+    : "";
+
+  return `Por tu audiencia (${perfilAudiencia}), el sector ${sector}${momento}, el paquete **${paquete.nombre}** — ${paquete.claim} — es el que mejor combina inversión, formatos y resultados: ${paquete.productos} productos por ${formatearPesos(paquete.precioPreventa)} en preventa.`;
 };
 
 /**
  * Obtener paquete por ID
+ * @param {string} id
+ * @returns {Object|undefined}
  */
-export const obtenerPaquetePorId = (id) => {
-  return PAQUETES_COMERCIALES.find((p) => p.id === id);
-};
+export const obtenerPaquetePorId = (id) =>
+  PAQUETES_COMERCIALES.find((p) => p.id === id);
 
 /**
- * Listar todos los paquetes ordenados por precio
+ * Listar todos los paquetes ordenados de mayor a menor inversión.
+ * @returns {Array}
  */
-export const listarPaquetes = () => {
-  return [...PAQUETES_COMERCIALES].sort((a, b) => b.precio - a.precio);
-};
+export const listarPaquetes = () => [...PAQUETES_POR_INVERSION].reverse();
 
 export default {
   PAQUETES_COMERCIALES,
+  RANGOS_PRESUPUESTO,
+  OPCIONES_PRESUPUESTO,
+  presupuestoDesdeEtiqueta,
   recomendarPaquete,
   obtenerPaquetePorId,
   listarPaquetes,

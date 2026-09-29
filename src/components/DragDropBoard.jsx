@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 
-const DragDropBoard = ({ options, onComplete, iconMap = {} }) => {
-  const [available, setAvailable] = useState(options);
-  const [selected, setSelected] = useState([]);
+const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [] }) => {
+  // Las afinidades que llegan del estilo de vida arrancan en la columna elegida
+  const iniciales = preseleccionadas.filter((item) => options.includes(item));
+  const [available, setAvailable] = useState(
+    options.filter((item) => !iniciales.includes(item)),
+  );
+  const [selected, setSelected] = useState(iniciales);
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverZone, setDragOverZone] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);

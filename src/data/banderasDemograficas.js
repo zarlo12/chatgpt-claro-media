@@ -17,12 +17,18 @@ const MAPEO_EDAD = {
   "56 +": ["56 +"],
 };
 
-// Mapeo de NSE del sistema a columnas del CSV
+// Mapeo de NSE del sistema a columnas del CSV.
+// Las claves deben coincidir con NIVELES_SOCIOECONOMICOS de mockData.js:
+// estrato 1-2 es NSE bajo y estrato 5-6 es NSE alto.
 const MAPEO_NSE = {
   Todos: ["NSE 1-2", "NSE 3-4", "NSE 5-6"],
-  "Alto (1-2)": ["NSE 1-2"],
-  "Medio (3-4)": ["NSE 3-4"],
-  "Bajo (5-6)": ["NSE 5-6"],
+  "Bajo (E1-E2)": ["NSE 1-2"],
+  "Medio (E3-E4)": ["NSE 3-4"],
+  "Alto (E5-E6)": ["NSE 5-6"],
+  // Nombres de columna directos
+  "NSE 1-2": ["NSE 1-2"],
+  "NSE 3-4": ["NSE 3-4"],
+  "NSE 5-6": ["NSE 5-6"],
 };
 
 // Base de datos de banderas demográficas

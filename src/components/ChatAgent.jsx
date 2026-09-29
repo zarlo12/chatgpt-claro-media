@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatOptions from './ChatOptions';
 import DragDropBoard from './DragDropBoard';
+import EstiloVidaSelector from './EstiloVidaSelector';
 import JourneyStageSelector from './JourneyStageSelector';
 import TransitionModal from './TransitionModal';
 import CompletionScreen from './CompletionScreen';
@@ -12,12 +13,37 @@ import {
   GENEROS,
   RANGOS_EDAD,
   NIVELES_SOCIOECONOMICOS,
-  AFINIDADES_POR_SECTOR,
   TODAS_AFINIDADES,
   ICONOS_AFINIDADES,
   MENSAJES_JOURNEY_POR_SECTOR,
   REVELACIONES_JOURNEY,
 } from '../data/mockData';
+import {
+  afinidadesDeCatalogo,
+  construirLecturaEstilo,
+  construirResumenEstilo,
+  construirRutaSectores,
+} from '../data/estilosDeVida';
+import { construirMensajeBenchmark } from '../data/benchmarksInteraccion';
+import { OPCIONES_PRESUPUESTO, presupuestoDesdeEtiqueta } from '../data/paquetesComerciales';
+
+// Ritmo de la conversación
+const DURACION_TIPEO = 800;
+const PAUSA_ENTRE_MENSAJES = 1200;
+
+// Pasos que se resuelven con un componente propio en lugar de ChatOptions
+const PASOS_CON_COMPONENTE = [
+  'datosPersonales',
+  'estiloVida',
+  'afinidades',
+  'journeyPrimera',
+  'journeySegunda',
+];
+
+// Pasos que permiten elegir varias opciones
+const PASOS_MULTISELECCION = ['edad', 'nivelSocioeconomico'];
+
+const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [messages, setMessages] = useState([]);
@@ -25,9 +51,12 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [userData, setUserData] = useState({});
   const [isTyping, setIsTyping] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const [selectedAfinidades, setSelectedAfinidades] = useState([]);
   const [selectedEdades, setSelectedEdades] = useState([]);
   const [selectedNSE, setSelectedNSE] = useState([]);
+  // Experiencia de estilos de vida
+  const [estiloVida, setEstiloVida] = useState(null);
+  const [respuestaEstilo, setRespuestaEstilo] = useState('');
+  // Customer journey
   const [primeraSeleccionJourney, setPrimeraSeleccionJourney] = useState(null);
   const [segundaSeleccionJourney, setSegundaSeleccionJourney] = useState(null);
   // Datos personales
@@ -60,7 +89,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       const targetScroll = Math.max(0, currentScroll - 200); // Subir 200px
       chatContainerRef.current.scrollTo({
         top: targetScroll,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
@@ -74,32 +103,38 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     if (hasInitialized.current) return;
     hasInitialized.current = true;
 
-    // Mensaje de bienvenida
-    setTimeout(() => {
-      addAgentMessage(
-        'Bienvenido al Agente de IA de Claro Media. Desarrollado con tecnología ChatGPT y entrenado con nuestra data, estoy aquí para ayudarte a crear propuestas estratégicas personalizadas.'
-      );
-      setTimeout(() => {
-        addAgentMessage('Antes de empezar, me gustaría conocerte mejor. Por favor ingresa tus datos:');
-        setTimeout(() => {
-          setCurrentStep('datosPersonales');
-          setShowFormulario(true);
-        }, 1000);
-      }, 1500);
-    }, 500);
+    iniciarConversacion();
   }, []);
 
-  const addAgentMessage = (message) => {
+  // ---------------------------------------------------------------------
+  // Utilidades de conversación
+  // ---------------------------------------------------------------------
+
+  /** Escribe un mensaje del agente (con indicador de tipeo) y espera. */
+  const decir = async (texto, pausa = PAUSA_ENTRE_MENSAJES) => {
     setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages(prev => [...prev, { text: message, isUser: false }]);
-    }, 800);
+    await esperar(DURACION_TIPEO);
+    setIsTyping(false);
+    setMessages((prev) => [...prev, { text: texto, isUser: false }]);
+    await esperar(pausa);
+  };
+
+  /** Escribe una secuencia de mensajes del agente, en orden. */
+  const decirVarios = async (textos, pausa) => {
+    for (const texto of textos.filter(Boolean)) {
+      await decir(texto, pausa);
+    }
   };
 
   const addUserMessage = (message) => {
-    setMessages(prev => [...prev, { text: message, isUser: true }]);
+    setMessages((prev) => [...prev, { text: message, isUser: true }]);
     setShowOptions(false);
+  };
+
+  /** Habilita el siguiente paso interactivo. */
+  const irA = (paso) => {
+    setCurrentStep(paso);
+    setShowOptions(true);
   };
 
   const mostrarModalTransicion = (mensaje, icono, accion) => {
@@ -120,6 +155,16 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     }
   };
 
+  const iniciarConversacion = async () => {
+    await esperar(500);
+    await decir(
+      'Bienvenido al Agente de IA de Claro Media. Desarrollado con tecnología ChatGPT y entrenado con nuestra data, estoy aquí para ayudarte a crear propuestas estratégicas personalizadas.',
+    );
+    await decir('Antes de empezar, me gustaría conocerte mejor. Por favor ingresa tus datos:');
+    setCurrentStep('datosPersonales');
+    setShowFormulario(true);
+  };
+
   const handleReset = () => {
     // Reiniciar todo el estado
     setShowCompletion(false);
@@ -127,9 +172,10 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setCurrentStep('welcome');
     setUserData({});
     setShowOptions(false);
-    setSelectedAfinidades([]);
     setSelectedEdades([]);
     setSelectedNSE([]);
+    setEstiloVida(null);
+    setRespuestaEstilo('');
     setPrimeraSeleccionJourney(null);
     setSegundaSeleccionJourney(null);
     setNombre('');
@@ -137,47 +183,36 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setCelular('');
     setShowFormulario(false);
     setConversacionId(null);
-    
-    // Reiniciar bienvenida
-    setTimeout(() => {
-      addAgentMessage(
-        'Bienvenido al Agente de IA de Claro Media. Desarrollado con tecnología ChatGPT y entrenado con nuestra data, estoy aquí para ayudarte a crear propuestas estratégicas personalizadas.'
-      );
-      setTimeout(() => {
-        addAgentMessage('Antes de empezar, me gustaría conocerte mejor. Por favor ingresa tus datos:');
-        setTimeout(() => {
-          setCurrentStep('datosPersonales');
-          setShowFormulario(true);
-        }, 1000);
-      }, 1500);
-    }, 500);
+
+    iniciarConversacion();
   };
+
+  // ---------------------------------------------------------------------
+  // Paso 1: datos personales
+  // ---------------------------------------------------------------------
 
   const handleDatosPersonalesSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Evitar múltiples envíos
     if (isSubmitting) return;
-    
+
     // Validar que todos los campos estén completos
     if (!nombre.trim() || !correo.trim() || !celular.trim()) {
       alert('Por favor completa todos los campos');
       return;
     }
-    
+
     // Validar formato de correo básico
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(correo)) {
       alert('Por favor ingresa un correo válido');
       return;
     }
-    
-    // Activar estado de carga
+
     setIsSubmitting(true);
-    
-    // Guardar datos personales
-    setUserData(prev => ({ ...prev, nombre, correo, celular }));
-    
+    setUserData((prev) => ({ ...prev, nombre, correo, celular }));
+
     // 🔥 Guardar datos iniciales en Firebase (crear documento)
     try {
       const docId = await guardarDatosIniciales({
@@ -192,77 +227,62 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       console.error('❌ Error guardando datos iniciales:', error);
       // Continuar aunque falle el guardado
     } finally {
-      // Desactivar loading después de guardar (éxito o error)
       setIsSubmitting(false);
     }
-    
-    // Mostrar mensaje del usuario
+
     addUserMessage(`${nombre} - ${correo} - ${celular}`);
     setShowFormulario(false);
-    
-    // Mostrar modal de transición
-    setTimeout(() => {
-      mostrarModalTransicion(
-        'Perfecto! Ahora vamos a descubrir el perfil de tu audiencia',
-        'profile',
-        () => {
-          addAgentMessage(`Perfecto ${nombre}, gracias por tu información. Ahora empecemos conociendo tu empresa. ¿A qué sector perteneces?`);
-          setTimeout(() => {
-            setCurrentStep('welcome');
-            setShowOptions(true);
-          }, 1000);
-        }
-      );
-    }, 500);
+
+    mostrarModalTransicion(
+      'Perfecto! Ahora vamos a descubrir el perfil de tu audiencia',
+      'profile',
+      async () => {
+        await decir(
+          `Perfecto ${nombre}, gracias por tu información. Ahora empecemos conociendo tu empresa. ¿A qué sector perteneces?`,
+        );
+        irA('welcome');
+      },
+    );
   };
 
-  const handleSectorSelect = (sector) => {
+  // ---------------------------------------------------------------------
+  // Paso 2: perfil demográfico
+  // ---------------------------------------------------------------------
+
+  const handleSectorSelect = async (sector) => {
     addUserMessage(sector);
-    setUserData(prev => ({ ...prev, sector }));
-    
-    setTimeout(() => {
-      addAgentMessage(`Perfecto, veo que trabajas en el sector ${sector}. Ahora, ¿a qué género está dirigida principalmente tu audiencia?`);
-      setTimeout(() => {
-        setCurrentStep('genero');
-        setShowOptions(true);
-      }, 1000);
-    }, 500);
+    setUserData((prev) => ({ ...prev, sector }));
+
+    await decir(`Perfecto, veo que trabajas en el sector ${sector}.`);
+    await decirVarios([construirMensajeBenchmark(sector)]);
+    await decir('Ahora, ¿a qué género está dirigida principalmente tu audiencia?');
+    irA('genero');
   };
 
-  const handleGeneroSelect = (genero) => {
+  const handleGeneroSelect = async (genero) => {
     addUserMessage(genero);
-    setUserData(prev => ({ ...prev, genero }));
-    
-    setTimeout(() => {
-      addAgentMessage('Excelente. ¿Cuál es el rango de edad de tu audiencia objetivo?');
-      setTimeout(() => {
-        setCurrentStep('edad');
-        setShowOptions(true);
-      }, 1000);
-    }, 500);
+    setUserData((prev) => ({ ...prev, genero }));
+
+    await decir('Excelente. ¿Cuál es el rango de edad de tu audiencia objetivo?');
+    irA('edad');
   };
 
-  const handleEdadSelect = (edades, isConfirmed) => {
+  const handleEdadSelect = async (edades, isConfirmed) => {
     if (!isConfirmed) {
       setSelectedEdades(edades);
       return;
     }
 
-    const edadesText = edades.length === 1 
-      ? edades[0] 
-      : `${edades.length} rangos de edad: ${edades.join(', ')}`;
-    
+    const edadesText =
+      edades.length === 1
+        ? edades[0]
+        : `${edades.length} rangos de edad: ${edades.join(', ')}`;
+
     addUserMessage(edadesText);
-    setUserData(prev => ({ ...prev, edad: edades }));
-    setShowOptions(false);
-    
-    setTimeout(() => {
-      addAgentMessage('Perfecto. ¿Cuál es el nivel socioeconómico de tu audiencia?');
-      setTimeout(() => {
-        setCurrentStep('nivelSocioeconomico');
-        setShowOptions(true);
-      }, 1000);
-    }, 500);
+    setUserData((prev) => ({ ...prev, edad: edades }));
+
+    await decir('Perfecto. ¿Cuál es el nivel socioeconómico de tu audiencia?');
+    irA('nivelSocioeconomico');
   };
 
   const handleNivelSocioeconomicoSelect = (niveles, isConfirmed) => {
@@ -271,194 +291,224 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       return;
     }
 
-    const nseText = niveles.length === 1
-      ? niveles[0]
-      : `${niveles.length} niveles socioeconómicos: ${niveles.join(', ')}`;
-    
+    const nseText =
+      niveles.length === 1
+        ? niveles[0]
+        : `${niveles.length} niveles socioeconómicos: ${niveles.join(', ')}`;
+
     addUserMessage(nseText);
-    setUserData(prev => ({ ...prev, nivelSocioeconomico: niveles }));
-    setShowOptions(false);
-    
-    setTimeout(() => {
-      mostrarModalTransicion(
-        '¡Excelente! Ahora descubramos las afinidades de tu audiencia',
-        'heart',
-        () => {
-          addAgentMessage(`Perfecto. Ahora utiliza el tablero interactivo para seleccionar las afinidades que mejor se ajusten a tu estrategia. Puedes arrastrar las opciones de la izquierda a la derecha o hacer doble clic en ellas.`);
-          setTimeout(() => {
-            setCurrentStep('afinidades');
-            setShowOptions(true);
-          }, 1000);
-        }
-      );
-    }, 500);
+    setUserData((prev) => ({ ...prev, nivelSocioeconomico: niveles }));
+
+    mostrarModalTransicion(
+      '¡Excelente! Ahora descubramos el estilo de vida de tu audiencia',
+      'lightbulb',
+      async () => {
+        await decir(
+          'Trabajamos con 10 estilos de vida construidos a partir del comportamiento real de las audiencias.',
+        );
+        await decir(
+          'Elige el estilo con el que más se identifican las personas que quieres alcanzar. Ese estilo define la ruta de análisis.',
+        );
+        irA('estiloVida');
+      },
+    );
   };
+
+  // ---------------------------------------------------------------------
+  // Paso 3: estilo de vida (dato observado → interpretación → pregunta)
+  // ---------------------------------------------------------------------
+
+  const handleEstiloVidaSelect = async (estilo) => {
+    addUserMessage(`Estilo de vida: ${estilo.nombre}`);
+    setEstiloVida(estilo);
+    setShowOptions(false);
+
+    // El dato observado y la interpretación van siempre separados
+    await decirVarios(construirLecturaEstilo(estilo));
+    await decir(construirRutaSectores(estilo));
+    await decir(estilo.pregunta);
+    irA('preguntaEstilo');
+  };
+
+  const handleRespuestaEstiloSelect = async (respuesta) => {
+    addUserMessage(respuesta);
+    setRespuestaEstilo(respuesta);
+    setShowOptions(false);
+
+    await decir(
+      `Tomo nota: "${respuesta}". Eso me dice cuál es la motivación detrás del interés, no solo el interés.`,
+    );
+
+    mostrarModalTransicion(
+      'Ahora vamos a afinar las afinidades de tu audiencia',
+      'heart',
+      async () => {
+        await decir(
+          `Dejé marcadas las afinidades de "${estiloVida?.nombre}". Agrega o quita las que necesites en el tablero: arrastra las tarjetas o haz doble clic sobre ellas.`,
+        );
+        irA('afinidades');
+      },
+    );
+  };
+
+  // ---------------------------------------------------------------------
+  // Paso 4: afinidades
+  // ---------------------------------------------------------------------
 
   const handleAfinidadesSelect = (afinidades, isConfirmed) => {
-    if (!isConfirmed) {
-      setSelectedAfinidades(afinidades);
-      return;
-    }
+    if (!isConfirmed) return;
 
     addUserMessage(`${afinidades.length} afinidades seleccionadas: ${afinidades.join(', ')}`);
-    setUserData(prev => ({ ...prev, afinidades }));
-    
-    setTimeout(() => {
-      mostrarModalTransicion(
-        '¡Increíble! Ahora vamos a explorar el Customer Journey',
-        'journey',
-        () => {
-          addAgentMessage('Perfecto. Ahora vamos a una reflexión estratégica importante...');
-          setTimeout(() => {
-            addAgentMessage('En tu experiencia: ¿En qué momento crees que tu comunicación tiene más poder para influir en tu audiencia?');
-            setTimeout(() => {
-              setCurrentStep('journeyPrimera');
-              setShowOptions(true);
-            }, 1000);
-          }, 1500);
-        }
-      );
-    }, 500);
+    setUserData((prev) => ({ ...prev, afinidades }));
+
+    mostrarModalTransicion(
+      '¡Increíble! Ahora vamos a explorar el Customer Journey',
+      'journey',
+      async () => {
+        await decir('Perfecto. Ahora vamos a una reflexión estratégica importante...');
+        await decir(
+          'En tu experiencia: ¿En qué momento crees que tu comunicación tiene más poder para influir en tu audiencia?',
+        );
+        irA('journeyPrimera');
+      },
+    );
   };
 
-  const handlePrimeraSeleccionJourney = (etapa) => {
+  // ---------------------------------------------------------------------
+  // Paso 5: customer journey
+  // ---------------------------------------------------------------------
+
+  const handlePrimeraSeleccionJourney = async (etapa) => {
     addUserMessage(`Primera selección: ${etapa}`);
     setPrimeraSeleccionJourney(etapa);
     setShowOptions(false);
-    
-    setTimeout(() => {
-      const afinidadPrincipal = userData.afinidades?.[0] || 'las afinidades';
-      addAgentMessage(`Interesante elección. Hace unos minutos descubrimos que tu audiencia tiene afinidad con ${afinidadPrincipal}.`);
-      
-      setTimeout(() => {
-        addAgentMessage('Eso nos dice algo clave: no solo qué consume… sino cómo piensa.');
-        
-        setTimeout(() => {
-          addAgentMessage('Ahora la pregunta cambia: ¿Qué deberíamos decirle… y cuándo?');
-          
-          setTimeout(() => {
-            mostrarEjemplosJourney();
-          }, 1500);
-        }, 1500);
-      }, 1500);
-    }, 500);
+
+    const afinidadPrincipal = userData.afinidades?.[0] || 'las afinidades';
+    await decir(
+      `Interesante elección. Hace unos minutos descubrimos que tu audiencia tiene afinidad con ${afinidadPrincipal}.`,
+    );
+    await decir('Eso nos dice algo clave: no solo qué consume… sino cómo piensa.');
+    await decir('Ahora la pregunta cambia: ¿Qué deberíamos decirle… y cuándo?');
+    await mostrarEjemplosJourney();
   };
 
-  const mostrarEjemplosJourney = () => {
-    const ejemplos = MENSAJES_JOURNEY_POR_SECTOR[userData.sector] || MENSAJES_JOURNEY_POR_SECTOR["Consumo Masivo"];
-    
-    addAgentMessage(`Veamos un ejemplo aplicado a ${userData.sector}:`);
-    
-    setTimeout(() => {
-      addAgentMessage(`Contexto: ${ejemplos.contexto}`);
-      
-      setTimeout(() => {
-        addAgentMessage('Observa cómo cambia el mensaje en cada etapa del journey:');
-        
-        setTimeout(() => {
-          const mensajeCompleto = `
-🔍 Descubre: "${ejemplos.descubre}"
+  const mostrarEjemplosJourney = async () => {
+    const ejemplos =
+      MENSAJES_JOURNEY_POR_SECTOR[userData.sector] ||
+      MENSAJES_JOURNEY_POR_SECTOR['Consumo Masivo'];
 
-🌐 Explora: "${ejemplos.explora}"
-
-⚖️ Compara: "${ejemplos.compara}"
-
-💡 Decide: "${ejemplos.decide}"
-
-🛍️ Compra: "${ejemplos.compra}"`;
-          
-          addAgentMessage(mensajeCompleto);
-          
-          setTimeout(() => {
-            addAgentMessage('Ahora, con esta nueva perspectiva: ¿En qué momento crees que el insight realmente cambia la decisión?');
-            setTimeout(() => {
-              setCurrentStep('journeySegunda');
-              setShowOptions(true);
-            }, 1500);
-          }, 3000);
-        }, 1500);
-      }, 1500);
-    }, 1500);
+    await decir(`Veamos un ejemplo aplicado a ${userData.sector}:`);
+    await decir(`Contexto: ${ejemplos.contexto}`);
+    await decir('Observa cómo cambia el mensaje en cada etapa del journey:');
+    await decir(
+      `🔍 Descubre: "${ejemplos.descubre}"\n\n🌐 Explora: "${ejemplos.explora}"\n\n⚖️ Compara: "${ejemplos.compara}"\n\n💡 Decide: "${ejemplos.decide}"\n\n🛍️ Compra: "${ejemplos.compra}"`,
+      2500,
+    );
+    await decir(
+      'Ahora, con esta nueva perspectiva: ¿En qué momento crees que el insight realmente cambia la decisión?',
+    );
+    irA('journeySegunda');
   };
 
-  const handleSegundaSeleccionJourney = (etapa) => {
+  const handleSegundaSeleccionJourney = async (etapa) => {
     addUserMessage(`Segunda selección (después de ver los ejemplos): ${etapa}`);
     setSegundaSeleccionJourney(etapa);
     setShowOptions(false);
-    
-    setTimeout(() => {
-      mostrarRevelaciones();
-    }, 500);
+
+    await mostrarRevelaciones();
   };
 
-  const mostrarRevelaciones = () => {
-    addAgentMessage('Excelente. Déjame compartirte los aprendizajes clave:');
-    
-    setTimeout(() => {
-      addAgentMessage(REVELACIONES_JOURNEY.titulo);
-      
-      setTimeout(() => {
-        REVELACIONES_JOURNEY.aprendizajes.forEach((aprendizaje, index) => {
-          setTimeout(() => {
-            addAgentMessage(`${aprendizaje.numero} ${aprendizaje.texto}\n${aprendizaje.detalle}`);
-          }, index * 2000);
-        });
-        
-        setTimeout(() => {
-          addAgentMessage(REVELACIONES_JOURNEY.cierre);
-          
-          setTimeout(() => {
-            addAgentMessage('Ahora sí, con esta comprensión completa del journey, estoy generando tu propuesta estratégica personalizada...');
-            setTimeout(async () => {
-              mostrarModalTransicion(
-                '¡Excelente trabajo! Ahora veamos tu propuesta estratégica completa',
-                'star',
-                async () => {
-                  console.log('🚀 Generando propuesta estratégica...');
-                  const propuesta = await generarPropuestaConIA({ 
-                    ...userData, 
-                    primeraSeleccionJourney,
-                    segundaSeleccionJourney 
-                  });
-                  console.log('✅ Propuesta generada:', propuesta);
-                  
-                  // 🔥 Actualizar documento existente en Firebase
-                  if (conversacionId) {
-                    try {
-                      await actualizarConversacion(conversacionId, {
-                        sector: userData.sector,
-                        genero: userData.genero,
-                        edad: userData.edad,
-                        nivelSocioeconomico: userData.nivelSocioeconomico,
-                        afinidades: userData.afinidades,
-                        primeraSeleccionJourney,
-                        segundaSeleccionJourney,
-                        propuesta,
-                        estado: 'completado',
-                        modo: import.meta.env.VITE_MODE || 'development',
-                        modeloIA: import.meta.env.VITE_OPENAI_MODEL || 'mock',
-                      });
-                      console.log('💾 Conversación actualizada en Firebase con ID:', conversacionId);
-                    } catch (error) {
-                      console.error('❌ Error actualizando conversación:', error);
-                      // Continuar aunque falle el guardado
-                    }
-                  } else {
-                    console.warn('⚠️ No hay ID de conversación, no se puede actualizar');
-                  }
-                  
-                  // Mostrar pantalla de completado
-                  setTimeout(() => {
-                    setShowCompletion(true);
-                  }, 500);
-                }
-              );
-            }, 2000);
-          }, 2000);
-        }, REVELACIONES_JOURNEY.aprendizajes.length * 2000 + 1000);
-      }, 1500);
-    }, 1000);
+  const mostrarRevelaciones = async () => {
+    await decir('Excelente. Déjame compartirte los aprendizajes clave:');
+    await decir(REVELACIONES_JOURNEY.titulo);
+    await decirVarios(
+      REVELACIONES_JOURNEY.aprendizajes.map(
+        (a) => `${a.numero} ${a.texto}\n${a.detalle}`,
+      ),
+      1800,
+    );
+    await decir(REVELACIONES_JOURNEY.cierre);
+
+    mostrarModalTransicion(
+      'Última pregunta antes de armar tu propuesta',
+      'chart',
+      async () => {
+        await decir(
+          'Para ajustar la recomendación al portafolio de la Rueda de Negocios 2026, ¿qué rango de inversión tienes contemplado?',
+        );
+        await decir(
+          'Si todavía no lo defines, lo calculo solo con el perfil de tu audiencia.',
+        );
+        irA('presupuesto');
+      },
+    );
   };
+
+  // ---------------------------------------------------------------------
+  // Paso 6: inversión y generación de la propuesta
+  // ---------------------------------------------------------------------
+
+  const handlePresupuestoSelect = async (etiqueta) => {
+    addUserMessage(etiqueta);
+    setShowOptions(false);
+
+    mostrarModalTransicion(
+      '¡Excelente trabajo! Ahora veamos tu propuesta estratégica completa',
+      'star',
+      () => generarYGuardarPropuesta(etiqueta),
+    );
+  };
+
+  const generarYGuardarPropuesta = async (etiquetaPresupuesto) => {
+    const datosExperiencia = {
+      ...userData,
+      estiloVida: estiloVida?.nombre,
+      respuestaEstilo,
+      primeraSeleccionJourney,
+      segundaSeleccionJourney,
+      etapaJourney: segundaSeleccionJourney,
+      presupuesto: presupuestoDesdeEtiqueta(etiquetaPresupuesto),
+      presupuestoEtiqueta: etiquetaPresupuesto,
+    };
+
+    console.log('🚀 Generando propuesta estratégica...');
+    const propuesta = await generarPropuestaConIA(datosExperiencia);
+    console.log('✅ Propuesta generada:', propuesta);
+
+    // 🔥 Actualizar documento existente en Firebase
+    if (conversacionId) {
+      try {
+        await actualizarConversacion(conversacionId, {
+          sector: userData.sector,
+          genero: userData.genero,
+          edad: userData.edad,
+          nivelSocioeconomico: userData.nivelSocioeconomico,
+          afinidades: userData.afinidades,
+          estiloVida: construirResumenEstilo(estiloVida, respuestaEstilo),
+          presupuestoEstimado: etiquetaPresupuesto,
+          primeraSeleccionJourney,
+          segundaSeleccionJourney,
+          propuesta,
+          estado: 'completado',
+          modo: import.meta.env.VITE_MODE || 'development',
+          modeloIA: import.meta.env.VITE_OPENAI_MODEL || 'mock',
+        });
+        console.log('💾 Conversación actualizada en Firebase con ID:', conversacionId);
+      } catch (error) {
+        console.error('❌ Error actualizando conversación:', error);
+        // Continuar aunque falle el guardado
+      }
+    } else {
+      console.warn('⚠️ No hay ID de conversación, no se puede actualizar');
+    }
+
+    onComplete?.(propuesta);
+    setShowCompletion(true);
+  };
+
+  // ---------------------------------------------------------------------
+  // Opciones por paso
+  // ---------------------------------------------------------------------
 
   const getCurrentOptions = () => {
     switch (currentStep) {
@@ -470,8 +520,10 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
         return RANGOS_EDAD;
       case 'nivelSocioeconomico':
         return NIVELES_SOCIOECONOMICOS;
-      case 'afinidades':
-        return AFINIDADES_POR_SECTOR[userData.sector] || [];
+      case 'preguntaEstilo':
+        return estiloVida?.opciones || [];
+      case 'presupuesto':
+        return OPCIONES_PRESUPUESTO;
       default:
         return [];
     }
@@ -491,12 +543,21 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       case 'nivelSocioeconomico':
         handleNivelSocioeconomicoSelect(option, isConfirmed);
         break;
-      case 'afinidades':
-        handleAfinidadesSelect(option, isConfirmed);
+      case 'preguntaEstilo':
+        handleRespuestaEstiloSelect(option);
+        break;
+      case 'presupuesto':
+        handlePresupuestoSelect(option);
         break;
       default:
         break;
     }
+  };
+
+  const opcionesSeleccionadas = () => {
+    if (currentStep === 'edad') return selectedEdades;
+    if (currentStep === 'nivelSocioeconomico') return selectedNSE;
+    return [];
   };
 
   return (
@@ -506,129 +567,136 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       ) : (
         <>
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-        {messages.map((msg, index) => (
-          <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
-        ))}
-        {isTyping && <ChatMessage isTyping={true} />}
-        {showFormulario && currentStep === 'datosPersonales' && (
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 animate-slide-up">
-            <form onSubmit={handleDatosPersonalesSubmit} className="space-y-4">
-              <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Nombre completo *
-                </label>
-                <input
-                  type="text"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ej: Juan Pérez"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
-                  autoFocus
-                />
+            {messages.map((msg, index) => (
+              <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
+            ))}
+            {isTyping && <ChatMessage isTyping={true} />}
+
+            {showFormulario && currentStep === 'datosPersonales' && (
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 animate-slide-up">
+                <form onSubmit={handleDatosPersonalesSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Nombre completo *
+                    </label>
+                    <input
+                      type="text"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      placeholder="Ej: Juan Pérez"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
+                      autoFocus
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Correo electrónico *
+                    </label>
+                    <input
+                      type="email"
+                      value={correo}
+                      onChange={(e) => setCorreo(e.target.value)}
+                      placeholder="Ej: juan.perez@empresa.com"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Número de celular *
+                    </label>
+                    <input
+                      type="tel"
+                      value={celular}
+                      onChange={(e) => setCelular(e.target.value)}
+                      placeholder="Ej: 3001234567"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center gap-2 ${
+                      isSubmitting
+                        ? 'bg-gray-500 cursor-not-allowed'
+                        : 'bg-claro-red hover:bg-claro-red/90 transform hover:scale-105'
+                    }`}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        Enviando...
+                      </>
+                    ) : (
+                      'Continuar'
+                    )}
+                  </button>
+                </form>
               </div>
-              <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Correo electrónico *
-                </label>
-                <input
-                  type="email"
-                  value={correo}
-                  onChange={(e) => setCorreo(e.target.value)}
-                  placeholder="Ej: juan.perez@empresa.com"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Número de celular *
-                </label>
-                <input
-                  type="tel"
-                  value={celular}
-                  onChange={(e) => setCelular(e.target.value)}
-                  placeholder="Ej: 3001234567"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center gap-2 ${
-                  isSubmitting 
-                    ? 'bg-gray-500 cursor-not-allowed' 
-                    : 'bg-claro-red hover:bg-claro-red/90 transform hover:scale-105'
-                }`}
-              >
-                {isSubmitting ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle 
-                        className="opacity-25" 
-                        cx="12" 
-                        cy="12" 
-                        r="10" 
-                        stroke="currentColor" 
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path 
-                        className="opacity-75" 
-                        fill="currentColor" 
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Enviando...
-                  </>
-                ) : (
-                  'Continuar'
-                )}
-              </button>
-            </form>
+            )}
+
+            {showOptions && !PASOS_CON_COMPONENTE.includes(currentStep) && (
+              <ChatOptions
+                options={getCurrentOptions()}
+                onSelect={handleOptionSelect}
+                multiSelect={PASOS_MULTISELECCION.includes(currentStep)}
+                selectedOptions={opcionesSeleccionadas()}
+              />
+            )}
+
+            {showOptions && currentStep === 'estiloVida' && (
+              <EstiloVidaSelector onSelect={handleEstiloVidaSelect} />
+            )}
+
+            {showOptions && currentStep === 'afinidades' && (
+              <DragDropBoard
+                options={TODAS_AFINIDADES}
+                onComplete={handleAfinidadesSelect}
+                iconMap={ICONOS_AFINIDADES}
+                preseleccionadas={afinidadesDeCatalogo(estiloVida)}
+              />
+            )}
+
+            {showOptions && currentStep === 'journeyPrimera' && (
+              <JourneyStageSelector
+                title="¿En qué momento tiene más impacto tu comunicación?"
+                subtitle="Selecciona una etapa del journey (tu intuición)"
+                onSelect={handlePrimeraSeleccionJourney}
+              />
+            )}
+
+            {showOptions && currentStep === 'journeySegunda' && (
+              <JourneyStageSelector
+                title="Ahora que viste los ejemplos..."
+                subtitle="¿Cambiarías tu respuesta? Selecciona nuevamente"
+                onSelect={handleSegundaSeleccionJourney}
+              />
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
-        )}
-        {showOptions && currentStep !== 'afinidades' && currentStep !== 'journeyPrimera' && currentStep !== 'journeySegunda' && currentStep !== 'datosPersonales' && (
-          <ChatOptions
-            options={getCurrentOptions()}
-            onSelect={handleOptionSelect}
-            multiSelect={currentStep === 'edad' || currentStep === 'nivelSocioeconomico'}
-            selectedOptions={
-              currentStep === 'edad' ? selectedEdades :
-              currentStep === 'nivelSocioeconomico' ? selectedNSE :
-              []
-            }
+
+          {/* Modal de transición */}
+          <TransitionModal
+            isOpen={showModal}
+            onClose={handleModalContinuar}
+            mensaje={modalConfig.mensaje}
+            icono={modalConfig.icono}
           />
-        )}
-        {showOptions && currentStep === 'afinidades' && (
-          <DragDropBoard
-            options={TODAS_AFINIDADES}
-            onComplete={handleAfinidadesSelect}
-            iconMap={ICONOS_AFINIDADES}
-          />
-        )}
-        {showOptions && currentStep === 'journeyPrimera' && (
-          <JourneyStageSelector
-            title="¿En qué momento tiene más impacto tu comunicación?"
-            subtitle="Selecciona una etapa del journey (tu intuición)"
-            onSelect={handlePrimeraSeleccionJourney}
-          />
-        )}
-        {showOptions && currentStep === 'journeySegunda' && (
-          <JourneyStageSelector
-            title="Ahora que viste los ejemplos..."
-            subtitle="¿Cambiarías tu respuesta? Selecciona nuevamente"
-            onSelect={handleSegundaSeleccionJourney}
-          />
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-      
-      {/* Modal de transición */}
-      <TransitionModal
-        isOpen={showModal}
-        onClose={handleModalContinuar}
-        mensaje={modalConfig.mensaje}
-        icono={modalConfig.icono}
-      />
         </>
       )}
     </div>

@@ -2,6 +2,17 @@
 
 import { calcularValorPropuesta } from "./banderasDemograficas";
 import { recomendarPaquete } from "./paquetesComerciales";
+import {
+  AFINIDADES_DE_ESTILOS,
+  construirResumenEstilo,
+  interpretacionNarrada,
+  obtenerEstiloPorNombre,
+} from "./estilosDeVida";
+import {
+  formatearInteraccion,
+  formatoLiderPorSector,
+  obtenerBenchmarkPorSector,
+} from "./benchmarksInteraccion";
 
 export const SECTORES = [
   "Financiero",
@@ -36,8 +47,8 @@ export const NIVELES_SOCIOECONOMICOS = [
   "Alto (E5-E6)",
 ];
 
-// Todas las afinidades disponibles con sus iconos
-export const TODAS_AFINIDADES = [
+// Catálogo base de afinidades del tablero interactivo
+const AFINIDADES_BASE = [
   "Educación financiera",
   "Construcción",
   "Tecnología",
@@ -58,6 +69,12 @@ export const TODAS_AFINIDADES = [
   "Bienestar y Fitness",
   "Centro comercial",
   "Ofertas y descuentos",
+];
+
+// El tablero muestra el catálogo base más las afinidades que aportan los
+// estilos de vida, sin duplicados.
+export const TODAS_AFINIDADES = [
+  ...new Set([...AFINIDADES_BASE, ...AFINIDADES_DE_ESTILOS]),
 ];
 
 // Mapa de iconos para las afinidades
@@ -82,6 +99,12 @@ export const ICONOS_AFINIDADES = {
   "Bienestar y Fitness": "🏋️",
   "Centro comercial": "🏬",
   "Ofertas y descuentos": "🔖",
+  // Afinidades que aporta la experiencia de Estilos de Vida
+  "Domótica y eficiencia energética": "🏠",
+  Gaming: "🎮",
+  "Idiomas y contenidos internacionales": "🌎",
+  "Negocios y B2B": "💼",
+  "Productividad digital": "⚙️",
 };
 
 export const AFINIDADES_POR_SECTOR = {
@@ -343,6 +366,42 @@ export const REVELACIONES_JOURNEY = {
     "La pregunta no es solo dónde pautar… es qué decir en cada momento del journey. Y ahí es donde una solución como Claro Media permite activar: descubrimiento, consideración y decisión con data real de audiencias.",
 };
 
+/**
+ * Insights derivados de la experiencia: estilo de vida elegido + benchmark de
+ * interacción de la categoría. Se anteponen a los insights fijos del sector.
+ * @param {Object} estilo - Estilo de vida seleccionado (puede ser null)
+ * @param {string} sector
+ * @returns {string[]}
+ */
+export const construirInsightsDeExperiencia = (estilo, sector) => {
+  const insights = [];
+
+  if (estilo) {
+    insights.push(`${estilo.dato} ${interpretacionNarrada(estilo)}`);
+    insights.push(
+      `El estilo de vida "${estilo.nombre}" conduce al sector ${estilo.sectorPrincipal} y abre oportunidad en ${estilo.sectoresConectados.join(", ")}.`,
+    );
+  }
+
+  const lider = formatoLiderPorSector(sector);
+  const benchmark = obtenerBenchmarkPorSector(sector);
+  if (lider && benchmark) {
+    const referencia = benchmark.esReferencia
+      ? ` (categoría de referencia: ${benchmark.categoria})`
+      : "";
+    insights.push(
+      `En tu categoría${referencia} el formato con mayor interacción es ${lider.formato}, con ${formatearInteraccion(lider.interaccion)} de respuesta.`,
+    );
+  }
+
+  return insights;
+};
+
+/**
+ * Propuesta estratégica calculada localmente (fallback cuando la IA no responde).
+ * @param {Object} userData - Datos recopilados durante la experiencia
+ * @returns {Object}
+ */
 export const generarPropuestaEstrategica = (userData) => {
   const {
     sector,
@@ -353,11 +412,22 @@ export const generarPropuestaEstrategica = (userData) => {
     nombre,
     correo,
     celular,
+    estiloVida,
+    respuestaEstilo,
+    etapaJourney,
+    presupuesto,
   } = userData;
 
-  const insights = INSIGHTS_POR_SECTOR[sector] || [];
+  const estilo = obtenerEstiloPorNombre(estiloVida);
   const insightsGeoespaciales = INSIGHTS_GEOESPACIALES[sector] || [];
   const afinidadesSector = AFINIDADES_POR_SECTOR[sector] || [];
+  const benchmark = obtenerBenchmarkPorSector(sector);
+  const formatoLider = formatoLiderPorSector(sector);
+
+  const insights = [
+    ...construirInsightsDeExperiencia(estilo, sector),
+    ...(INSIGHTS_POR_SECTOR[sector] || []),
+  ];
 
   // Calcular valor de propuesta
   const valorPropuesta = calcularValorPropuesta({
@@ -370,9 +440,10 @@ export const generarPropuestaEstrategica = (userData) => {
 
   // Recomendar paquete comercial
   const recomendacion = recomendarPaquete({
-    presupuesto: 0, // Sin presupuesto del usuario, se basa en alcance
+    presupuesto: presupuesto || 0,
     alcancePotencial: valorPropuesta.alcanceTotalNumerico,
     sector,
+    etapaJourney,
     audiencia: {
       genero,
       edad: Array.isArray(edad) ? edad.join(", ") : edad,
@@ -381,6 +452,25 @@ export const generarPropuestaEstrategica = (userData) => {
         : nivelSocioeconomico,
     },
   });
+
+  const recomendaciones = [
+    `Enfoque estratégico en ${sector.toLowerCase()} considerando el perfil demográfico seleccionado`,
+    `Activación de contenidos basados en las afinidades: ${(afinidades || afinidadesSector).slice(0, 3).join(", ")}`,
+    `Optimización de campañas según la ruta de comportamiento: ${RUTA_COMPORTAMIENTO.join(" → ")}`,
+    `Segmentación geográfica basada en insights de ubicación y comportamiento`,
+  ];
+
+  if (formatoLider) {
+    recomendaciones.push(
+      `Priorizar ${formatoLider.formato} en la mezcla de medios: es el formato de mayor interacción en tu categoría`,
+    );
+  }
+
+  if (estilo) {
+    recomendaciones.push(
+      `Construir el mensaje desde el estilo de vida "${estilo.nombre}", conectando ${estilo.afinidades.join(" y ")}`,
+    );
+  }
 
   return {
     sector,
@@ -393,14 +483,11 @@ export const generarPropuestaEstrategica = (userData) => {
       nivelSocioeconomico,
     },
     afinidades: afinidades || afinidadesSector,
+    estiloVida: construirResumenEstilo(estilo, respuestaEstilo),
+    benchmarkCategoria: benchmark,
     insights,
     insightsGeoespaciales,
-    recomendaciones: [
-      `Enfoque estratégico en ${sector.toLowerCase()} considerando el perfil demográfico seleccionado`,
-      `Activación de contenidos basados en las afinidades: ${afinidadesSector.slice(0, 3).join(", ")}`,
-      `Optimización de campañas según la ruta de comportamiento: ${RUTA_COMPORTAMIENTO.join(" → ")}`,
-      `Segmentación geográfica basada en insights de ubicación y comportamiento`,
-    ],
+    recomendaciones,
     proximosPasos: [
       "Activar campañas en zonas de alta concentración",
       "Personalizar mensajes según afinidades identificadas",
