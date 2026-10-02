@@ -16,7 +16,7 @@ function MainScreen() {
       <div
         className="fixed inset-0 z-0"
         style={{
-          backgroundImage: 'url(/Fondo.jpeg)',
+          backgroundImage: 'url(/Fondo.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
