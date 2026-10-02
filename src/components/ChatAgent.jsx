@@ -662,7 +662,12 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       {showCompletion && propuestaFinal ? (
         <div ref={resultadosRef} className="flex-1 min-h-0 overflow-y-auto">
           <BarraResultados standId={standId} onReset={handleReset} voz={voz} />
-          <ResultsView propuesta={propuestaFinal} onReset={handleReset} />
+          <ResultsView
+            propuesta={propuestaFinal}
+            onReset={handleReset}
+            conversacionId={conversacionId}
+            standId={standId}
+          />
           <div className="flex justify-center px-6 pb-10">
             <button
               onClick={handleReset}

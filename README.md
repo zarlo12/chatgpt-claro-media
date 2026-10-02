@@ -101,3 +101,34 @@ Este proyecto está configurado con datos de prueba. Para conectarlo con la API 
 ## Autor
 
 Desarrollado para Claro Media - 2026
+
+
+## Enlace con Fotografía IA
+
+Al final de la propuesta aparecen dos botones **"Fotografía IA"** —uno arriba y
+otro abajo, porque el resultado es largo— que llevan al kiosco de pósters
+(proyecto `webcam-ia`, desplegado en `https://claro-datatech.web.app`).
+
+Son dos despliegues distintos (este en Vercel, aquel en Firebase Hosting) pero
+comparten el mismo proyecto de Firebase y esta misma colección,
+`ClaroMediaAgenteIA`. El puente es el ID del documento, que viaja por la URL:
+
+```
+https://claro-datatech.web.app/?doc=<conversacionId>&stand=A
+```
+
+Con ese ID, el kiosco no vuelve a pedir los datos del visitante y guarda el
+póster en el campo `fotografiaIA` del **mismo documento** de esta conversación:
+
+```js
+fotografiaIA: {
+  plantilla, plantillaPalabra, posterUrl, originalImageUrl,
+  requestId, model, generadoEn,
+}
+```
+
+Al terminar, el kiosco devuelve al visitante aquí (al mismo stand) para que
+pueda generar una propuesta nueva.
+
+La URL del kiosco se puede cambiar con `VITE_FOTO_IA_URL`; si no se define, se
+usa la de producción.

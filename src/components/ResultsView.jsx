@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { enviarPropuestaPorCorreo } from '../services/pdfService';
 import EstiloVidaCard from './EstiloVidaCard';
 import BenchmarkInteraccion from './BenchmarkInteraccion';
+import BotonFotografiaIA from './BotonFotografiaIA';
 
 const InsightCard = ({ insight, index }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -85,7 +86,7 @@ const GeoInsightCard = ({ insight, index }) => {
   );
 };
 
-const ResultsView = ({ propuesta, onReset }) => {
+const ResultsView = ({ propuesta, onReset, conversacionId, standId }) => {
   const resultsContainerRef = React.useRef(null);
   
   // Estados para envío de correo
@@ -165,6 +166,11 @@ const ResultsView = ({ propuesta, onReset }) => {
           <p className="text-xl text-white/80">
             Sector: <span className="text-claro-red font-semibold">{propuesta.sector}</span>
           </p>
+
+          {/* Arriba: para no obligar a recorrer toda la propuesta. */}
+          <div className="flex justify-center pt-2">
+            <BotonFotografiaIA conversacionId={conversacionId} standId={standId} />
+          </div>
         </div>
 
         {/* Datos de Contacto - Solo si existen */}
@@ -644,7 +650,13 @@ const ResultsView = ({ propuesta, onReset }) => {
           </button>
         </div>
 
-       
+        {/* Abajo: el cierre natural de la propuesta es pasar a la foto. */}
+        <div className="flex flex-col items-center gap-3 pt-6">
+          <p className="text-white/60 text-sm text-center">
+            ¿Quiere llevarse su póster del evento?
+          </p>
+          <BotonFotografiaIA conversacionId={conversacionId} standId={standId} />
+        </div>
 
         {/* Reset Button */}
         {/* <div className="flex justify-center pt-8 pb-4">
