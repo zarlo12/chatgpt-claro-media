@@ -135,3 +135,72 @@ requiere tocar el motor: alcanza con editar su definición.
   `primeraSeleccionJourney`/`segundaSeleccionJourney` se siguen leyendo.
 - **Los resultados se muestran en el mismo flujo**, sin enviar al visitante a otra
   pantalla.
+
+## Voz del agente (octubre 2026)
+
+El agente ahora habla. El visitante sigue respondiendo solo con clics.
+
+### Modos
+
+| Modo | Qué ve y oye el visitante |
+|---|---|
+| **Texto** | Igual que antes: mensajes escritos, sin audio |
+| **Audio** | El agente habla y no hay burbujas de texto. Las ondas ocupan la parte alta de la pantalla |
+| **Texto y audio** (por defecto) | Mensajes escritos y voz a la vez. La burbuja que se está leyendo se ilumina con un mini ecualizador |
+
+El modo se elige en la **pantalla de inicio** (nueva) y se puede cambiar en cualquier
+momento con los tres botones de la barra superior. La configuración queda guardada
+en el equipo, así que el stand arranca como lo dejó el operador.
+
+### Ondas
+
+`OndasVoz` dibuja cuatro ondas superpuestas que se agitan mientras el agente habla y
+casi se aplanan en reposo. El navegador no entrega el audio de la voz sintética, así
+que la amplitud se simula con el ritmo del habla y se refuerza cada vez que el
+navegador avisa que se pronunció una palabra. Respeta `prefers-reduced-motion`.
+
+### Qué cambió en el flujo
+
+- **Pantalla de inicio.** Es obligatoria: los navegadores solo dejan reproducir audio
+  después de un toque del usuario. Al terminar una propuesta, "Crear nueva propuesta"
+  vuelve a esta pantalla para el siguiente visitante.
+- **Los modales de transición también se leen.**
+- **Mientras la IA arma la propuesta**, el agente lo dice en voz alta en vez de dejar
+  la pantalla quieta.
+- **Al mostrar los resultados**, el agente anuncia el paquete recomendado y su
+  inversión; las mini-ondas aparecen en la barra superior mientras habla.
+- **Botón "Saltar"** corta la frase en curso y sigue con la siguiente.
+- **Ajustes de voz** (engranaje): voz, velocidad, tono, volumen y "Probar voz".
+- Cada frase se limpia antes de leerse: sin emojis, flechas ni símbolos, y se
+  traducen `$25.000/mes`, `24/7`, `km` y `+` a lenguaje hablado.
+- El layout pasó de "página que hace scroll" a pantalla de alto fijo, con el
+  escenario siempre visible arriba y el chat desplazándose por dentro.
+
+### Archivos
+
+| Archivo | Responsabilidad |
+|---|---|
+| `src/services/vozService.js` | Síntesis de voz: limpieza de texto, fragmentos, ranking de voces, vigilante |
+| `src/hooks/useVoz.js` | Modo y ajustes persistentes, voces del equipo, estado "hablando" |
+| `src/components/voz/OndasVoz.jsx` | Las ondas (canvas) |
+| `src/components/voz/EscenarioVoz.jsx` | Barra superior: estado, Saltar, selector de modo, ajustes |
+| `src/components/voz/PantallaInicio.jsx` | Inicio y elección de modo |
+| `src/components/voz/PanelVoz.jsx` | Ajustes de voz |
+
+El único punto de enganche en el chat es `decir()` en `ChatAgent.jsx`: todo lo que
+el agente dice pasa por ahí.
+
+### Límites a tener presentes
+
+- **Es la voz del sistema operativo/navegador.** Sin costo mensual y sin internet,
+  pero suena a sintetizador; en Chrome con internet, las voces "Google español" son
+  las más naturales. Si se quiere una voz realmente humana, el cambio se limita a
+  `vozService.js` (conectar un servicio de voz), con costo por uso.
+- **La experiencia hablada dura unos 4,5 minutos** (medido: ~4.300 caracteres). El
+  tramo más largo es el del journey (ejemplos por sector + aprendizajes). Si el
+  evento tiene mucho flujo, conviene acortar esos textos o dejar solo el resumen
+  hablado.
+- Si el equipo no tiene voces en español, el panel lo avisa y se usa la voz
+  predeterminada del sistema. Sin soporte de voz, la experiencia queda en texto.
+- La prueba automatizada usó un simulador de la API de voz; la calidad real de la
+  voz conviene escucharla en el equipo del stand.

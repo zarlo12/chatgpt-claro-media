@@ -6,6 +6,10 @@ import EstiloVidaSelector from './EstiloVidaSelector';
 import JourneyStageSelector from './JourneyStageSelector';
 import TransitionModal from './TransitionModal';
 import ResultsView from './ResultsView';
+import EscenarioVoz from './voz/EscenarioVoz';
+import PantallaInicio from './voz/PantallaInicio';
+import OndasVoz from './voz/OndasVoz';
+import { useVoz } from '../hooks/useVoz';
 import { generarPropuestaConIA } from '../services/apiService';
 import { guardarDatosIniciales, actualizarConversacion } from '../services/firebaseService';
 import {
@@ -26,11 +30,21 @@ import {
 } from '../data/estilosDeVida';
 import { construirMensajeBenchmark } from '../data/benchmarksInteraccion';
 import { ETAPAS_JOURNEY } from '../data/journey';
-import { OPCIONES_PRESUPUESTO, presupuestoDesdeEtiqueta } from '../data/paquetesComerciales';
+import {
+  OPCIONES_PRESUPUESTO,
+  anunciarPaquete,
+  presupuestoDesdeEtiqueta,
+} from '../data/paquetesComerciales';
 
 // Ritmo de la conversación
 const DURACION_TIPEO = 800;
 const PAUSA_ENTRE_MENSAJES = 1200;
+// Con voz, el propio habla marca el ritmo: basta una pausa corta entre frases.
+const DURACION_TIPEO_VOZ = 500;
+const PAUSA_TRAS_VOZ = 450;
+
+const FRASE_ARMANDO_PROPUESTA =
+  'Estoy cruzando el perfil de tu audiencia con el portafolio de la Rueda de Negocios para armar tu propuesta.';
 
 // Pasos que se resuelven con un componente propio en lugar de ChatOptions
 const PASOS_CON_COMPONENTE = [
@@ -46,11 +60,16 @@ const PASOS_MULTISELECCION = ['edad', 'nivelSocioeconomico'];
 const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Barra fija sobre los resultados: confirma el stand y permite reiniciar. */
-const BarraResultados = ({ standId, onReset }) => (
+const BarraResultados = ({ standId, onReset, voz }) => (
   <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-6 py-3 bg-black/80 backdrop-blur-xl border-b border-white/10">
-    <div className="flex items-center gap-2 text-white/80 text-sm font-medium">
+    <div className="flex items-center gap-3 text-white/80 text-sm font-medium">
       <span className="w-2 h-2 rounded-full bg-green-400"></span>
       Propuesta lista · Stand {standId}
+      {voz.hablando && (
+        <div className="relative w-32 h-8">
+          <OndasVoz activo pulsoRef={voz.pulsoRef} />
+        </div>
+      )}
     </div>
     <button
       onClick={onReset}
@@ -62,6 +81,10 @@ const BarraResultados = ({ standId, onReset }) => (
 );
 
 const ChatAgent = ({ onComplete, standId = 'A' }) => {
+  const voz = useVoz();
+  // La conversación arranca con un toque: así el navegador permite el audio.
+  const [iniciado, setIniciado] = useState(false);
+  const [hablandoId, setHablandoId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [currentStep, setCurrentStep] = useState('welcome');
   const [userData, setUserData] = useState({});
@@ -94,7 +117,8 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const resultadosRef = useRef(null);
-  const hasInitialized = useRef(false);
+  const opcionesRef = useRef(null);
+  const idMensaje = useRef(0);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -117,19 +141,27 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   }, [messages, showOptions]);
 
   useEffect(() => {
+    // Un bloque alto (los 10 estilos de vida, el tablero de afinidades) se muestra
+    // desde su inicio; si se bajara al final quedaría fuera de vista el título.
+    const contenedor = chatContainerRef.current;
+    const bloque = opcionesRef.current;
+    if ((!showOptions && !showFormulario) || !contenedor || !bloque) return;
+    if (bloque.offsetHeight <= contenedor.clientHeight * 0.6) return;
+
+    const arriba =
+      bloque.getBoundingClientRect().top -
+      contenedor.getBoundingClientRect().top +
+      contenedor.scrollTop -
+      16;
+    contenedor.scrollTo({ top: arriba, behavior: 'smooth' });
+  }, [showOptions, showFormulario, currentStep]);
+
+  useEffect(() => {
     // Los resultados se leen desde el principio, no desde donde quedó el chat
     if (!showCompletion) return;
     window.scrollTo({ top: 0 });
     resultadosRef.current?.scrollTo({ top: 0 });
   }, [showCompletion]);
-
-  useEffect(() => {
-    // Prevenir duplicación en React StrictMode
-    if (hasInitialized.current) return;
-    hasInitialized.current = true;
-
-    iniciarConversacion();
-  }, []);
 
   // ---------------------------------------------------------------------
   // Utilidades de conversación
@@ -138,10 +170,21 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   /** Escribe un mensaje del agente (con indicador de tipeo) y espera. */
   const decir = async (texto, pausa = PAUSA_ENTRE_MENSAJES) => {
     setIsTyping(true);
-    await esperar(DURACION_TIPEO);
+    await esperar(voz.leerEstado().usarVoz ? DURACION_TIPEO_VOZ : DURACION_TIPEO);
     setIsTyping(false);
-    setMessages((prev) => [...prev, { text: texto, isUser: false }]);
-    await esperar(pausa);
+
+    const id = ++idMensaje.current;
+    setMessages((prev) => [...prev, { id, text: texto, isUser: false }]);
+
+    // El modo se lee de nuevo: el visitante pudo cambiarlo mientras el agente "pensaba".
+    if (voz.leerEstado().usarVoz) {
+      setHablandoId(id);
+      await voz.hablar(texto);
+      setHablandoId(null);
+      await esperar(PAUSA_TRAS_VOZ);
+    } else {
+      await esperar(pausa);
+    }
   };
 
   /** Escribe una secuencia de mensajes del agente, en orden. */
@@ -152,7 +195,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   };
 
   const addUserMessage = (message) => {
-    setMessages((prev) => [...prev, { text: message, isUser: true }]);
+    setMessages((prev) => [...prev, { id: ++idMensaje.current, text: message, isUser: true }]);
     setShowOptions(false);
   };
 
@@ -166,11 +209,13 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setModalConfig({ mensaje, icono });
     setPendingAction(() => accion);
     setShowModal(true);
+    if (voz.leerEstado().usarVoz) voz.hablar(mensaje);
     // Hacer scroll suave hacia arriba para mejor visibilidad del modal
     setTimeout(() => scrollUpModerately(), 100);
   };
 
   const handleModalContinuar = () => {
+    voz.detener();
     setShowModal(false);
     if (pendingAction) {
       setTimeout(() => {
@@ -190,8 +235,17 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setShowFormulario(true);
   };
 
+  const handleComenzar = () => {
+    voz.preparar();
+    setIniciado(true);
+    iniciarConversacion();
+  };
+
   const handleReset = () => {
-    // Reiniciar todo el estado
+    voz.detener();
+    setHablandoId(null);
+    // Reiniciar todo el estado: el siguiente visitante vuelve a la pantalla de inicio
+    setIniciado(false);
     setShowCompletion(false);
     setMessages([]);
     setCurrentStep('welcome');
@@ -209,8 +263,6 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setCelular('');
     setShowFormulario(false);
     setConversacionId(null);
-
-    iniciarConversacion();
   };
 
   // ---------------------------------------------------------------------
@@ -265,7 +317,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       'profile',
       async () => {
         await decir(
-          `Perfecto ${nombre}, gracias por tu información. Ahora empecemos conociendo a ${empresa}. ¿A qué sector pertenece?`,
+          `Perfecto ${nombre}, gracias por tu información. Ahora cuéntame sobre ${empresa}: ¿a qué sector pertenece?`,
         );
         irA('welcome');
       },
@@ -488,7 +540,11 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     };
 
     console.log('🚀 Generando propuesta estratégica...');
-    const propuesta = await generarPropuestaConIA(datosExperiencia);
+    // La IA tarda unos segundos: el agente los llena hablando en lugar de dejar la pantalla quieta.
+    const [propuesta] = await Promise.all([
+      generarPropuestaConIA(datosExperiencia),
+      decir(FRASE_ARMANDO_PROPUESTA, 600),
+    ]);
     console.log('✅ Propuesta generada:', propuesta);
 
     // 🔥 Actualizar documento existente en Firebase
@@ -529,6 +585,12 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
 
     onComplete?.(propuesta);
     setShowCompletion(true);
+
+    // El momento de la revelación: el agente anuncia el paquete mientras se muestra.
+    const paquete = propuesta.paqueteRecomendado?.paquete;
+    if (paquete && voz.leerEstado().usarVoz) {
+      voz.hablar(anunciarPaquete(paquete, userData.nombre));
+    }
   };
 
   // ---------------------------------------------------------------------
@@ -585,11 +647,21 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     return [];
   };
 
+  const ultimoMensajeDelAgente = [...messages].reverse().find((m) => !m.isUser)?.text;
+
+  const estadoEscenario = voz.hablando
+    ? 'Hablando'
+    : isTyping
+      ? 'Pensando…'
+      : showOptions || showFormulario
+        ? 'Tu turno'
+        : '';
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full min-h-0">
       {showCompletion && propuestaFinal ? (
-        <div ref={resultadosRef} className="flex-1 overflow-y-auto">
-          <BarraResultados standId={standId} onReset={handleReset} />
+        <div ref={resultadosRef} className="flex-1 min-h-0 overflow-y-auto">
+          <BarraResultados standId={standId} onReset={handleReset} voz={voz} />
           <ResultsView propuesta={propuestaFinal} onReset={handleReset} />
           <div className="flex justify-center px-6 pb-10">
             <button
@@ -600,14 +672,30 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
             </button>
           </div>
         </div>
+      ) : !iniciado ? (
+        <PantallaInicio voz={voz} onComenzar={handleComenzar} />
       ) : (
         <>
-          <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-            {messages.map((msg, index) => (
-              <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
-            ))}
-            {isTyping && <ChatMessage isTyping={true} />}
+          <EscenarioVoz voz={voz} estado={estadoEscenario} />
+          <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-4">
+            {voz.mostrarTexto &&
+              messages.map((msg) => (
+                <ChatMessage
+                  key={msg.id}
+                  message={msg.text}
+                  isUser={msg.isUser}
+                  isSpeaking={msg.id === hablandoId}
+                />
+              ))}
+            {voz.mostrarTexto && isTyping && <ChatMessage isTyping={true} />}
+            {/* En modo solo audio el texto no se ve, pero sigue disponible para lectores de pantalla */}
+            {!voz.mostrarTexto && (
+              <p className="sr-only" aria-live="polite">
+                {ultimoMensajeDelAgente}
+              </p>
+            )}
 
+            <div ref={opcionesRef}>
             {showFormulario && currentStep === 'datosPersonales' && (
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 animate-slide-up">
                 <form onSubmit={handleDatosPersonalesSubmit} className="space-y-4">
@@ -726,6 +814,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
                 onSelect={handleJourneySelect}
               />
             )}
+            </div>
 
             <div ref={messagesEndRef} />
           </div>

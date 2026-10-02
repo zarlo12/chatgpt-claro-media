@@ -14,6 +14,7 @@ export default {
         "fade-in": "fadeIn 0.5s ease-in",
         "slide-up": "slideUp 0.5s ease-out",
         "pulse-soft": "pulseSoft 2s ease-in-out infinite",
+        eq: "eq 0.9s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -27,6 +28,10 @@ export default {
         pulseSoft: {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.7" },
+        },
+        eq: {
+          "0%, 100%": { transform: "scaleY(0.3)" },
+          "50%": { transform: "scaleY(1)" },
         },
       },
     },

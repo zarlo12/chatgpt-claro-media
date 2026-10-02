@@ -11,7 +11,7 @@ function MainScreen() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="h-[100dvh] relative overflow-hidden">
       {/* Background Image with Overlay */}
       <div
         className="fixed inset-0 z-0"
@@ -26,7 +26,7 @@ function MainScreen() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 h-full flex flex-col">
         {/* Header */}
         <header className="px-6 py-6 border-b border-white/10 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -46,11 +46,11 @@ function MainScreen() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 flex items-stretch justify-center">
-          <div className="w-full max-w-7xl mx-auto px-4 py-8 flex items-stretch">
-            <div className="w-full bg-black/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden flex flex-col">
+        <main className="flex-1 min-h-0 flex items-stretch justify-center">
+          <div className="w-full max-w-7xl mx-auto px-4 py-4 md:py-6 flex items-stretch min-h-0">
+            <div className="w-full bg-black/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden flex flex-col min-h-0">
               {/* Chat Container */}
-              <div className="flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col min-h-0">
                 <ChatAgent onComplete={handleComplete} standId={standId} />
               </div>
             </div>

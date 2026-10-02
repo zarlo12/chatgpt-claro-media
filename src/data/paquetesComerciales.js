@@ -963,6 +963,20 @@ const generarMensajePersonalizado = (paquete, perfil) => {
 };
 
 /**
+ * Frase con la que el agente anuncia el paquete recomendado en voz alta.
+ * @param {Object} paquete
+ * @param {string} [nombre] - Nombre completo del visitante
+ * @returns {string}
+ */
+export const anunciarPaquete = (paquete, nombre = "") => {
+  const primerNombre = nombre.trim().split(/\s+/)[0];
+  const saludo = primerNombre ? `Listo, ${primerNombre}.` : "Listo.";
+  const millones = Math.round(paquete.precioPreventa / 1000000);
+
+  return `${saludo} Tu paquete ideal es ${paquete.nombre}: ${paquete.claim.toLowerCase()}. La inversión en preventa es de ${millones} millones de pesos, más impuestos. Aquí abajo tienes todo el detalle.`;
+};
+
+/**
  * Obtener paquete por ID
  * @param {string} id
  * @returns {Object|undefined}
@@ -981,6 +995,7 @@ export default {
   RANGOS_PRESUPUESTO,
   OPCIONES_PRESUPUESTO,
   presupuestoDesdeEtiqueta,
+  anunciarPaquete,
   recomendarPaquete,
   obtenerPaquetePorId,
   listarPaquetes,
