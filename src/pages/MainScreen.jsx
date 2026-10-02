@@ -37,9 +37,7 @@ function MainScreen() {
                 className="h-12 w-auto object-contain"
               />
               <div className="hidden md:block h-8 w-px bg-white/20"></div>
-              <div className="bg-claro-red/20 border border-claro-red/50 px-4 py-2 rounded-lg">
-                <span className="text-white font-semibold">Stand {standId}</span>
-              </div>
+             
             </div>
             <div className="hidden md:flex items-center space-x-2 text-white/80 text-sm">
               <span>Powered by ChatGPT</span>

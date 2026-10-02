@@ -62,11 +62,14 @@ const DisplayScreen = () => {
     
     const query = searchQuery.toLowerCase();
     const nombre = (conv.nombre || '').toLowerCase();
+    const empresa = (conv.empresa || '').toLowerCase();
     const sector = (conv.sector || '').toLowerCase();
     const correo = (conv.correo || '').toLowerCase();
     const paquete = (conv.propuesta?.paqueteRecomendado?.paquete?.nombre || '').toLowerCase();
     
     return nombre.includes(query) || 
+           empresa.includes(query) ||
+           
            sector.includes(query) || 
            correo.includes(query) ||
            paquete.includes(query);
@@ -80,6 +83,7 @@ const DisplayScreen = () => {
     const propuesta = {
       sector: conversacion.sector,
       nombre: conversacion.nombre,
+      empresa: conversacion.empresa,
       correo: conversacion.correo,
       celular: conversacion.celular,
       audiencia: {
@@ -93,7 +97,10 @@ const DisplayScreen = () => {
       presupuestoEstimado:
         conversacion.presupuestoEstimado || conversacion.propuesta?.presupuestoEstimado || null,
       etapaJourney:
-        conversacion.segundaSeleccionJourney || conversacion.propuesta?.etapaJourney || null,
+        conversacion.etapaJourney ||
+        conversacion.segundaSeleccionJourney || // registros del evento anterior
+        conversacion.propuesta?.etapaJourney ||
+        null,
       insights: conversacion.propuesta?.insights || [],
       insightsGeoespaciales: conversacion.propuesta?.insightsGeoespaciales || [],
       recomendaciones: conversacion.propuesta?.recomendaciones || [],

@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cotización Narración por Voz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+  <style>
+    /* Documento de una página: encabezado, dos bloques de alcance, cierre con la cifra. */
+    :root {
+      color-scheme: light;
+      --papel: #FBFAF9;
+      --tinta: #1A1718;
+      --tenue: #6E6567;
+      --linea: #E6DFDF;
+      --acento: #D6121F;
+      --acento-suave: #FDF0F0;
+      --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+      --texto: "Source Serif 4", Georgia, "Times New Roman", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+    }
+
+    body {
+      background: var(--papel);
+      color: var(--tinta);
+      font-family: var(--texto);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .hoja {
+      max-width: 44rem;
+      margin: 0 auto;
+      padding-block: 3.5rem 4rem;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    /* Encabezado */
+    .encabezado {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid var(--tinta);
+    }
+
+    .rotulo {
+      font-family: var(--display);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--acento);
+      margin: 0 0 0.6rem;
+    }
+
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(1.75rem, 5vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      text-wrap: balance;
+      margin: 0 0 0.5rem;
+    }
+
+    .proyecto {
+      margin: 0;
+      color: var(--tenue);
+      font-size: 0.95rem;
+    }
+
+    .meta {
+      font-family: var(--display);
+      font-size: 0.8rem;
+      line-height: 1.8;
+      color: var(--tenue);
+      text-align: right;
+      min-width: 0;
+    }
+
+    .meta b {
+      display: block;
+      color: var(--tinta);
+      font-weight: 600;
+    }
+
+    /* Secciones */
+    section {
+      margin-top: 2.5rem;
+    }
+
+    h2 {
+      font-family: var(--display);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tenue);
+      margin: 0 0 0.9rem;
+    }
+
+    p {
+      margin: 0 0 1rem;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .resumen {
+      font-size: 1.1rem;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    li {
+      display: grid;
+      grid-template-columns: 1.1rem 1fr;
+      gap: 0.7rem;
+      align-items: baseline;
+    }
+
+    li::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--acento);
+      transform: translateY(-0.15rem);
+    }
+
+    .excluye li::before {
+      background: none;
+      border: 1.5px solid var(--linea);
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .excluye {
+      color: var(--tenue);
+    }
+
+    /* Cierre con el desglose y la cifra */
+    .inversion {
+      margin-top: 2.75rem;
+      border-top: 1px solid var(--linea);
+      padding-top: 1.75rem;
+    }
+
+    .desglose {
+      margin: 0 0 1.5rem;
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .fila {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 1.5rem;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid var(--linea);
+    }
+
+    .fila dt {
+      min-width: 0;
+    }
+
+    .fila .detalle {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--tenue);
+    }
+
+    .fila dd {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .cierre {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem 2.5rem;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .precio-rotulo {
+      font-family: var(--display);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tenue);
+      margin: 0 0 0.25rem;
+    }
+
+    .precio {
+      font-family: var(--display);
+      font-size: clamp(1.5rem, 8vw, 2.4rem);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--acento);
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+    }
+
+    .precio span {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      color: var(--tenue);
+      margin-left: 0.5rem;
+    }
+
+    .entrega {
+      font-family: var(--display);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--tenue);
+      text-align: right;
+      min-width: 0;
+    }
+
+    .entrega b {
+      display: block;
+      color: var(--tinta);
+      font-size: 1rem;
+    }
+
+    .nota {
+      margin-top: 1.75rem;
+      background: var(--acento-suave);
+      border-left: 3px solid var(--acento);
+      padding: 1rem 1.25rem;
+      font-size: 0.95rem;
+    }
+
+    .nota strong {
+      font-weight: 600;
+    }
+
+    /* Acción (no se imprime) */
+    .acciones {
+      margin-top: 2.5rem;
+    }
+
+    button {
+      font-family: var(--display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--tinta);
+      background: transparent;
+      border: 1.5px solid var(--linea);
+      border-radius: 2px;
+      padding: 0.6rem 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+
+    button:hover {
+      border-color: var(--acento);
+      color: var(--acento);
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--acento);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 480px) {
+
+      .meta,
+      .entrega {
+        text-align: left;
+      }
+
+      .encabezado {
+        border-bottom-width: 1.5px;
+      }
+    }
+
+    @media print {
+      .acciones {
+        display: none;
+      }
+
+      .hoja {
+        padding-block: 0;
+        max-width: none;
+      }
+
+      body {
+        font-size: 11pt;
+      }
+
+      .nota {
+        background: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hoja">
+
+    <header class="encabezado">
+      <div>
+        <p class="rotulo">Cotización</p>
+        <h1>Narración por voz del agente</h1>
+        <p class="proyecto">Agente IA Claro Media · Rueda de Negocios 2026</p>
+      </div>
+      <div class="meta">
+        <b>1 de octubre de 2026</b>
+        Validez: 15 días
+      </div>
+    </header>
+
+    <section>
+      <h2>Qué se va a hacer</h2>
+      <p class="resumen">
+        Hoy el agente escribe sus mensajes. Con este cambio también los lee en voz alta,
+        para que la conversación en el stand se sienta real y el visitante no tenga que
+        leer la pantalla completa.
+      </p>
+      <p>
+        El visitante sigue respondiendo con clics sobre las opciones en pantalla. No se
+        activa el micrófono ni se graba audio de nadie.
+      </p>
+    </section>
+
+    <section>
+      <h2>Incluye</h2>
+      <ul>
+        <li><span>Lectura en voz alta de todos los mensajes del agente, en español.</span></li>
+        <li><span>Botón para activar o silenciar la voz en cualquier momento.</span></li>
+        <li><span>La voz respeta el ritmo de la conversación: no se encima entre mensajes ni con las pantallas de
+            transición.</span></li>
+        <li><span>Indicador visual mientras el agente está hablando.</span></li>
+        <li><span>Ajuste de velocidad y tono para que se entienda con el ruido del evento.</span></li>
+        <li><span>Pruebas en el equipo del stand, con su navegador y su parlante.</span></li>
+      </ul>
+    </section>
+
+
+
+    <section class="inversion">
+      <h2>Inversión</h2>
+
+      <dl class="desglose">
+        <div class="fila">
+          <dt>
+            Narración por voz
+            <span class="detalle">Implementación, ajustes y pruebas en el stand</span>
+          </dt>
+          <dd>USD&nbsp;$130</dd>
+        </div>
+        <div class="fila">
+          <dt>
+            Uso de IA
+            <span class="detalle">Consumo del modelo que genera las propuestas durante el evento</span>
+          </dt>
+          <dd>USD&nbsp;$70</dd>
+        </div>
+      </dl>
+
+      <div class="cierre">
+        <div>
+          <p class="precio-rotulo">Total</p>
+          <p class="precio">USD&nbsp;$200 <span>pago único</span></p>
+        </div>
+        <div class="entrega">
+          <b>3 días hábiles</b>
+          desde la aprobación
+        </div>
+      </div>
+    </section>
+
+
+
+    <div class="acciones">
+      <button type="button" id="imprimir">Imprimir o guardar en PDF</button>
+    </div>
+
+  </div>
+
+  <script>
+    document.getElementById('imprimir').addEventListener('click', function () {
+      window.print();
+    });
+  </script>
+</body>
+
+</html>

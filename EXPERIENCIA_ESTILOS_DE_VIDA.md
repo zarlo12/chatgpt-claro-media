@@ -25,6 +25,10 @@ la conversación.
   `SECTOR_A_CATEGORIA` que conecta los sectores del chat con las categorías del
   estudio. Cuando el nombre no coincide exacto se usa la categoría más cercana y
   la interfaz lo muestra como *categoría de referencia*.
+- **`src/data/journey.js`** — Fuente única de las etapas del journey: Conoce,
+  Encuentra, Atrae, Conecta, Decide y Descubre, con su icono, descripción y
+  color. La usan el selector del chat, los ejemplos por sector, la recomendación
+  de paquetes y la pantalla de resultados.
 - **`src/data/paquetesComerciales.js`** — Reemplaza los 4 paquetes anteriores por
   los 6 vigentes: ELITE + Investigación, ELITE 360, VIP, CONNECT, SMART y BASIC.
   Cada paquete se declara por **fases** (tal como en la lámina) y de ahí se
@@ -42,9 +46,10 @@ El flujo queda así (en negrita lo nuevo):
 5. **Lectura de audiencia**: dato observado → *esto sugiere* → pregunta de
    profundización, con las opciones de respuesta del estilo elegido
 6. Afinidades (el tablero arranca con las afinidades del estilo ya marcadas)
-7. Customer journey (dos selecciones + aprendizajes) — sin cambios
+7. **Customer journey**: una sola selección entre las 6 etapas, seguida de los
+   ejemplos por sector y los aprendizajes
 8. **Rango de inversión** (incluye "Aún no lo defino")
-9. Propuesta
+9. **Propuesta en la misma pantalla** (ya no manda a la pantalla de resultados)
 
 La conversación se escribe ahora de forma lineal con `await decir(...)` en lugar
 de `setTimeout` anidados: para cambiar el guion basta leer el handler del paso.
@@ -63,7 +68,7 @@ envía por correo. La regla también está escrita en el prompt del modelo.
 | Criterio | Peso | De dónde sale |
 |---|---|---|
 | Presupuesto | 45 | Rango elegido por el usuario. Gana el paquete más completo que cabe |
-| Etapa del journey | 25 | Segunda selección del journey vs. `etapasJourney` de cada paquete |
+| Etapa del journey | 25 | Etapa elegida vs. `etapasJourney` de cada paquete |
 | Alcance potencial | 15 | Banderas demográficas (escala calibrada con el rango real: 6,7M–54,9M) |
 | Sector | 15 | `sectoresDestacados` de cada paquete (criterio comercial, ajustable) |
 | NSE y edad | 8 + 8 | Perfil de audiencia |
@@ -80,8 +85,12 @@ requiere tocar el motor: alcanza con editar su definición.
   (claim + vigencia), porque los paquetes nuevos se definen por objetivo y
   duración, no por tamaño de audiencia.
 - Cada componente muestra la fase a la que pertenece.
-- El export a Excel suma las columnas `estiloVida`, `presupuestoEstimado` y
-  `propuesta_estiloVida`.
+- Al terminar, la propuesta se muestra en la misma pantalla del chat, con una
+  barra superior que confirma el stand y un botón para empezar de nuevo. Se
+  eliminó `CompletionScreen.jsx`, que solo servía para mandar al visitante a otra
+  pantalla.
+- El export a Excel suma las columnas `empresa`, `estiloVida`,
+  `presupuestoEstimado`, `etapaJourney` y `propuesta_estiloVida`.
 - El PDF de `functions/index.js` incluye las dos secciones nuevas.
   **Requiere redespliegue**: `npm run functions:deploy`.
 
@@ -105,5 +114,24 @@ requiere tocar el motor: alcanza con editar su definición.
 | Rangos de inversión del chat | `RANGOS_PRESUPUESTO` en `paquetesComerciales.js` |
 | Tasas de interacción por categoría | `src/data/benchmarksInteraccion.js` |
 | Qué categoría le corresponde a cada sector | `SECTOR_A_CATEGORIA` |
+| Nombre, icono o descripción de una etapa del journey | `src/data/journey.js` |
+| Ejemplos de mensaje por sector y etapa | `MENSAJES_JOURNEY_POR_SECTOR` en `mockData.js` |
 | Lo que dice el agente en cada paso | Handlers de `src/components/ChatAgent.jsx` |
 | Instrucciones del modelo | `SYSTEM_PROMPT` en `src/services/apiService.js` (se arma solo desde la data) |
+
+## Cambios posteriores (2 de octubre de 2026)
+
+- **Campo "Nombre de empresa"** en el formulario inicial. Se guarda como `empresa`
+  en Firestore desde el primer paso y viaja a resultados, Excel, PDF y al prompt.
+- **Etapas del journey renombradas** a Conoce, Encuentra, Atrae, Conecta, Decide y
+  Descubre. Los ejemplos por sector se re-mapearon a las cinco primeras etapas y
+  se escribió una línea nueva por sector para "Descubre", entendida como lo que
+  el cliente descubre después de decidir. Es copy de ejemplo: ajústenlo si el
+  equipo comercial lo quiere con otras palabras.
+- **El journey se pregunta una sola vez.** Antes se pedía la etapa, se mostraban
+  los ejemplos y se volvía a pedir. Ahora se pide una vez y los ejemplos y
+  aprendizajes vienen después. En Firestore se guarda un solo campo,
+  `etapaJourney`; los registros del evento anterior con
+  `primeraSeleccionJourney`/`segundaSeleccionJourney` se siguen leyendo.
+- **Los resultados se muestran en el mismo flujo**, sin enviar al visitante a otra
+  pantalla.

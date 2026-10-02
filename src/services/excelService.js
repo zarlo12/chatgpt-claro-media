@@ -203,6 +203,7 @@ const extraerTodosLosCampos = (registros) => {
     "standId",
     "estado",
     "nombre",
+    "empresa",
     "correo",
     "celular",
     "sector",
@@ -212,8 +213,7 @@ const extraerTodosLosCampos = (registros) => {
     "afinidades",
     "estiloVida",
     "presupuestoEstimado",
-    "primeraSeleccionJourney",
-    "segundaSeleccionJourney",
+    "etapaJourney",
   ];
 
   // Agregar campos prioritarios en orden

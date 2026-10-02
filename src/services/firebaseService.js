@@ -74,6 +74,7 @@ export const guardarConversacion = async (conversacion) => {
     const docRef = await addDoc(collection(db, COLLECTION_NAME), {
       // Datos personales
       nombre: conversacion.nombre || "",
+      empresa: conversacion.empresa || "",
       correo: conversacion.correo || "",
       celular: conversacion.celular || "",
 
@@ -90,9 +91,8 @@ export const guardarConversacion = async (conversacion) => {
       estiloVida: conversacion.estiloVida || null,
       presupuestoEstimado: conversacion.presupuestoEstimado || null,
 
-      // Journey (si están disponibles)
-      primeraSeleccionJourney: conversacion.primeraSeleccionJourney || null,
-      segundaSeleccionJourney: conversacion.segundaSeleccionJourney || null,
+      // Journey: etapa elegida en la experiencia
+      etapaJourney: conversacion.etapaJourney || null,
 
       // Propuesta generada
       propuesta: conversacion.propuesta || null,
@@ -123,6 +123,7 @@ export const guardarDatosIniciales = async (datosPersonales) => {
     const docRef = await conTiempoLimite(
       addDoc(collection(db, COLLECTION_NAME), {
         nombre: datosPersonales.nombre || "",
+        empresa: datosPersonales.empresa || "",
         correo: datosPersonales.correo || "",
         celular: datosPersonales.celular || "",
         standId: datosPersonales.standId || "A", // Stand A o B

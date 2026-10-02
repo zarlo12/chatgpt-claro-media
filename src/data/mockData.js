@@ -8,6 +8,7 @@ import {
   interpretacionNarrada,
   obtenerEstiloPorNombre,
 } from "./estilosDeVida";
+import { ORDEN_JOURNEY } from "./journey";
 import {
   formatearInteraccion,
   formatoLiderPorSector,
@@ -143,13 +144,7 @@ export const AFINIDADES_POR_SECTOR = {
   ],
 };
 
-export const RUTA_COMPORTAMIENTO = [
-  "Descubre",
-  "Explora",
-  "Compara",
-  "Decide",
-  "Compra",
-];
+export const RUTA_COMPORTAMIENTO = ORDEN_JOURNEY;
 
 export const INSIGHTS_POR_SECTOR = {
   Financiero: [
@@ -243,99 +238,109 @@ export const MENSAJES_JOURNEY_POR_SECTOR = {
   Financiero: {
     contexto:
       "Una familia está considerando opciones de inversión para el futuro de sus hijos.",
-    descubre:
+    conoce:
       "Existen soluciones de inversión diseñadas para el futuro de tu familia.",
-    explora:
+    encuentra:
       "Planes de ahorro con rendimientos garantizados y respaldo bancario.",
-    compara: "Tasas de interés 2% superiores al promedio del mercado.",
-    decide: "Asesoría personalizada gratuita con expertos financieros.",
-    compra: "Abre tu cuenta hoy y recibe bono de bienvenida de $500.",
+    atrae: "Tasas de interés 2% superiores al promedio del mercado.",
+    conecta: "Asesoría personalizada gratuita con expertos financieros.",
+    decide: "Abre tu cuenta hoy y recibe bono de bienvenida de $500.",
+    descubre: "Ya con tu cuenta, descubre los fondos que se ajustan a cada meta familiar.",
   },
   Automotor: {
     contexto:
       "Un cliente busca su primer vehículo eléctrico, valorando movilidad sostenible.",
-    descubre: "Descubre los vehículos eléctricos más eficientes del mercado.",
-    explora: "Autonomía de 400km, carga rápida y cero emisiones.",
-    compara: "30% menos costo de mantenimiento vs vehículos tradicionales.",
-    decide: "Prueba de manejo a domicilio sin compromiso.",
-    compra: "Financiamiento especial 0% de interés por 12 meses.",
+    conoce: "Descubre los vehículos eléctricos más eficientes del mercado.",
+    encuentra: "Autonomía de 400km, carga rápida y cero emisiones.",
+    atrae: "30% menos costo de mantenimiento vs vehículos tradicionales.",
+    conecta: "Prueba de manejo a domicilio sin compromiso.",
+    decide: "Financiamiento especial 0% de interés por 12 meses.",
+    descubre: "Después de la entrega, descubre la red de carga y el servicio a domicilio.",
   },
   Educación: {
     contexto: "Un joven profesional busca especializarse mientras trabaja.",
-    descubre: "Programas de maestría 100% virtuales y flexibles.",
-    explora: "Horarios adaptables, profesores con experiencia internacional.",
-    compara: "Certificación avalada, mismo título que modalidad presencial.",
-    decide: "Sesión informativa personalizada con coordinador académico.",
-    compra: "Matrícula con 20% de descuento, inicia el próximo mes.",
+    conoce: "Programas de maestría 100% virtuales y flexibles.",
+    encuentra: "Horarios adaptables, profesores con experiencia internacional.",
+    atrae: "Certificación avalada, mismo título que modalidad presencial.",
+    conecta: "Sesión informativa personalizada con coordinador académico.",
+    decide: "Matrícula con 20% de descuento, inicia el próximo mes.",
+    descubre: "Durante el programa, descubre la bolsa de empleo y la red de egresados.",
   },
   Gobierno: {
     contexto:
       "Una comunidad necesita información sobre programas de vivienda social.",
-    descubre: "Nuevos programas de vivienda para familias colombianas.",
-    explora:
+    conoce: "Nuevos programas de vivienda para familias colombianas.",
+    encuentra:
       "Subsidios de hasta el 50% del valor, créditos con tasas preferenciales.",
-    compara:
+    atrae:
       "Proyectos en ubicaciones estratégicas con acceso a transporte público.",
-    decide: "Jornada de inscripción en tu municipio este fin de semana.",
-    compra: "Separa tu vivienda con solo el 10% de cuota inicial.",
+    conecta: "Jornada de inscripción en tu municipio este fin de semana.",
+    decide: "Separa tu vivienda con solo el 10% de cuota inicial.",
+    descubre: "Con tu vivienda asignada, descubre los programas de acompañamiento familiar.",
   },
   Salud: {
     contexto:
       "Una persona activa busca complementar su plan de salud para bienestar integral.",
-    descubre: "Planes de salud que incluyen medicina preventiva y bienestar.",
-    explora: "Telemedicina 24/7, gimnasios afiliados, nutrición personalizada.",
-    compara:
+    conoce: "Planes de salud que incluyen medicina preventiva y bienestar.",
+    encuentra: "Telemedicina 24/7, gimnasios afiliados, nutrición personalizada.",
+    atrae:
       "Cobertura más amplia con menores copagos que planes tradicionales.",
-    decide: "Evaluación médica inicial sin costo.",
-    compra: "Primer mes gratis, activa tu plan hoy mismo.",
+    conecta: "Evaluación médica inicial sin costo.",
+    decide: "Primer mes gratis, activa tu plan hoy mismo.",
+    descubre: "Con tu plan activo, descubre los chequeos y beneficios que ya están incluidos.",
   },
   Tecnología: {
     contexto:
       "Un emprendedor necesita equipar su oficina con tecnología moderna.",
-    descubre: "Soluciones tecnológicas para impulsar tu negocio.",
-    explora: "Laptops, tablets y software colaborativo en un solo paquete.",
-    compara:
+    conoce: "Soluciones tecnológicas para impulsar tu negocio.",
+    encuentra: "Laptops, tablets y software colaborativo en un solo paquete.",
+    atrae:
       "Rendimiento superior, garantía extendida y soporte técnico incluido.",
-    decide: "Demo en vivo de cómo funciona integrado en tu negocio.",
-    compra: "Pago en 18 meses sin intereses, envío e instalación gratis.",
+    conecta: "Demo en vivo de cómo funciona integrado en tu negocio.",
+    decide: "Pago en 18 meses sin intereses, envío e instalación gratis.",
+    descubre: "Con los equipos funcionando, descubre las herramientas que automatizan tu operación.",
   },
   Moda: {
     contexto:
       "Una persona busca renovar su guardarropa con piezas sostenibles y versátiles.",
-    descubre: "Moda consciente: estilo y sostenibilidad en cada prenda.",
-    explora: "Materiales eco-friendly, diseños atemporales, producción ética.",
-    compara: "Calidad superior a fast fashion, durabilidad garantizada.",
-    decide: "Asesoría de estilo personal virtual gratuita.",
-    compra: "Promoción: 3x2 en toda la colección primavera-verano.",
+    conoce: "Moda consciente: estilo y sostenibilidad en cada prenda.",
+    encuentra: "Materiales eco-friendly, diseños atemporales, producción ética.",
+    atrae: "Calidad superior a fast fashion, durabilidad garantizada.",
+    conecta: "Asesoría de estilo personal virtual gratuita.",
+    decide: "Promoción: 3x2 en toda la colección primavera-verano.",
+    descubre: "Después de tu compra, descubre cómo combinar cada prenda temporada tras temporada.",
   },
   Entretenimiento: {
     contexto:
       "Una familia busca opciones de entretenimiento para el fin de semana.",
-    descubre: "Miles de películas, series y eventos en vivo en un solo lugar.",
-    explora: "Contenido exclusivo, estrenos simultáneos, sin publicidad.",
-    compara: "Precio 40% menor que servicios competidores, más contenido.",
-    decide: "Prueba gratis por 30 días, cancela cuando quieras.",
-    compra: "Plan familiar: 4 pantallas simultáneas por solo $25.000/mes.",
+    conoce: "Miles de películas, series y eventos en vivo en un solo lugar.",
+    encuentra: "Contenido exclusivo, estrenos simultáneos, sin publicidad.",
+    atrae: "Precio 40% menor que servicios competidores, más contenido.",
+    conecta: "Prueba gratis por 30 días, cancela cuando quieras.",
+    decide: "Plan familiar: 4 pantallas simultáneas por solo $25.000/mes.",
+    descubre: "Con tu plan activo, descubre los estrenos y eventos exclusivos de cada mes.",
   },
   Retail: {
     contexto:
       "Una persona busca equipar su hogar con electrodomésticos eficientes.",
-    descubre: "Los electrodomésticos más eficientes para tu hogar moderno.",
-    explora:
+    conoce: "Los electrodomésticos más eficientes para tu hogar moderno.",
+    encuentra:
       "Ahorro de energía hasta 50%, tecnología inteligente, diseño premium.",
-    compara:
+    atrae:
       "Garantía extendida, instalación incluida, mejor precio garantizado.",
-    decide: "Visita showroom o programa asesoría virtual.",
-    compra: "Cyber Monday: hasta 40% de descuento + 6 meses sin intereses.",
+    conecta: "Visita showroom o programa asesoría virtual.",
+    decide: "Cyber Monday: hasta 40% de descuento + 6 meses sin intereses.",
+    descubre: "Ya instalado, descubre las funciones inteligentes que ahorran en tu factura.",
   },
   "Consumo Masivo": {
     contexto:
       "Una familia busca productos más saludables para su alimentación diaria.",
-    descubre: "Hay nuevas bebidas hechas con ingredientes 100% naturales.",
-    explora: "Sin conservantes, con fruta real y vitaminas esenciales.",
-    compara: "30% menos azúcar que otras marcas, certificación orgánica.",
-    decide: "Promoción en tu tienda cercana, encuentra el punto de venta.",
-    compra: "Llévate 2 y paga 1 en toda la línea familiar.",
+    conoce: "Hay nuevas bebidas hechas con ingredientes 100% naturales.",
+    encuentra: "Sin conservantes, con fruta real y vitaminas esenciales.",
+    atrae: "30% menos azúcar que otras marcas, certificación orgánica.",
+    conecta: "Promoción en tu tienda cercana, encuentra el punto de venta.",
+    decide: "Llévate 2 y paga 1 en toda la línea familiar.",
+    descubre: "En casa, descubre las recetas y presentaciones nuevas de toda la línea.",
   },
 };
 
@@ -410,6 +415,7 @@ export const generarPropuestaEstrategica = (userData) => {
     nivelSocioeconomico,
     afinidades,
     nombre,
+    empresa,
     correo,
     celular,
     estiloVida,
@@ -475,6 +481,7 @@ export const generarPropuestaEstrategica = (userData) => {
   return {
     sector,
     nombre,
+    empresa,
     correo,
     celular,
     audiencia: {

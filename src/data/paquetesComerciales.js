@@ -10,9 +10,9 @@
  * exista una sola fuente de verdad.
  */
 
-const IMPUESTOS = "+ Impuestos (IVA 19% + impoconsumo 4% en mobile)";
+import { ORDEN_JOURNEY } from "./journey";
 
-const ORDEN_JOURNEY = ["Descubre", "Explora", "Compara", "Decide", "Compra"];
+const IMPUESTOS = "+ Impuestos (IVA 19% + impoconsumo 4% en mobile)";
 
 /**
  * Definición de los paquetes tal como están en la presentación.
@@ -35,7 +35,7 @@ const DEFINICION_PAQUETES = [
     precioPreventa: 240000000,
     descuento: "36% de descuento",
     categoriaPresupuesto: "alto",
-    etapasJourney: ["Descubre", "Explora", "Compara"],
+    etapasJourney: ["Conoce", "Encuentra", "Atrae"],
     sectoresDestacados: ["Gobierno", "Educación", "Consumo Masivo"],
     incluyeProduccion: true,
     fases: [
@@ -157,7 +157,7 @@ const DEFINICION_PAQUETES = [
     precioPreventa: 200000000,
     descuento: "40% de descuento",
     categoriaPresupuesto: "alto",
-    etapasJourney: ["Explora", "Compara", "Decide"],
+    etapasJourney: ["Encuentra", "Atrae", "Conecta"],
     sectoresDestacados: ["Financiero", "Automotor", "Salud"],
     incluyeProduccion: true,
     fases: [
@@ -264,7 +264,7 @@ const DEFINICION_PAQUETES = [
     precioPreventa: 100000000,
     descuento: "40% de descuento",
     categoriaPresupuesto: "medio-alto",
-    etapasJourney: ["Descubre", "Explora", "Compara"],
+    etapasJourney: ["Conoce", "Encuentra", "Atrae"],
     sectoresDestacados: ["Tecnología", "Salud", "Educación"],
     incluyeProduccion: false,
     fases: [
@@ -370,7 +370,7 @@ const DEFINICION_PAQUETES = [
     precioPreventa: 150000000,
     descuento: "5% de descuento",
     categoriaPresupuesto: "medio-alto",
-    etapasJourney: ["Decide", "Compra"],
+    etapasJourney: ["Conecta", "Decide", "Descubre"],
     sectoresDestacados: ["Retail", "Consumo Masivo", "Entretenimiento"],
     incluyeProduccion: false,
     fases: [
@@ -456,7 +456,7 @@ const DEFINICION_PAQUETES = [
     precioPreventa: 50000000,
     descuento: "19% de descuento",
     categoriaPresupuesto: "medio",
-    etapasJourney: ["Descubre", "Explora"],
+    etapasJourney: ["Conoce", "Encuentra"],
     sectoresDestacados: ["Moda", "Entretenimiento", "Tecnología"],
     incluyeProduccion: false,
     fases: [
@@ -542,7 +542,7 @@ const DEFINICION_PAQUETES = [
     precioPreventa: 20000000,
     descuento: "10% de descuento",
     categoriaPresupuesto: "bajo",
-    etapasJourney: ["Descubre"],
+    etapasJourney: ["Conoce"],
     sectoresDestacados: ["Retail", "Moda", "Gobierno"],
     incluyeProduccion: false,
     fases: [

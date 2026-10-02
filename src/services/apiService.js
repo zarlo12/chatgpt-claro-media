@@ -357,6 +357,7 @@ const contextoBenchmark = (benchmark) => {
  */
 export const generarPropuestaConIA = async (userData) => {
   const {
+    empresa,
     sector,
     genero,
     edad,
@@ -407,7 +408,7 @@ export const generarPropuestaConIA = async (userData) => {
     .map((b) => `${b.nombre} (${b.alcance} usuarios)`)
     .join(", ");
 
-  const userPrompt = `Genera una propuesta estratégica personalizada para una empresa del sector ${sector} con la siguiente audiencia:
+  const userPrompt = `Genera una propuesta estratégica personalizada para ${empresa || "una empresa"}, del sector ${sector}, con la siguiente audiencia:
   - Género: ${genero}
   - Edad: ${edadText}
   - Nivel Socioeconómico: ${nseText}
@@ -468,6 +469,7 @@ ${contextoBenchmark(benchmark)}
 
     return {
       sector,
+      empresa,
       audiencia: {
         genero,
         edad: edadText,

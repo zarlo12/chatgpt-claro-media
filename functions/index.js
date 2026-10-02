@@ -395,12 +395,13 @@ const generarHTMLPropuesta = (propuesta) => {
 
     <!-- Datos de Contacto -->
     ${
-      propuesta.nombre || propuesta.correo || propuesta.celular
+      propuesta.nombre || propuesta.empresa || propuesta.correo || propuesta.celular
         ? `
     <div class="section">
       <div class="section-title">Información de Contacto</div>
       <div class="info-grid">
         ${propuesta.nombre ? `<div class="info-item"><div class="info-label">Nombre</div><div class="info-value">${propuesta.nombre}</div></div>` : ""}
+        ${propuesta.empresa ? `<div class="info-item"><div class="info-label">Empresa</div><div class="info-value">${propuesta.empresa}</div></div>` : ""}
         ${propuesta.correo ? `<div class="info-item"><div class="info-label">Correo</div><div class="info-value">${propuesta.correo}</div></div>` : ""}
         ${propuesta.celular ? `<div class="info-item"><div class="info-label">Celular</div><div class="info-value">${propuesta.celular}</div></div>` : ""}
       </div>

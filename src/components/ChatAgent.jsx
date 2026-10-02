@@ -5,7 +5,7 @@ import DragDropBoard from './DragDropBoard';
 import EstiloVidaSelector from './EstiloVidaSelector';
 import JourneyStageSelector from './JourneyStageSelector';
 import TransitionModal from './TransitionModal';
-import CompletionScreen from './CompletionScreen';
+import ResultsView from './ResultsView';
 import { generarPropuestaConIA } from '../services/apiService';
 import { guardarDatosIniciales, actualizarConversacion } from '../services/firebaseService';
 import {
@@ -25,6 +25,7 @@ import {
   construirRutaSectores,
 } from '../data/estilosDeVida';
 import { construirMensajeBenchmark } from '../data/benchmarksInteraccion';
+import { ETAPAS_JOURNEY } from '../data/journey';
 import { OPCIONES_PRESUPUESTO, presupuestoDesdeEtiqueta } from '../data/paquetesComerciales';
 
 // Ritmo de la conversación
@@ -36,14 +37,29 @@ const PASOS_CON_COMPONENTE = [
   'datosPersonales',
   'estiloVida',
   'afinidades',
-  'journeyPrimera',
-  'journeySegunda',
+  'journey',
 ];
 
 // Pasos que permiten elegir varias opciones
 const PASOS_MULTISELECCION = ['edad', 'nivelSocioeconomico'];
 
 const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Barra fija sobre los resultados: confirma el stand y permite reiniciar. */
+const BarraResultados = ({ standId, onReset }) => (
+  <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-6 py-3 bg-black/80 backdrop-blur-xl border-b border-white/10">
+    <div className="flex items-center gap-2 text-white/80 text-sm font-medium">
+      <span className="w-2 h-2 rounded-full bg-green-400"></span>
+      Propuesta lista · Stand {standId}
+    </div>
+    <button
+      onClick={onReset}
+      className="px-5 py-2 bg-white/10 border border-white/30 rounded-lg text-white text-sm font-semibold hover:bg-white/20 transition-all duration-300"
+    >
+      Crear nueva propuesta
+    </button>
+  </div>
+);
 
 const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [messages, setMessages] = useState([]);
@@ -57,10 +73,10 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [estiloVida, setEstiloVida] = useState(null);
   const [respuestaEstilo, setRespuestaEstilo] = useState('');
   // Customer journey
-  const [primeraSeleccionJourney, setPrimeraSeleccionJourney] = useState(null);
-  const [segundaSeleccionJourney, setSegundaSeleccionJourney] = useState(null);
+  const [etapaJourney, setEtapaJourney] = useState(null);
   // Datos personales
   const [nombre, setNombre] = useState('');
+  const [empresa, setEmpresa] = useState('');
   const [correo, setCorreo] = useState('');
   const [celular, setCelular] = useState('');
   const [showFormulario, setShowFormulario] = useState(false);
@@ -68,14 +84,16 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   // ID del documento de Firebase para actualizar después
   const [conversacionId, setConversacionId] = useState(null);
-  // Pantalla de completado
+  // Resultado final: la propuesta se muestra en el mismo flujo
   const [showCompletion, setShowCompletion] = useState(false);
+  const [propuestaFinal, setPropuestaFinal] = useState(null);
   // Modal de transición
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({ mensaje: '', icono: '' });
   const [pendingAction, setPendingAction] = useState(null);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const resultadosRef = useRef(null);
   const hasInitialized = useRef(false);
 
   const scrollToBottom = () => {
@@ -97,6 +115,13 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, showOptions]);
+
+  useEffect(() => {
+    // Los resultados se leen desde el principio, no desde donde quedó el chat
+    if (!showCompletion) return;
+    window.scrollTo({ top: 0 });
+    resultadosRef.current?.scrollTo({ top: 0 });
+  }, [showCompletion]);
 
   useEffect(() => {
     // Prevenir duplicación en React StrictMode
@@ -176,9 +201,10 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setSelectedNSE([]);
     setEstiloVida(null);
     setRespuestaEstilo('');
-    setPrimeraSeleccionJourney(null);
-    setSegundaSeleccionJourney(null);
+    setEtapaJourney(null);
+    setPropuestaFinal(null);
     setNombre('');
+    setEmpresa('');
     setCorreo('');
     setCelular('');
     setShowFormulario(false);
@@ -198,7 +224,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     if (isSubmitting) return;
 
     // Validar que todos los campos estén completos
-    if (!nombre.trim() || !correo.trim() || !celular.trim()) {
+    if (!nombre.trim() || !empresa.trim() || !correo.trim() || !celular.trim()) {
       alert('Por favor completa todos los campos');
       return;
     }
@@ -211,12 +237,13 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     }
 
     setIsSubmitting(true);
-    setUserData((prev) => ({ ...prev, nombre, correo, celular }));
+    setUserData((prev) => ({ ...prev, nombre, empresa, correo, celular }));
 
     // 🔥 Guardar datos iniciales en Firebase (crear documento)
     try {
       const docId = await guardarDatosIniciales({
         nombre,
+        empresa,
         correo,
         celular,
         standId, // Identificador del stand (A o B)
@@ -230,7 +257,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       setIsSubmitting(false);
     }
 
-    addUserMessage(`${nombre} - ${correo} - ${celular}`);
+    addUserMessage(`${nombre} · ${empresa} - ${correo} - ${celular}`);
     setShowFormulario(false);
 
     mostrarModalTransicion(
@@ -238,7 +265,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       'profile',
       async () => {
         await decir(
-          `Perfecto ${nombre}, gracias por tu información. Ahora empecemos conociendo tu empresa. ¿A qué sector perteneces?`,
+          `Perfecto ${nombre}, gracias por tu información. Ahora empecemos conociendo a ${empresa}. ¿A qué sector pertenece?`,
         );
         irA('welcome');
       },
@@ -369,7 +396,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
         await decir(
           'En tu experiencia: ¿En qué momento crees que tu comunicación tiene más poder para influir en tu audiencia?',
         );
-        irA('journeyPrimera');
+        irA('journey');
       },
     );
   };
@@ -378,9 +405,9 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   // Paso 5: customer journey
   // ---------------------------------------------------------------------
 
-  const handlePrimeraSeleccionJourney = async (etapa) => {
-    addUserMessage(`Primera selección: ${etapa}`);
-    setPrimeraSeleccionJourney(etapa);
+  const handleJourneySelect = async (etapa) => {
+    addUserMessage(etapa);
+    setEtapaJourney(etapa);
     setShowOptions(false);
 
     const afinidadPrincipal = userData.afinidades?.[0] || 'las afinidades';
@@ -401,20 +428,11 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     await decir(`Contexto: ${ejemplos.contexto}`);
     await decir('Observa cómo cambia el mensaje en cada etapa del journey:');
     await decir(
-      `🔍 Descubre: "${ejemplos.descubre}"\n\n🌐 Explora: "${ejemplos.explora}"\n\n⚖️ Compara: "${ejemplos.compara}"\n\n💡 Decide: "${ejemplos.decide}"\n\n🛍️ Compra: "${ejemplos.compra}"`,
+      ETAPAS_JOURNEY.map(
+        (etapa) => `${etapa.icono} ${etapa.nombre}: "${ejemplos[etapa.id]}"`,
+      ).join('\n\n'),
       2500,
     );
-    await decir(
-      'Ahora, con esta nueva perspectiva: ¿En qué momento crees que el insight realmente cambia la decisión?',
-    );
-    irA('journeySegunda');
-  };
-
-  const handleSegundaSeleccionJourney = async (etapa) => {
-    addUserMessage(`Segunda selección (después de ver los ejemplos): ${etapa}`);
-    setSegundaSeleccionJourney(etapa);
-    setShowOptions(false);
-
     await mostrarRevelaciones();
   };
 
@@ -464,9 +482,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       ...userData,
       estiloVida: estiloVida?.nombre,
       respuestaEstilo,
-      primeraSeleccionJourney,
-      segundaSeleccionJourney,
-      etapaJourney: segundaSeleccionJourney,
+      etapaJourney,
       presupuesto: presupuestoDesdeEtiqueta(etiquetaPresupuesto),
       presupuestoEtiqueta: etiquetaPresupuesto,
     };
@@ -486,8 +502,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
           afinidades: userData.afinidades,
           estiloVida: construirResumenEstilo(estiloVida, respuestaEstilo),
           presupuestoEstimado: etiquetaPresupuesto,
-          primeraSeleccionJourney,
-          segundaSeleccionJourney,
+          etapaJourney,
           propuesta,
           estado: 'completado',
           modo: import.meta.env.VITE_MODE || 'development',
@@ -501,6 +516,16 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     } else {
       console.warn('⚠️ No hay ID de conversación, no se puede actualizar');
     }
+
+    // La propuesta se muestra en esta misma pantalla, con los datos de contacto
+    // que la vista de resultados necesita para el envío por correo.
+    setPropuestaFinal({
+      ...propuesta,
+      nombre: userData.nombre,
+      empresa: userData.empresa,
+      correo: userData.correo,
+      celular: userData.celular,
+    });
 
     onComplete?.(propuesta);
     setShowCompletion(true);
@@ -562,8 +587,19 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
 
   return (
     <div className="flex flex-col h-full">
-      {showCompletion ? (
-        <CompletionScreen standId={standId} onReset={handleReset} />
+      {showCompletion && propuestaFinal ? (
+        <div ref={resultadosRef} className="flex-1 overflow-y-auto">
+          <BarraResultados standId={standId} onReset={handleReset} />
+          <ResultsView propuesta={propuestaFinal} onReset={handleReset} />
+          <div className="flex justify-center px-6 pb-10">
+            <button
+              onClick={handleReset}
+              className="px-8 py-4 bg-claro-red text-white font-semibold rounded-xl shadow-lg shadow-claro-red/40 hover:bg-red-700 transform hover:scale-105 transition-all duration-300"
+            >
+              Crear nueva propuesta
+            </button>
+          </div>
+        </div>
       ) : (
         <>
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
@@ -586,6 +622,18 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
                       placeholder="Ej: Juan Pérez"
                       className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
                       autoFocus
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Nombre de empresa *
+                    </label>
+                    <input
+                      type="text"
+                      value={empresa}
+                      onChange={(e) => setEmpresa(e.target.value)}
+                      placeholder="Ej: Claro Media"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-claro-red focus:border-transparent transition-all"
                     />
                   </div>
                   <div>
@@ -671,19 +719,11 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
               />
             )}
 
-            {showOptions && currentStep === 'journeyPrimera' && (
+            {showOptions && currentStep === 'journey' && (
               <JourneyStageSelector
                 title="¿En qué momento tiene más impacto tu comunicación?"
-                subtitle="Selecciona una etapa del journey (tu intuición)"
-                onSelect={handlePrimeraSeleccionJourney}
-              />
-            )}
-
-            {showOptions && currentStep === 'journeySegunda' && (
-              <JourneyStageSelector
-                title="Ahora que viste los ejemplos..."
-                subtitle="¿Cambiarías tu respuesta? Selecciona nuevamente"
-                onSelect={handleSegundaSeleccionJourney}
+                subtitle="Selecciona la etapa del journey donde quieres estar presente"
+                onSelect={handleJourneySelect}
               />
             )}
 

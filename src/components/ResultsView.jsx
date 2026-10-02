@@ -168,7 +168,7 @@ const ResultsView = ({ propuesta, onReset }) => {
         </div>
 
         {/* Datos de Contacto - Solo si existen */}
-        {(propuesta.nombre || propuesta.correo || propuesta.celular) && (
+        {(propuesta.nombre || propuesta.empresa || propuesta.correo || propuesta.celular) && (
           <div className="bg-gradient-to-br from-claro-red/10 to-claro-red/5 backdrop-blur-md border border-claro-red/30 rounded-2xl p-6 animate-slide-up">
             <h2 className="text-lg font-bold text-white mb-4 flex items-center">
               <svg
@@ -191,6 +191,12 @@ const ResultsView = ({ propuesta, onReset }) => {
                 <div className="flex items-center space-x-2">
                   <span className="text-white/60 text-sm">Nombre:</span>
                   <span className="text-white font-medium">{propuesta.nombre}</span>
+                </div>
+              )}
+              {propuesta.empresa && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-white/60 text-sm">Empresa:</span>
+                  <span className="text-white font-medium">{propuesta.empresa}</span>
                 </div>
               )}
               {propuesta.correo && (
