@@ -228,7 +228,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const iniciarConversacion = async () => {
     await esperar(500);
     await decir(
-      'Bienvenido al Agente de IA de Claro Media. Desarrollado con tecnología ChatGPT y entrenado con nuestra data, estoy aquí para ayudarte a crear propuestas estratégicas personalizadas.',
+      'Bienvenido al Agente de IA de Claro Media. Desarrollado con tecnología y entrenado con nuestra data, estoy aquí para ayudarte a crear propuestas estratégicas personalizadas.',
     );
     await decir('Antes de empezar, me gustaría conocerte mejor. Por favor ingresa tus datos:');
     setCurrentStep('datosPersonales');
