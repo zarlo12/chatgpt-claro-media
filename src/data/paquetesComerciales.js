@@ -10,6 +10,7 @@
  * exista una sola fuente de verdad.
  */
 
+import { FRASES_CIERRE } from "./cierre";
 import { ORDEN_JOURNEY } from "./journey";
 
 const IMPUESTOS = "+ Impuestos (IVA 19% + impoconsumo 4% en mobile)";
@@ -973,7 +974,7 @@ export const anunciarPaquete = (paquete, nombre = "") => {
   const saludo = primerNombre ? `Listo, ${primerNombre}.` : "Listo.";
   const millones = Math.round(paquete.precioPreventa / 1000000);
 
-  return `${saludo} Tu paquete ideal es ${paquete.nombre}: ${paquete.claim.toLowerCase()}. La inversión en preventa es de ${millones} millones de pesos, más impuestos. Aquí abajo tienes todo el detalle.`;
+  return `${saludo} Tu paquete ideal es ${paquete.nombre}: ${paquete.claim.toLowerCase()}. La inversión en preventa es de ${millones} millones de pesos, más impuestos. Aquí abajo tienes todo el detalle. ${FRASES_CIERRE.join(" ")}`;
 };
 
 /**

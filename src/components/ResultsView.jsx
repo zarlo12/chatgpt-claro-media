@@ -3,6 +3,7 @@ import { enviarPropuestaPorCorreo } from '../services/pdfService';
 import EstiloVidaCard from './EstiloVidaCard';
 import BenchmarkInteraccion from './BenchmarkInteraccion';
 import BotonFotografiaIA from './BotonFotografiaIA';
+import { CIERRE } from '../data/cierre';
 import { formatearUsuarios, obtenerSector } from '../data/sectores';
 
 const InsightCard = ({ insight, index }) => {
@@ -620,6 +621,12 @@ const ResultsView = ({ propuesta, onReset, conversacionId, standId }) => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Cierre de la experiencia */}
+        <div className="bg-gradient-to-br from-claro-red/20 to-claro-red/5 border border-claro-red/40 rounded-2xl p-8 text-center space-y-3 animate-slide-up">
+          <p className="text-white text-xl md:text-2xl font-bold leading-snug">{CIERRE.consultor}</p>
+          <p className="text-white/80 text-base md:text-lg">{CIERRE.correo}</p>
         </div>
 
         {/* Botón Enviar por Correo */}

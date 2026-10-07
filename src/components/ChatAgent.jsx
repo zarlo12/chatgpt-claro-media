@@ -444,7 +444,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       'Ahora llevemos esta audiencia a una decisión de negocio.',
       'journey',
       async () => {
-        await decir('Perfecto. Ahora vamos a una reflexión estratégica importante...');
+        await decir('Ahora la data construye la estrategia a partir del reto que tengas en este momento para llegar a tú audiencia ideal');
         await decir(
           'En tu experiencia: ¿En qué momento crees que tu comunicación tiene más poder para influir en tu audiencia?',
         );
