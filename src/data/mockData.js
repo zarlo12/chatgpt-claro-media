@@ -4,6 +4,7 @@ import { calcularValorPropuesta } from "./banderasDemograficas";
 import { recomendarPaquete } from "./paquetesComerciales";
 import {
   AFINIDADES_DE_ESTILOS,
+  afinidadesDeCatalogo,
   construirResumenEstilo,
   interpretacionNarrada,
   obtenerEstiloPorNombre,
@@ -66,6 +67,17 @@ const AFINIDADES_BASE = [
 export const TODAS_AFINIDADES = [
   ...new Set([...AFINIDADES_BASE, ...AFINIDADES_DE_ESTILOS]),
 ];
+
+/**
+ * Afinidades que el visitante puede sumar a las de su estilo de vida: el
+ * catálogo completo menos las dos que el estilo ya aporta.
+ * @param {Object|null} estilo
+ * @returns {string[]}
+ */
+export const afinidadesAdicionales = (estilo) => {
+  const propias = afinidadesDeCatalogo(estilo);
+  return TODAS_AFINIDADES.filter((afinidad) => !propias.includes(afinidad));
+};
 
 // Mapa de iconos para las afinidades
 export const ICONOS_AFINIDADES = {

@@ -47,7 +47,8 @@ export const limpiarParaVoz = (texto = "") => {
     .replace(/\$\s?([\d.,]+)/g, "$1 pesos")
     .replace(/\/mes\b/gi, " al mes")
     .replace(/24\/7/g, "las veinticuatro horas, los siete días")
-    .replace(/(\d)\s?km\b/gi, "$1 kilómetros");
+    .replace(/(\d)\s?km\b/gi, "$1 kilómetros")
+    .replace(/\s+\/\s+/g, ", ");
 
   // Cada línea es una frase: se cierra con punto para que la voz haga pausa.
   return sinSimbolos

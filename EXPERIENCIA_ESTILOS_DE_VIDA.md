@@ -45,7 +45,8 @@ El flujo queda así (en negrita lo nuevo):
 4. **Estilo de vida** (tablero de 10 tarjetas)
 5. **Lectura de audiencia**: dato observado → *esto sugiere* → pregunta de
    profundización, con las opciones de respuesta del estilo elegido
-6. Afinidades (el tablero arranca con las afinidades del estilo ya marcadas)
+6. Afinidades adicionales (opcional): las dos del estilo ya cuentan y no aparecen
+   en el tablero; el visitante solo puede sumar otras
 7. **Customer journey**: una sola selección entre las 6 etapas, seguida de los
    ejemplos por sector y los aprendizajes
 8. **Rango de inversión** (incluye "Aún no lo defino")
@@ -234,3 +235,44 @@ Gobierno 1,1M · Hogar 4,2M. "Consumo Masivo" desaparece.
   Entretenimiento · SMART → Moda, Entretenimiento, Tecnología · BASIC → Retail, Moda, B2B.
 - Los registros guardados con sectores anteriores (p. ej. "Consumo Masivo") se siguen
   mostrando; solo cambia lo que se genera de ahora en adelante.
+
+## Afinidades del estilo de vida (octubre 2026)
+
+Al elegir un estilo, el agente ahora explica **sus dos afinidades, una por una**, antes de
+mostrar la evidencia. El orden de lo que dice es:
+
+1. Apertura del estilo (Excel: "Descripción / apertura")
+2. **Afinidad 1** y su explicación (burbuja con encabezado "Afinidad 1 de 2 · Gaming")
+3. **Afinidad 2** y su explicación
+4. Dato observado → "Esto sugiere…" → ruta de sectores → pregunta
+
+La voz anuncia cada una ("Primera afinidad: Gaming. …", "Segunda afinidad: …").
+
+### Lo que el Excel no trae
+
+El Excel tiene **un solo** texto por estilo (descripción, dato e interpretación), no uno por
+afinidad. Por eso:
+
+- Las **20 explicaciones** (10 estilos × 2) están en el campo `explicaciones` de cada estilo
+  en `src/data/estilosDeVida.js`. Son redacción nuestra, hecha con las palabras del propio
+  Excel y **sin cifras**. Conviene que el cliente las revise: son el único contenido de
+  esta función que él no escribió.
+- **El dato no se reparte entre afinidades.** En 4 estilos podría (1, 2, 3 y 8), pero en el
+  #5 el orden está invertido (Música antes que OTT), en #4, #6 y #9 una sola cifra une a las
+  dos, y en #7 y #10 una parte del dato habla de Tecnología, que no es ninguna de las dos
+  afinidades. Repartirlo atribuiría cifras a la afinidad equivocada, así que el dato sigue
+  siendo un solo mensaje, separado de la interpretación como exige la regla narrativa.
+
+### Tablero de afinidades
+
+- Las dos afinidades del estilo **ya no aparecen** en el tablero; se muestran fijas arriba
+  como "Ya incluidas por tu estilo de vida".
+- Sumar otras es **opcional**. El botón siempre está disponible y dice "Continuar sin agregar
+  más" o "Continuar con N adicionales", y queda fijo al borde inferior para que no se pierda
+  en pantallas bajas.
+- Las afinidades que se guardan y llegan a la propuesta, Excel y PDF son las dos del estilo
+  **más** las adicionales, sin repetir. En el chat quedan registradas como "Sin afinidades
+  adicionales" o "Afinidades adicionales: …".
+- Los nombres de las dos afinidades son los del Excel ("E-Commerce y Retail"); el tablero usa
+  un catálogo propio ("E-Commerce"). `EQUIVALENCIAS_CATALOGO` en `estilosDeVida.js` es el
+  puente que decide qué tarjeta del tablero se quita.

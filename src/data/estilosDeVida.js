@@ -24,7 +24,10 @@ export const REGLA_NARRATIVA = {
  *
  * Campos (según hoja "Estructura IA"):
  *  - nombre              → contexto inicial seleccionado por el usuario
- *  - afinidades          → intereses que definen la ruta de análisis
+ *  - afinidades          → intereses que definen la ruta de análisis (Afinidad 1 y 2)
+ *  - explicaciones       → qué significa cada afinidad para este estilo. NO viene
+ *                          del Excel (que trae un solo texto por estilo): está
+ *                          redactado con sus mismas palabras y sin cifras
  *  - dato                → evidencia cuantitativa que sustenta la conexión
  *  - interpretacion      → qué puede significar el cruce (sin afirmar causalidad)
  *  - sectorPrincipal     → sector al que conduce la experiencia
@@ -37,6 +40,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Siempre en movimiento",
     icono: "🧭",
     afinidades: ["Viajes y Turismo", "Movilidad"],
+    explicaciones: {
+      "Viajes y Turismo":
+        "El interés por descubrir nuevos destinos y vivir experiencias fuera de la rutina.",
+      "Movilidad":
+        "La forma de desplazarse todos los días: autonomía y resolver mejor la necesidad cotidiana de moverse.",
+    },
     descripcion:
       "Para ti, desplazarte no es solo ir de un punto a otro: movilidad, autonomía y nuevas experiencias forman parte de una misma forma de vivir.",
     dato: "40% de las personas interesadas en vehículos híbridos también presenta afinidad con Viajes y Turismo; entre quienes investigan concesionarios, 73% cruza con Movilidad.",
@@ -56,6 +65,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Mi vida es smart",
     icono: "🏠",
     afinidades: ["Tecnología", "Domótica y eficiencia energética"],
+    explicaciones: {
+      "Tecnología":
+        "La tecnología que vale cuando hace la vida más simple, eficiente y conectada, y no como dispositivos aislados.",
+      "Domótica y eficiencia energética":
+        "El hogar conectado: automatización, seguridad y ahorro de energía integrados al día a día.",
+    },
     descripcion:
       "La tecnología para ti tiene valor cuando hace la vida más simple, eficiente y conectada.",
     dato: "82% de la audiencia empresarial cruza con Tecnología; quienes muestran interés en Domótica también conectan con seguridad y eficiencia energética.",
@@ -76,6 +91,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Activo por elección",
     icono: "🏃",
     afinidades: ["Deportes", "Bienestar y Fitness"],
+    explicaciones: {
+      "Deportes":
+        "El movimiento y los retos personales como parte del estilo de vida.",
+      "Bienestar y Fitness":
+        "Sentirse bien: un bienestar que influye en cómo viajan, cómo se visten y cómo quieren sentirse.",
+    },
     descripcion:
       "El movimiento, el bienestar y los retos personales forman parte de tu estilo de vida.",
     dato: "68% de las personas interesadas en viajes terrestres cruza con Deportes; 54% de quienes muestran interés en perfumes cruza con Bienestar y Fitness.",
@@ -96,6 +117,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Vivo para compartir",
     icono: "🍽️",
     afinidades: ["Gastronomía", "Centros Comerciales"],
+    explicaciones: {
+      "Gastronomía":
+        "Salir a comer como plan para encontrarse, descubrir y crear momentos con otras personas.",
+      "Centros Comerciales":
+        "El lugar donde una comida, una compra y una salida se vuelven una misma experiencia social.",
+    },
     descripcion:
       "Para ti, consumir también significa encontrarte, descubrir y crear momentos con otras personas.",
     dato: "82% de la audiencia interesada en Gastronomía y Restaurantes cruza con Centros Comerciales.",
@@ -112,6 +139,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Entre pantallas y música",
     icono: "🎧",
     afinidades: ["Entretenimiento y OTT", "Música"],
+    explicaciones: {
+      "Entretenimiento y OTT":
+        "Ver contenido en pantallas y plataformas que acompañan el descanso y buena parte de la vida cotidiana.",
+      "Música":
+        "La música como compañía en los desplazamientos y parte de la identidad personal.",
+    },
     descripcion:
       "El entretenimiento acompaña tus desplazamientos, tus momentos de descanso y buena parte de tu vida cotidiana.",
     dato: "89% de la audiencia relacionada con motocicletas cruza con Música; 78% de quienes muestran interés en celulares tiene afinidad con Entretenimiento y OTT.",
@@ -132,6 +165,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Juego, compro y conecto",
     icono: "🎮",
     afinidades: ["Gaming", "E-Commerce y Retail"],
+    explicaciones: {
+      "Gaming":
+        "Jugar en línea y todo el ecosistema que lo rodea: dispositivos, conectividad, periféricos y contenido.",
+      "E-Commerce y Retail":
+        "Comprar en el mundo digital: para esta audiencia entretenimiento y consumo son una misma experiencia.",
+    },
     descripcion:
       "Para ti, el mundo digital no separa entretenimiento y consumo: ambos forman parte de una misma experiencia.",
     dato: "62% de las personas interesadas en Juegos en Línea también cruza con E-Commerce y Retail.",
@@ -148,6 +187,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Nunca dejo de aprender",
     icono: "🎓",
     afinidades: ["Educación", "Idiomas y contenidos internacionales"],
+    explicaciones: {
+      "Educación":
+        "Adquirir nuevas habilidades para ampliar oportunidades y estar preparados para lo que viene.",
+      "Idiomas y contenidos internacionales":
+        "Aprender idiomas y acceder a contenidos de otros países, una vía hacia nuevas aspiraciones profesionales.",
+    },
     descripcion:
       "Adquirir nuevas habilidades significa ampliar oportunidades y mantenerte preparado para lo que viene.",
     dato: "91% de la audiencia interesada en créditos cruza con Educación; quienes buscan universidades privadas presentan afinidades con Tecnología.",
@@ -168,6 +213,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Construyo mi futuro",
     icono: "🏗️",
     afinidades: ["Financiero", "Construcción y Vivienda"],
+    explicaciones: {
+      "Financiero":
+        "Las decisiones de largo plazo: financiación, patrimonio y estabilidad.",
+      "Construcción y Vivienda":
+        "El proyecto de vivienda propia, que se decide junto con la financiación como un solo proyecto de patrimonio.",
+    },
     descripcion:
       "Tus decisiones tienen una mirada de largo plazo: patrimonio, estabilidad y proyectos personales están conectados.",
     dato: "86% de la audiencia interesada en Vivienda VIS cruza con Financiero; quienes investigan créditos hipotecarios muestran afinidad con Construcción.",
@@ -184,6 +235,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Creo y hago crecer",
     icono: "💼",
     afinidades: ["Empresarios / B2B", "Tecnología y productividad"],
+    explicaciones: {
+      "Empresarios / B2B":
+        "Quienes piensan cómo hacer más eficiente un proyecto, una empresa o una oportunidad de negocio.",
+      "Tecnología y productividad":
+        "Digitalizar procesos, ganar productividad y administrar mejor los recursos para decidir con información.",
+    },
     descripcion:
       "Piensas constantemente en cómo hacer más eficiente un proyecto, una empresa o una oportunidad de negocio.",
     dato: "82% de la audiencia empresarial también cruza con Tecnología.",
@@ -205,6 +262,12 @@ export const ESTILOS_DE_VIDA = [
     nombre: "Me cuido con información",
     icono: "🩺",
     afinidades: ["Salud", "Telemedicina"],
+    explicaciones: {
+      "Salud":
+        "Acceder a información clara y oportuna para tomar mejores decisiones de bienestar.",
+      "Telemedicina":
+        "Orientación y seguimiento a distancia: información, dispositivos y acceso digital trabajando juntos.",
+    },
     descripcion:
       "Acceder a información clara y oportuna es parte fundamental de tomar mejores decisiones de bienestar.",
     dato: "78% de la audiencia interesada en Hospitales y Clínicas cruza con Tecnología; entre interesados en accesorios tecnológicos encontramos 88% de afinidad con Telemedicina.",
@@ -253,8 +316,22 @@ export const obtenerEstiloPorNombre = (nombre) =>
  * @param {Object} estilo
  * @returns {string[]}
  */
+export const afinidadDeCatalogo = (afinidad) =>
+  EQUIVALENCIAS_CATALOGO[afinidad] || afinidad;
+
 export const afinidadesDeCatalogo = (estilo) =>
-  (estilo?.afinidades || []).map((a) => EQUIVALENCIAS_CATALOGO[a] || a);
+  (estilo?.afinidades || []).map(afinidadDeCatalogo);
+
+/**
+ * Afinidades finales de la audiencia: las dos del estilo de vida más las que
+ * el visitante haya sumado (opcional), sin repetir.
+ * @param {Object} estilo
+ * @param {string[]} [adicionales]
+ * @returns {string[]}
+ */
+export const combinarAfinidades = (estilo, adicionales = []) => [
+  ...new Set([...(estilo?.afinidades || []), ...adicionales]),
+];
 
 /** Afinidades nuevas que aporta el catálogo de estilos de vida. */
 export const AFINIDADES_DE_ESTILOS = [
@@ -291,6 +368,30 @@ export const construirLecturaEstilo = (estilo) => {
     `📊 Dato observado: ${estilo.dato}`,
     `🔎 ${interpretacionNarrada(estilo)}`,
   ];
+};
+
+const ORDINALES_AFINIDAD = ["Primera", "Segunda"];
+
+/**
+ * Explicación de cada afinidad del estilo, una por una y en el orden del Excel
+ * (Afinidad 1, luego Afinidad 2). Cada pieza trae lo que se ve en pantalla y,
+ * aparte, lo que dice la voz, que anuncia cuál afinidad es.
+ * @param {Object} estilo
+ * @returns {Array<{nombre: string, etiqueta: string, texto: string, voz: string}>}
+ */
+export const construirExplicacionAfinidades = (estilo) => {
+  if (!estilo) return [];
+
+  const total = estilo.afinidades.length;
+  return estilo.afinidades
+    .map((nombre, indice) => ({ nombre, indice, texto: estilo.explicaciones?.[nombre] }))
+    .filter(({ texto }) => texto)
+    .map(({ nombre, indice, texto }) => ({
+      nombre,
+      etiqueta: `Afinidad ${indice + 1} de ${total}`,
+      texto,
+      voz: `${ORDINALES_AFINIDAD[indice] ?? `Afinidad ${indice + 1}`} afinidad: ${nombre}. ${texto}`,
+    }));
 };
 
 /**
@@ -336,9 +437,12 @@ export default {
   AFINIDADES_DE_ESTILOS,
   REGLA_NARRATIVA,
   obtenerEstiloPorNombre,
+  afinidadDeCatalogo,
   afinidadesDeCatalogo,
+  combinarAfinidades,
   interpretacionNarrada,
   construirLecturaEstilo,
+  construirExplicacionAfinidades,
   construirRutaSectores,
   construirResumenEstilo,
 };

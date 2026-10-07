@@ -17,13 +17,15 @@ import {
   GENEROS,
   RANGOS_EDAD,
   NIVELES_SOCIOECONOMICOS,
-  TODAS_AFINIDADES,
+  afinidadesAdicionales,
   ICONOS_AFINIDADES,
   MENSAJES_JOURNEY_POR_SECTOR,
   REVELACIONES_JOURNEY,
 } from '../data/mockData';
 import {
-  afinidadesDeCatalogo,
+  afinidadDeCatalogo,
+  combinarAfinidades,
+  construirExplicacionAfinidades,
   construirLecturaEstilo,
   construirResumenEstilo,
   construirRutaSectores,
@@ -167,19 +169,23 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   // Utilidades de conversación
   // ---------------------------------------------------------------------
 
-  /** Escribe un mensaje del agente (con indicador de tipeo) y espera. */
-  const decir = async (texto, pausa = PAUSA_ENTRE_MENSAJES) => {
+  /**
+   * Escribe un mensaje del agente (con indicador de tipeo) y espera.
+   * `extras.encabezado` rotula la burbuja; `extras.voz` es lo que se dice en
+   * voz alta cuando difiere de lo escrito (p. ej. anuncia "Primera afinidad").
+   */
+  const decir = async (texto, pausa = PAUSA_ENTRE_MENSAJES, extras = {}) => {
     setIsTyping(true);
     await esperar(voz.leerEstado().usarVoz ? DURACION_TIPEO_VOZ : DURACION_TIPEO);
     setIsTyping(false);
 
     const id = ++idMensaje.current;
-    setMessages((prev) => [...prev, { id, text: texto, isUser: false }]);
+    setMessages((prev) => [...prev, { id, text: texto, encabezado: extras.encabezado, isUser: false }]);
 
     // El modo se lee de nuevo: el visitante pudo cambiarlo mientras el agente "pensaba".
     if (voz.leerEstado().usarVoz) {
       setHablandoId(id);
-      await voz.hablar(texto);
+      await voz.hablar(extras.voz ?? texto);
       setHablandoId(null);
       await esperar(PAUSA_TRAS_VOZ);
     } else {
@@ -397,13 +403,28 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   // Paso 3: estilo de vida (dato observado → interpretación → pregunta)
   // ---------------------------------------------------------------------
 
+  /** Explica una por una las dos afinidades del estilo, en el orden del Excel. */
+  const explicarAfinidades = async (estilo) => {
+    for (const afinidad of construirExplicacionAfinidades(estilo)) {
+      const icono = ICONOS_AFINIDADES[afinidadDeCatalogo(afinidad.nombre)] ?? '✦';
+      await decir(afinidad.texto, PAUSA_ENTRE_MENSAJES, {
+        encabezado: `${icono} ${afinidad.etiqueta} · ${afinidad.nombre}`,
+        voz: afinidad.voz,
+      });
+    }
+  };
+
   const handleEstiloVidaSelect = async (estilo) => {
     addUserMessage(`Estilo de vida: ${estilo.nombre}`);
     setEstiloVida(estilo);
     setShowOptions(false);
 
+    const [apertura, ...evidencia] = construirLecturaEstilo(estilo);
+
+    await decir(apertura);
+    await explicarAfinidades(estilo);
     // El dato observado y la interpretación van siempre separados
-    await decirVarios(construirLecturaEstilo(estilo));
+    await decirVarios(evidencia);
     await decir(construirRutaSectores(estilo));
     await decir(estilo.pregunta);
     irA('preguntaEstilo');
@@ -423,7 +444,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
       'heart',
       async () => {
         await decir(
-          `Dejé marcadas las afinidades de "${estiloVida?.nombre}". Agrega o quita las que necesites en el tablero: arrastra las tarjetas o haz doble clic sobre ellas.`,
+          `Ya incluí ${estiloVida?.afinidades.join(' y ')}, las dos afinidades de "${estiloVida?.nombre}". Si quieres sumar otras, elígelas en el tablero: arrastra las tarjetas o haz doble clic sobre ellas. Es opcional; si no necesitas más, continúa.`,
         );
         irA('afinidades');
       },
@@ -434,11 +455,19 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   // Paso 4: afinidades
   // ---------------------------------------------------------------------
 
-  const handleAfinidadesSelect = (afinidades, isConfirmed) => {
+  const handleAfinidadesSelect = (adicionales, isConfirmed) => {
     if (!isConfirmed) return;
 
-    addUserMessage(`${afinidades.length} afinidades seleccionadas: ${afinidades.join(', ')}`);
-    setUserData((prev) => ({ ...prev, afinidades }));
+    // Las dos del estilo siempre cuentan; el tablero solo aporta las adicionales.
+    addUserMessage(
+      adicionales.length > 0
+        ? `Afinidades adicionales: ${adicionales.join(', ')}`
+        : 'Sin afinidades adicionales',
+    );
+    setUserData((prev) => ({
+      ...prev,
+      afinidades: combinarAfinidades(estiloVida, adicionales),
+    }));
 
     mostrarModalTransicion(
       'Ahora llevemos esta audiencia a una decisión de negocio.',
@@ -688,6 +717,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
                 <ChatMessage
                   key={msg.id}
                   message={msg.text}
+                  encabezado={msg.encabezado}
                   isUser={msg.isUser}
                   isSpeaking={msg.id === hablandoId}
                 />
@@ -805,10 +835,10 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
 
             {showOptions && currentStep === 'afinidades' && (
               <DragDropBoard
-                options={TODAS_AFINIDADES}
+                options={afinidadesAdicionales(estiloVida)}
+                incluidas={estiloVida?.afinidades}
                 onComplete={handleAfinidadesSelect}
                 iconMap={ICONOS_AFINIDADES}
-                preseleccionadas={afinidadesDeCatalogo(estiloVida)}
               />
             )}
 

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 
-const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [] }) => {
-  // Las afinidades que llegan del estilo de vida arrancan en la columna elegida
-  const iniciales = preseleccionadas.filter((item) => options.includes(item));
-  const [available, setAvailable] = useState(
-    options.filter((item) => !iniciales.includes(item)),
-  );
-  const [selected, setSelected] = useState(iniciales);
+/**
+ * Tablero para sumar afinidades ADICIONALES a las del estilo de vida.
+ * `incluidas` son las que ya cuentan (se muestran fijas, fuera del tablero) y
+ * `options` solo trae las que el visitante todavía puede agregar. Elegir otras
+ * es opcional, así que se puede continuar sin seleccionar ninguna.
+ */
+const DragDropBoard = ({ options, onComplete, iconMap = {}, incluidas = [] }) => {
+  const [available, setAvailable] = useState(options);
+  const [selected, setSelected] = useState([]);
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverZone, setDragOverZone] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -72,15 +74,15 @@ const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [
   };
 
   const handleContinue = async () => {
-    if (selected.length > 0 && !isProcessing) {
-      setIsProcessing(true);
-      
-      // Pequeño delay para mostrar el loading
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      onComplete(selected, true);
-      setIsProcessing(false);
-    }
+    if (isProcessing) return;
+
+    setIsProcessing(true);
+
+    // Pequeño delay para mostrar el loading
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    onComplete(selected, true);
+    setIsProcessing(false);
   };
 
   const getIcon = (text) => {
@@ -94,6 +96,20 @@ const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [
 
   return (
     <div className="space-y-4 animate-slide-up">
+      {incluidas.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 bg-claro-red/10 border border-claro-red/40 rounded-xl px-4 py-3">
+          <span className="text-white/70 text-sm">Ya incluidas por tu estilo de vida:</span>
+          {incluidas.map((afinidad) => (
+            <span
+              key={afinidad}
+              className="px-3 py-1 bg-claro-red/30 border border-claro-red/60 rounded-lg text-white text-sm font-medium"
+            >
+              ✓ {afinidad}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Zona de Disponibles */}
         <div
@@ -108,7 +124,7 @@ const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [
           onDrop={(e) => handleDrop(e, 'available')}
         >
           <div className="text-center mb-4">
-            <h3 className="text-white font-semibold text-lg">Afinidades Disponibles</h3>
+            <h3 className="text-white font-semibold text-lg">Otras afinidades</h3>
             <p className="text-white/60 text-sm mt-1">
               Arrastra o haz doble clic para seleccionar
             </p>
@@ -117,7 +133,7 @@ const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [
           <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2">
             {available.length === 0 ? (
               <div className="text-center py-8 text-white/40">
-                Todas las afinidades seleccionadas
+                Ya elegiste todas las afinidades
               </div>
             ) : (
               available.map((option, index) => (
@@ -183,7 +199,7 @@ const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [
               Afinidades Seleccionadas
             </h3>
             <p className="text-white/60 text-sm mt-1">
-              {selected.length} {selected.length === 1 ? 'afinidad' : 'afinidades'}
+              Opcional · {selected.length} {selected.length === 1 ? 'adicional' : 'adicionales'}
             </p>
           </div>
           
@@ -203,8 +219,8 @@ const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [
                     d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
                   />
                 </svg>
-                <p>Arrastra aquí las afinidades</p>
-                <p className="text-xs mt-1">que apliquen a tu estrategia</p>
+                <p>Arrastra aquí si quieres sumar otras</p>
+                <p className="text-xs mt-1">o continúa sin agregar más</p>
               </div>
             ) : (
               selected.map((option, index) => (
@@ -241,59 +257,61 @@ const DragDropBoard = ({ options, onComplete, iconMap = {}, preseleccionadas = [
         </div>
       </div>
 
-      {/* Botón Continuar */}
-      {selected.length > 0 && (
-        <div className="flex justify-center pt-4">
-          <button
-            onClick={handleContinue}
-            disabled={isProcessing}
-            className={`px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 flex items-center space-x-2 ${
-              isProcessing
-                ? 'bg-gray-500 cursor-not-allowed text-white'
-                : 'bg-claro-red text-white shadow-claro-red/50 hover:bg-red-700 transform hover:scale-105'
-            }`}
-          >
-            {isProcessing ? (
-              <>
-                <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24">
-                  <circle 
-                    className="opacity-25" 
-                    cx="12" 
-                    cy="12" 
-                    r="10" 
-                    stroke="currentColor" 
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path 
-                    className="opacity-75" 
-                    fill="currentColor" 
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                <span>Procesando...</span>
-              </>
-            ) : (
-              <>
-                <span>Continuar con {selected.length} {selected.length === 1 ? 'afinidad' : 'afinidades'}</span>
-                <svg
-                  className="w-6 h-6"
+      {/* Botón Continuar: fijo al borde inferior, porque es la salida del paso aunque no se elija nada */}
+      <div className="sticky bottom-0 z-10 flex justify-center pt-4 pb-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
+        <button
+          onClick={handleContinue}
+          disabled={isProcessing}
+          className={`px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 flex items-center space-x-2 ${
+            isProcessing
+              ? 'bg-gray-500 cursor-not-allowed text-white'
+              : 'bg-claro-red text-white shadow-claro-red/50 hover:bg-red-700 transform hover:scale-105'
+          }`}
+        >
+          {isProcessing ? (
+            <>
+              <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24">
+                <circle 
+                  className="opacity-25" 
+                  cx="12" 
+                  cy="12" 
+                  r="10" 
+                  stroke="currentColor" 
+                  strokeWidth="4"
                   fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </>
-            )}
-          </button>
-        </div>
-      )}
+                />
+                <path 
+                  className="opacity-75" 
+                  fill="currentColor" 
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              <span>Procesando...</span>
+            </>
+          ) : (
+            <>
+              <span>
+                    {selected.length === 0
+                      ? 'Continuar sin agregar más'
+                      : `Continuar con ${selected.length} ${selected.length === 1 ? 'adicional' : 'adicionales'}`}
+                  </span>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
 
       {/* Instrucciones */}
       <div className="text-center text-white/60 text-sm">

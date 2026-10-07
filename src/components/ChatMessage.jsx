@@ -13,7 +13,7 @@ const Ecualizador = () => (
   </div>
 );
 
-const ChatMessage = ({ message, isUser, isTyping, isSpeaking }) => {
+const ChatMessage = ({ message, encabezado, isUser, isTyping, isSpeaking }) => {
   // Formatear mensaje con saltos de línea
   const formatMessage = (text) => {
     if (!text) return null;
@@ -37,6 +37,11 @@ const ChatMessage = ({ message, isUser, isTyping, isSpeaking }) => {
         } ${isSpeaking ? 'border-claro-red/70 shadow-[0_0_28px_rgba(227,6,19,0.3)]' : ''}`}
       >
         {isSpeaking && <Ecualizador />}
+        {encabezado && !isTyping && (
+          <p className="text-[11px] font-bold uppercase tracking-widest text-claro-red mb-2">
+            {encabezado}
+          </p>
+        )}
         {isTyping ? (
           <div className="flex space-x-2">
             <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
