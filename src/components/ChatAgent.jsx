@@ -12,8 +12,8 @@ import OndasVoz from './voz/OndasVoz';
 import { useVoz } from '../hooks/useVoz';
 import { generarPropuestaConIA } from '../services/apiService';
 import { guardarDatosIniciales, actualizarConversacion } from '../services/firebaseService';
+import { OPCIONES_SECTOR, sectorDesdeEtiqueta } from '../data/sectores';
 import {
-  SECTORES,
   GENEROS,
   RANGOS_EDAD,
   NIVELES_SOCIOECONOMICOS,
@@ -313,11 +313,11 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setShowFormulario(false);
 
     mostrarModalTransicion(
-      'Perfecto! Ahora vamos a descubrir el perfil de tu audiencia',
+      'Perfecto! Descubramos qué señales definen a tu audiencia y cómo convertirlas en oportunidades.',
       'profile',
       async () => {
         await decir(
-          `Perfecto ${nombre}, gracias por tu información. Ahora cuéntame sobre ${empresa}: ¿a qué sector pertenece?`,
+          `Perfecto ${nombre}, identifiquemos primero el contexto de tu marca. Selecciona tu sector para descubrir las audiencias, afinidades y oportunidades con mayor potencial.`,
         );
         irA('welcome');
       },
@@ -379,7 +379,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setUserData((prev) => ({ ...prev, nivelSocioeconomico: niveles }));
 
     mostrarModalTransicion(
-      '¡Excelente! Ahora descubramos el estilo de vida de tu audiencia',
+      '¡Excelente! Ahora identifiquemos qué estilo de vida define mejor a tu audiencia.',
       'lightbulb',
       async () => {
         await decir(
@@ -419,7 +419,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     );
 
     mostrarModalTransicion(
-      'Ahora vamos a afinar las afinidades de tu audiencia',
+      'Ahora identifiquemos qué intereses conectan con mayor fuerza a tu audiencia.',
       'heart',
       async () => {
         await decir(
@@ -441,7 +441,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
     setUserData((prev) => ({ ...prev, afinidades }));
 
     mostrarModalTransicion(
-      '¡Increíble! Ahora vamos a explorar el Customer Journey',
+      'Ahora llevemos esta audiencia a una decisión de negocio.',
       'journey',
       async () => {
         await decir('Perfecto. Ahora vamos a una reflexión estratégica importante...');
@@ -474,7 +474,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const mostrarEjemplosJourney = async () => {
     const ejemplos =
       MENSAJES_JOURNEY_POR_SECTOR[userData.sector] ||
-      MENSAJES_JOURNEY_POR_SECTOR['Consumo Masivo'];
+      MENSAJES_JOURNEY_POR_SECTOR.Retail;
 
     await decir(`Veamos un ejemplo aplicado a ${userData.sector}:`);
     await decir(`Contexto: ${ejemplos.contexto}`);
@@ -600,7 +600,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const getCurrentOptions = () => {
     switch (currentStep) {
       case 'welcome':
-        return SECTORES;
+        return OPCIONES_SECTOR;
       case 'genero':
         return GENEROS;
       case 'edad':
@@ -619,7 +619,7 @@ const ChatAgent = ({ onComplete, standId = 'A' }) => {
   const handleOptionSelect = (option, isConfirmed) => {
     switch (currentStep) {
       case 'welcome':
-        handleSectorSelect(option);
+        handleSectorSelect(sectorDesdeEtiqueta(option) ?? option);
         break;
       case 'genero':
         handleGeneroSelect(option);

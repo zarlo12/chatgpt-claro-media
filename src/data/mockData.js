@@ -9,24 +9,13 @@ import {
   obtenerEstiloPorNombre,
 } from "./estilosDeVida";
 import { ORDEN_JOURNEY } from "./journey";
+export { SECTORES } from "./sectores";
 import {
   formatearInteraccion,
   formatoLiderPorSector,
   obtenerBenchmarkPorSector,
 } from "./benchmarksInteraccion";
 
-export const SECTORES = [
-  "Financiero",
-  "Automotor",
-  "Educación",
-  "Gobierno",
-  "Salud",
-  "Tecnología",
-  "Moda",
-  "Entretenimiento",
-  "Retail",
-  "Consumo Masivo",
-];
 
 export const GENEROS = ["Mujeres", "Hombres", "Todos"];
 
@@ -136,11 +125,18 @@ export const AFINIDADES_POR_SECTOR = {
     "Educación",
   ],
   Retail: ["Ofertas y descuentos", "Centro comercial", "Tecnología"],
-  "Consumo Masivo": [
-    "Entretenimiento y OTT",
+  Turismo: ["Turismo", "Movilidad", "Gastronomía", "Deportes"],
+  B2B: [
+    "Negocios y B2B",
+    "Productividad digital",
     "Tecnología",
+    "Educación financiera",
+  ],
+  Hogar: [
+    "Construcción",
+    "Educación financiera",
+    "Domótica y eficiencia energética",
     "Centro comercial",
-    "Turismo",
   ],
 };
 
@@ -192,10 +188,20 @@ export const INSIGHTS_POR_SECTOR = {
     "Usuarios que visitan tiendas especializadas incrementan la navegación en contenidos y reseñas de esa categoría días posteriores.",
     "Detectamos patrones diferenciados: compras grandes en fines de semana y compras rápidas de reposición entre semana.",
   ],
-  "Consumo Masivo": [
-    "Usuarios que visitan supermercados y grandes superficies presentan alta afinidad con contenidos sobre productos para mascotas.",
-    "Usuarios de zonas como Usaquén y Chapinero muestran alta afinidad con alimentación saludable y productos orgánicos.",
-    "Personas que asisten a conciertos y eventos masivos incrementan el uso de apps de domicilios como Rappi.",
+  Turismo: [
+    "40% de las personas interesadas en vehículos híbridos también presenta afinidad con Viajes y Turismo.",
+    "68% de las personas interesadas en viajes terrestres cruza con Deportes.",
+    "Esto sugiere que elegir un destino puede estar conectado con cómo nos movemos y cómo queremos sentirnos: movilidad y bienestar influyen en el viaje.",
+  ],
+  B2B: [
+    "82% de la audiencia empresarial cruza con Tecnología.",
+    "Esto sugiere que crecer ya no depende solo de vender más: también pasa por digitalizar procesos, ganar productividad y tomar decisiones con información.",
+    "La audiencia empresarial conecta además con Financiero y Educación, sectores que amplían la oportunidad.",
+  ],
+  Hogar: [
+    "86% de la audiencia interesada en Vivienda VIS cruza con Financiero.",
+    "Quienes investigan créditos hipotecarios muestran afinidad con Construcción.",
+    "Esto sugiere que la vivienda y la financiación no son dos decisiones separadas: forman parte de un mismo proyecto de patrimonio.",
   ],
 };
 
@@ -230,7 +236,9 @@ export const INSIGHTS_GEOESPACIALES = {
   Moda: [],
   Entretenimiento: [],
   Retail: [],
-  "Consumo Masivo": [],
+  Turismo: [],
+  B2B: [],
+  Hogar: [],
 };
 
 // Ejemplos de mensajes por etapa del customer journey según sector
@@ -332,15 +340,35 @@ export const MENSAJES_JOURNEY_POR_SECTOR = {
     decide: "Cyber Monday: hasta 40% de descuento + 6 meses sin intereses.",
     descubre: "Ya instalado, descubre las funciones inteligentes que ahorran en tu factura.",
   },
-  "Consumo Masivo": {
+  Turismo: {
     contexto:
-      "Una familia busca productos más saludables para su alimentación diaria.",
-    conoce: "Hay nuevas bebidas hechas con ingredientes 100% naturales.",
-    encuentra: "Sin conservantes, con fruta real y vitaminas esenciales.",
-    atrae: "30% menos azúcar que otras marcas, certificación orgánica.",
-    conecta: "Promoción en tu tienda cercana, encuentra el punto de venta.",
-    decide: "Llévate 2 y paga 1 en toda la línea familiar.",
-    descubre: "En casa, descubre las recetas y presentaciones nuevas de toda la línea.",
+      "Una pareja planea su próximo viaje por carretera y quiere llegar sin sorpresas.",
+    conoce: "Descubre destinos cercanos para escaparte este puente festivo.",
+    encuentra: "Rutas con paradas gastronómicas, peajes y clima en un solo lugar.",
+    atrae: "Hospedajes con cancelación gratuita y 30% menos que en temporada alta.",
+    conecta: "Un asesor de viajes te arma el itinerario por chat, sin costo.",
+    decide: "Reserva hoy y paga en cuotas sin intereses hasta en 6 meses.",
+    descubre: "Ya en el viaje, descubre los planes y restaurantes que casi nadie conoce.",
+  },
+  B2B: {
+    contexto:
+      "Un empresario quiere digitalizar su operación para vender más y gastar menos.",
+    conoce: "Las empresas que digitalizan sus procesos ganan tiempo para crecer.",
+    encuentra: "Facturación, inventario y atención al cliente conectados en una sola plataforma.",
+    atrae: "Pymes como la tuya reducen costos operativos hasta 25% en el primer año.",
+    conecta: "Diagnóstico gratuito de tu operación con un especialista.",
+    decide: "Implementación en 15 días y primer mes sin costo.",
+    descubre: "Ya implementado, descubre reportes que muestran dónde está tu próxima oportunidad.",
+  },
+  Hogar: {
+    contexto:
+      "Una familia busca su primera vivienda y quiere saber cuánto puede financiar.",
+    conoce: "Conocer cuánto puedes financiar es el primer paso para encontrar tu hogar.",
+    encuentra: "Proyectos de vivienda cerca de tu trabajo, con subsidio y crédito en un solo lugar.",
+    atrae: "Cuotas desde el valor de un arriendo, con tasas preferenciales.",
+    conecta: "Simula tu crédito hipotecario y agenda una visita a la sala de ventas.",
+    decide: "Separa tu apartamento este mes con una cuota inicial reducida.",
+    descubre: "Ya en casa, descubre cómo hacerla más eficiente y conectada.",
   },
 };
 

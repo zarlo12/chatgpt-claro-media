@@ -204,3 +204,33 @@ el agente dice pasa por ahí.
   predeterminada del sistema. Sin soporte de voz, la experiencia queda en texto.
 - La prueba automatizada usó un simulador de la API de voz; la calidad real de la
   voz conviene escucharla en el equipo del stand.
+
+## Sectores (octubre 2026)
+
+Los 10 sectores anteriores se reemplazaron por 12, con su audiencia en usuarios Claro:
+Automotor 2,4M · Financiero 7,2M · Retail 4,6M · Moda 3M · Entretenimiento 4,2M ·
+Turismo 2,8M · B2B 950K · Tecnología 15M · Salud 3,1M · Educación 1,4M ·
+Gobierno 1,1M · Hogar 4,2M. "Consumo Masivo" desaparece.
+
+- **`src/data/sectores.js`** es la fuente única (nombre y usuarios). El botón del chat
+  muestra "Automotor — 2,4M usuarios", pero el dato que se guarda y se usa como llave
+  es solo el nombre. La cabecera de resultados muestra la audiencia del sector.
+- **Los mismos 12 nombres** se usan como llave en `mockData.js` (afinidades, insights,
+  ejemplos del journey), `benchmarksInteraccion.js`, `paquetesComerciales.js`
+  (`sectoresDestacados`) y `estilosDeVida.js` (sector principal y conectados). En el
+  Excel de estilos de vida, "Construcción y Hogar" pasó a "Hogar" y
+  "Tecnología / Entretenimiento" a "Tecnología" con Entretenimiento como conectado.
+- **Benchmark de interacción.** El estudio tiene 11 categorías y el chat 12 sectores.
+  Financiero, Retail, Gobierno, Automotor, Salud, Educación y Tecnología tienen la suya;
+  Moda (→ Belleza), Entretenimiento, Turismo y B2B (→ Servicios) y Hogar
+  (→ Construcción) usan la categoría más cercana y el chat lo dice. Se cambia en
+  `SECTOR_A_CATEGORIA`.
+- **Contenido nuevo (Turismo, B2B, Hogar).** Los insights salen del Excel de estilos de
+  vida. Los ejemplos del journey son texto ilustrativo, igual que en los demás
+  sectores. No se inventaron datos geoespaciales: quedan vacíos hasta tener cifras.
+- **Paquetes.** `sectoresDestacados` es criterio comercial y se puede ajustar:
+  ELITE + Investigación → Gobierno, Educación, Hogar · ELITE 360 → Financiero,
+  Automotor, Salud · VIP → Tecnología, Salud, Educación · CONNECT → Retail, Turismo,
+  Entretenimiento · SMART → Moda, Entretenimiento, Tecnología · BASIC → Retail, Moda, B2B.
+- Los registros guardados con sectores anteriores (p. ej. "Consumo Masivo") se siguen
+  mostrando; solo cambia lo que se genera de ahora en adelante.

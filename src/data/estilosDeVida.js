@@ -117,8 +117,8 @@ export const ESTILOS_DE_VIDA = [
     dato: "89% de la audiencia relacionada con motocicletas cruza con Música; 78% de quienes muestran interés en celulares tiene afinidad con Entretenimiento y OTT.",
     interpretacion:
       "Una pantalla, un dispositivo o incluso un medio de transporte pueden convertirse en vehículos de entretenimiento e identidad personal.",
-    sectorPrincipal: "Tecnología / Entretenimiento",
-    sectoresConectados: ["Automotor"],
+    sectorPrincipal: "Tecnología",
+    sectoresConectados: ["Entretenimiento", "Automotor"],
     pregunta:
       "¿Qué ocupa más espacio en tu día: escuchar música, ver contenido o descubrir nuevas experiencias digitales?",
     opciones: [
@@ -173,7 +173,7 @@ export const ESTILOS_DE_VIDA = [
     dato: "86% de la audiencia interesada en Vivienda VIS cruza con Financiero; quienes investigan créditos hipotecarios muestran afinidad con Construcción.",
     interpretacion:
       "La vivienda y la financiación no son dos decisiones separadas: forman parte de un mismo proyecto de patrimonio.",
-    sectorPrincipal: "Construcción y Hogar",
+    sectorPrincipal: "Hogar",
     sectoresConectados: ["Financiero"],
     pregunta:
       "¿Qué define primero tu decisión: encontrar la vivienda ideal o entender cuánto puedes financiar?",

@@ -75,21 +75,36 @@ export const BENCHMARKS_POR_CATEGORIA = {
 };
 
 /**
- * Categoría del estudio que corresponde a cada sector del chat.
- * Cuando el nombre no coincide exactamente se usa la categoría más cercana
- * y la UI lo indica como "categoría de referencia".
+ * Categoría del estudio que corresponde a cada sector del chat. El estudio
+ * tiene 11 categorías y el chat 12 sectores: cuando el nombre no coincide se
+ * usa la categoría más cercana y la UI lo indica como "categoría de referencia".
+ * La categoría "Apuestas" no se asigna a ningún sector (es de las restringidas).
  */
+// Sectores que tienen su propia categoría en el estudio (aunque el nombre cambie,
+// como Financiero → Financiera). Los demás se leen como "categoría de referencia".
+const SECTORES_CON_CATEGORIA_PROPIA = new Set([
+  "Automotor",
+  "Financiero",
+  "Retail",
+  "Tecnología",
+  "Salud",
+  "Educación",
+  "Gobierno",
+]);
+
 export const SECTOR_A_CATEGORIA = {
-  Financiero: "Financiera",
   Automotor: "Automotor",
-  Educación: "Educación",
-  Gobierno: "Gobiernos",
-  Salud: "Salud",
-  Tecnología: "Tecnología",
+  Financiero: "Financiera",
+  Retail: "Comercios",
   Moda: "Belleza",
   Entretenimiento: "Servicios",
-  Retail: "Comercios",
-  "Consumo Masivo": "Comercios",
+  Turismo: "Servicios",
+  B2B: "Servicios",
+  Tecnología: "Tecnología",
+  Salud: "Salud",
+  Educación: "Educación",
+  Gobierno: "Gobiernos",
+  Hogar: "Construcción",
 };
 
 /** Tope de la escala: mayor tasa observada en todo el estudio. */
@@ -112,7 +127,7 @@ export const obtenerBenchmarkPorSector = (sector) => {
 
   return {
     categoria,
-    esReferencia: categoria !== sector,
+    esReferencia: !SECTORES_CON_CATEGORIA_PROPIA.has(sector),
     formatos,
   };
 };
@@ -152,11 +167,11 @@ export const construirMensajeBenchmark = (sector) => {
     .map((f) => `${f.formato} ${formatearInteraccion(f.interaccion)}`)
     .join(" · ");
 
-  const referencia = benchmark.esReferencia
-    ? ` Tomo como referencia la categoría ${benchmark.categoria}.`
-    : "";
+  const presentacion = benchmark.esReferencia
+    ? `Para ${sector} tomo como referencia la categoría ${benchmark.categoria}, la más cercana del estudio. Los formatos con mayor respuesta son:`
+    : `En ${sector} los formatos con mayor respuesta son:`;
 
-  return `Cada categoría interactúa de forma diferente.${referencia} En ${benchmark.categoria} los formatos con mayor respuesta son: ${detalle}.`;
+  return `Cada categoría interactúa de forma diferente. ${presentacion} ${detalle}.`;
 };
 
 export default {

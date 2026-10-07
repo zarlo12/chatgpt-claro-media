@@ -3,6 +3,7 @@ import { enviarPropuestaPorCorreo } from '../services/pdfService';
 import EstiloVidaCard from './EstiloVidaCard';
 import BenchmarkInteraccion from './BenchmarkInteraccion';
 import BotonFotografiaIA from './BotonFotografiaIA';
+import { formatearUsuarios, obtenerSector } from '../data/sectores';
 
 const InsightCard = ({ insight, index }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -87,6 +88,7 @@ const GeoInsightCard = ({ insight, index }) => {
 };
 
 const ResultsView = ({ propuesta, onReset, conversacionId, standId }) => {
+  const sectorInfo = obtenerSector(propuesta.sector);
   const resultsContainerRef = React.useRef(null);
   
   // Estados para envío de correo
@@ -165,6 +167,9 @@ const ResultsView = ({ propuesta, onReset, conversacionId, standId }) => {
           </h1>
           <p className="text-xl text-white/80">
             Sector: <span className="text-claro-red font-semibold">{propuesta.sector}</span>
+            {sectorInfo && (
+              <span className="text-white/60"> · {formatearUsuarios(sectorInfo.usuarios)} usuarios Claro</span>
+            )}
           </p>
 
           {/* Arriba: para no obligar a recorrer toda la propuesta. */}

@@ -36,7 +36,7 @@ const DEFINICION_PAQUETES = [
     descuento: "36% de descuento",
     categoriaPresupuesto: "alto",
     etapasJourney: ["Conoce", "Encuentra", "Atrae"],
-    sectoresDestacados: ["Gobierno", "Educación", "Consumo Masivo"],
+    sectoresDestacados: ["Gobierno", "Educación", "Hogar"],
     incluyeProduccion: true,
     fases: [
       {
@@ -142,7 +142,7 @@ const DEFINICION_PAQUETES = [
     recomendadoPara: [
       "Marcas que necesitan datos antes de definir el mensaje",
       "Campañas de liderazgo de categoría a 6 meses",
-      "Sectores: Gobierno, Educación, Consumo Masivo",
+      "Sectores: Gobierno, Educación, Hogar",
       "Proyectos que deben sustentar la estrategia con evidencia",
     ],
   },
@@ -371,7 +371,7 @@ const DEFINICION_PAQUETES = [
     descuento: "5% de descuento",
     categoriaPresupuesto: "medio-alto",
     etapasJourney: ["Conecta", "Decide", "Descubre"],
-    sectoresDestacados: ["Retail", "Consumo Masivo", "Entretenimiento"],
+    sectoresDestacados: ["Retail", "Turismo", "Entretenimiento"],
     incluyeProduccion: false,
     fases: [
       {
@@ -441,7 +441,7 @@ const DEFINICION_PAQUETES = [
     recomendadoPara: [
       "Marcas con objetivos de interacción y consideración",
       "Campañas que necesitan llevar audiencia a un destino digital",
-      "Sectores: Retail, Consumo Masivo, Entretenimiento",
+      "Sectores: Retail, Turismo, Entretenimiento",
       "Productos con punto de venta o app propia",
     ],
   },
@@ -543,7 +543,7 @@ const DEFINICION_PAQUETES = [
     descuento: "10% de descuento",
     categoriaPresupuesto: "bajo",
     etapasJourney: ["Conoce"],
-    sectoresDestacados: ["Retail", "Moda", "Gobierno"],
+    sectoresDestacados: ["Retail", "Moda", "B2B"],
     incluyeProduccion: false,
     fases: [
       {
@@ -598,7 +598,7 @@ const DEFINICION_PAQUETES = [
     recomendadoPara: [
       "PyMEs que inician en medios masivos",
       "Campañas locales o pruebas de mercado",
-      "Sectores: Retail, Moda, Gobierno",
+      "Sectores: Retail, Moda, B2B",
       "Marcas que quieren validar antes de escalar",
     ],
   },
